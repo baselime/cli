@@ -1,0 +1,63 @@
+{
+  "name": "baselime-cli",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./build/cli.js",
+  "bin": {
+    "baselime": "./build/cli.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "/assets",
+    "/build"
+  ],
+  "keywords": [
+    "cli",
+    "observability"
+  ],
+  "author": "Baselime <boris@baselime.io> (baselime.io)",
+  "license": "MIT",
+  "scripts": {
+    "test": "ava",
+    "test:ci": "nyc ava --fail-fast",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "package:linux": "pkg . --no-bytecode --targets node14-linux-x64 --output bin/linux/baselime",
+    "package:macos": "pkg . --no-bytecode --targets node14-macos-x64 --output bin/macos/baselime",
+    "prettier": "prettier --loglevel warn --write \"**/*.{ts,js,json,yaml}\"",
+    "prettier:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint:check": "eslint \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "base64url": "^3.0.1",
+    "chalk": "^4.1.2",
+    "cli-table": "^0.3.11",
+    "dotenv": "^16.0.0",
+    "enquirer": "^2.3.6",
+    "figlet": "^1.5.2",
+    "ora": "^5.4.1",
+    "yargs": "^17.3.1",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "@types/figlet": "^1.5.4",
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^17.0.21",
+    "@types/yargs": "^17.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.15.0",
+    "@typescript-eslint/parser": "^5.15.0",
+    "ava": "^4.1.0",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
+    "faker": "^6.6.6",
+    "fs-extra": "^10.0.1",
+    "nyc": "^15.1.0",
+    "pkg": "^5.5.2",
+    "prettier": "^2.6.0",
+    "typescript": "^4.6.2"
+  }
+}
