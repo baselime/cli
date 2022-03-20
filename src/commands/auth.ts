@@ -32,8 +32,14 @@ export async function handler(argv: Arguments<Options>) {
 
   try {
     const config = await readUserConfig(profile);
-    outputs.userConfigFound(profile);
-  } catch (_) {}
+    if (config) {
+      outputs.userConfigFound(profile);
+      const res = await prompts.promptReplaceExistingConfig(profile);
+      if (!res) {
+        process.exit(0);
+      }
+    }
+  } catch (_) { }
 
   const accountEmail = email ?? (await prompts.promptForEmail());
 

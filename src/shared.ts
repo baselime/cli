@@ -9,5 +9,5 @@ export const baseOptions = {
   profile: { type: "string", default: "default" },
   "api-key": { type: "string" },
   quiet: { type: "boolean", default: false, alias: "q" },
-  json: { type: "boolean", default: true, conflicts: "output" },
+  json: { type: "boolean", default: false, conflicts: "output" },
 } as const;

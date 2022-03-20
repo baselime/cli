@@ -45,6 +45,16 @@ export async function promptForOneTimePassword(email: string): Promise<string> {
   return otp;
 }
 
+export async function promptReplaceExistingConfig(profile: string): Promise<boolean> {
+  const { confirm } = await prompt<{ confirm: boolean }>({
+    type: "confirm",
+    name: "confirm",
+    message: `Replace profile ${profile}?`,
+  });
+
+  return confirm;
+}
+
 export async function promptForEnvironment(
   workspaces: Workspace[],
 ): Promise<{ workspaceId: string; environmentId: string }> {
@@ -68,7 +78,7 @@ export async function promptForEnvironment(
     choices: environments.map((env) => {
       return {
         name: env.id,
-        message: `${chalk.green(
+        message: `${chalk.cyan(
           chalk.bold(`${env.workspace} - ${env.alias}`),
         )}`,
         value: env.id,

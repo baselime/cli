@@ -19,7 +19,6 @@ export function userConfigFound(profile: string) {
   ${chalk.bold(`$ baselime auth --profile ${chalk.cyan("new_profile_name")}`)}
 
   ${EOL}`);
-  process.exit(0);
 }
 
 export function credentialsConfigured(path: string) {
