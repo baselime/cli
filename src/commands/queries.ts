@@ -1,27 +1,43 @@
 import { Arguments, CommandBuilder } from "yargs";
-import chalk from "chalk";
-import { EOL } from "os";
+import { authenticate, baseOptions, userConfigNotFound } from "../shared";
+import { Options } from "./queries/types";
+import handlers from "./queries/handlers";
+import spinner from "../services/spinner/index";
 
-interface Options {
-  name: string;
-  upper?: boolean;
-}
-
-export const command = "greet <name>";
-export const desc = "Greet <name> with Hello";
+export const command = "queries <subcommand> [parameters]";
+export const desc = "Operations on queries";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
-    .options({
-      upper: { type: "boolean" },
+    .options(baseOptions)
+    .positional("subcommand", {
+      type: "string",
+      choices: ["list", "create"]
     })
-    .positional("name", { type: "string", demandOption: true });
+    .example([
+      ["$0 queries <subcommand>"],
+      ["$0 queries <subcommand>  --profile prod"]
+    ]);
 };
 
-export function handler(argv: Arguments<Options>) {
-  const { name, upper } = argv;
-  const greeting = `Hello ${name}`;
-  const s = upper ? greeting.toUpperCase() : greeting;
-  process.stdout.write(chalk.green(chalk.bold(s)) + EOL);
-  process.exit(0);
+export async function handler(argv: Arguments<Options>) {
+  const { subcommand, profile = "default", json, } = argv;
+  spinner.init(!!argv.quiet)
+  await authenticate(profile);
+
+  switch (subcommand) {
+    case subCommand.list:
+      await handlers.list(!!json)
+      break;
+    case subCommand.create:
+      console.log("create");
+      break;
+    default:
+      process.exit(1);
+  }
+}
+
+export enum subCommand {
+  list = "list",
+  create = "create",
 }
