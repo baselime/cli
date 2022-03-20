@@ -6,21 +6,21 @@ require("dotenv").config();
 const { BASELIME_BASE_URL = "https://go.baselime.io/v1/" } = process.env;
 const baseUrl = BASELIME_BASE_URL;
 
-export const axiosInstance = axios.create({
+export const client = axios.create({
   baseURL: baseUrl,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-export const publicAxiosInstance = axios.create({
+export const publicClient = axios.create({
   baseURL: baseUrl,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-axiosInstance.interceptors.response.use(
+client.interceptors.response.use(
   function (response) {
     return response;
   },
@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-publicAxiosInstance.interceptors.response.use(
+publicClient.interceptors.response.use(
   function (response) {
     return response;
   },
@@ -47,7 +47,7 @@ publicAxiosInstance.interceptors.response.use(
 );
 
 export function setAxiosAuth(apiKey: string) {
-  axiosInstance.interceptors.request.use(function (config) {
+  client.interceptors.request.use(function (config) {
     if (!apiKey) {
       process.exit(1);
     }

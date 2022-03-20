@@ -1,4 +1,4 @@
-import { publicAxiosInstance } from "../clients";
+import { publicClient } from "../clients";
 
 export interface Workspace {
   id: string;
@@ -21,14 +21,14 @@ export interface Environment {
 }
 
 async function generateOneTimePassword(email: string) {
-  await publicAxiosInstance.post("/auth/otp", { email });
+  await publicClient.post("/auth/otp", { email });
 }
 
 async function getWorkspacesByOneTimePassword(
   otp: string,
 ): Promise<Workspace[]> {
   const { workspaces } = (
-    await publicAxiosInstance.get("/auth/workspaces", { params: { otp } })
+    await publicClient.get("/auth/workspaces", { params: { otp } })
   ).data;
   return workspaces;
 }
@@ -39,7 +39,7 @@ async function getApiKey(
   otp: string,
 ): Promise<string> {
   const { apiKey } = (
-    await publicAxiosInstance.get("/auth/api-key", {
+    await publicClient.get("/auth/api-key", {
       params: { otp, environmentId, workspaceId },
     })
   ).data;

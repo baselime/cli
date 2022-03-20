@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import figlet from "figlet";
 import { EOL } from "os";
 
 export function welcome() {
