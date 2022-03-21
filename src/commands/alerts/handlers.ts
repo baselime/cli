@@ -4,10 +4,10 @@ import outputs from "./outputs";
 
 async function list(json: boolean) {
   const s = spinner.get();
-  s.start("Fetching your queries");
-  const queries = await api.queriesList();
+  s.start("Fetching your alerts");
+  const alerts = await api.alertsList();
   s.succeed();
-  outputs.list(queries, json);
+  outputs.list(alerts, json);
 }
 
 export default {
