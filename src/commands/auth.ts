@@ -7,6 +7,7 @@ import * as outputs from "./auth/outputs";
 import { readUserConfig, writeUserConfig } from "../services/config";
 import { Options } from "./auth/types";
 import spinner from "../services/spinner/index";
+import { EOL } from "os";
 
 export const command = "auth";
 export const desc = "Authenticate a user";
