@@ -9,7 +9,10 @@ export const desc = "Operations on alerts";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
-    .options(baseOptions)
+    .options({
+      ...baseOptions,
+      application: { type: "string", desc: "application name", alias: "a" },
+    })
     .positional("subcommand", {
       type: "string",
       choices: ["list"],
@@ -21,13 +24,13 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { subcommand, profile = "default", json } = argv;
+  const { subcommand, profile = "default", json, application } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
   switch (subcommand) {
     case subCommand.list:
-      await handlers.list(!!json);
+      await handlers.list(!!json, application);
       break;
     default:
       process.exit(1);
