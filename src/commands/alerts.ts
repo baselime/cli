@@ -12,22 +12,22 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .options(baseOptions)
     .positional("subcommand", {
       type: "string",
-      choices: ["list"]
+      choices: ["list"],
     })
     .example([
       ["$0 alerts <subcommand>"],
-      ["$0 alerts <subcommand>  --profile prod"]
+      ["$0 alerts <subcommand>  --profile prod"],
     ]);
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { subcommand, profile = "default", json, } = argv;
-  spinner.init(!!argv.quiet)
+  const { subcommand, profile = "default", json } = argv;
+  spinner.init(!!argv.quiet);
   await authenticate(profile);
 
   switch (subcommand) {
     case subCommand.list:
-      await handlers.list(!!json)
+      await handlers.list(!!json);
       break;
     default:
       process.exit(1);

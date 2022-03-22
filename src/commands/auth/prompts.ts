@@ -45,7 +45,9 @@ export async function promptForOneTimePassword(email: string): Promise<string> {
   return otp;
 }
 
-export async function promptReplaceExistingConfig(profile: string): Promise<boolean> {
+export async function promptReplaceExistingProfile(
+  profile: string,
+): Promise<boolean> {
   const { confirm } = await prompt<{ confirm: boolean }>({
     type: "confirm",
     name: "confirm",
@@ -78,9 +80,7 @@ export async function promptForEnvironment(
     choices: environments.map((env) => {
       return {
         name: env.id,
-        message: `${chalk.cyan(
-          chalk.bold(`${env.workspace} - ${env.alias}`),
-        )}`,
+        message: `${chalk.cyan(chalk.bold(`${env.workspace} - ${env.alias}`))}`,
         value: env.id,
       };
     }),

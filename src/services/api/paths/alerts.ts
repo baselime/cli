@@ -18,7 +18,7 @@ export interface AlertThreshold {
 }
 
 export interface Alert {
-  parameters: AlertParameters,
+  parameters: AlertParameters;
   id: string;
   name: string;
   description: string;
@@ -38,4 +38,4 @@ async function alertsList(): Promise<Alert[]> {
 
 export default {
   alertsList,
-}
+};

@@ -1,6 +1,6 @@
 import { Query } from "../../services/api/paths/queries";
-import Table from 'cli-table3';
-import { EOL } from 'os';
+import Table from "cli-table3";
+import { EOL } from "os";
 import { tableChars } from "../../shared";
 import chalk from "chalk";
 
@@ -11,15 +11,17 @@ function list(queries: Query[], json: boolean) {
   }
   var table = new Table({
     chars: tableChars,
-    head: ["id", "Name", "Created"].map(e => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["id", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  queries.forEach(query => {
+  queries.forEach((query) => {
     table.push([query.id, query.name, query.created]);
   });
   process.stdout.write(`${EOL}${table.toString()}${EOL}`);
-  process.stdout.write(`${EOL}✨ ${chalk.bold(chalk.cyan(`${queries.length} queries${EOL}`))}`);
+  process.stdout.write(
+    `${EOL}✨ ${chalk.bold(chalk.cyan(`${queries.length} queries${EOL}`))}`,
+  );
 }
 
 export default {
   list,
-}
+};

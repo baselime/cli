@@ -4,7 +4,7 @@ import api from "../services/api/api";
 import { baseOptions } from "../shared";
 import * as prompts from "./auth/prompts";
 import * as outputs from "./auth/outputs";
-import { readUserConfig, writeUserConfig } from "../services/config";
+import { readUserAuth, writeUserAuth } from "../services/auth";
 import { Options } from "./auth/types";
 import spinner from "../services/spinner/index";
 import { EOL } from "os";
@@ -18,10 +18,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       email: { type: "string", desc: "user email", alias: "e" },
     })
-    .example([
-      ["$0 auth"],
-      ["$0 auth --email hi@example.com --profile prod"]
-    ]);
+    .example([["$0 auth"], ["$0 auth --email hi@example.com --profile prod"]]);
 };
 
 export async function handler(argv: Arguments<Options>) {
@@ -32,15 +29,15 @@ export async function handler(argv: Arguments<Options>) {
   outputs.welcome();
 
   try {
-    const config = await readUserConfig(profile);
+    const config = await readUserAuth(profile);
     if (config) {
       outputs.userConfigFound(profile);
-      const res = await prompts.promptReplaceExistingConfig(profile);
+      const res = await prompts.promptReplaceExistingProfile(profile);
       if (!res) {
         process.exit(0);
       }
     }
-  } catch (_) { }
+  } catch (_) {}
 
   const accountEmail = email ?? (await prompts.promptForEmail());
 
@@ -61,7 +58,7 @@ export async function handler(argv: Arguments<Options>) {
   s.start("Setting up your workstation");
   const apiKey = await api.getApiKey(workspaceId, environmentId, otp);
 
-  const path = await writeUserConfig(profile, {
+  const path = await writeUserAuth(profile, {
     apiKey,
     workspace: workspaceId,
     environment: environmentId,

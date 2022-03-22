@@ -16,4 +16,4 @@ function get(): ora.Ora {
 export default {
   init,
   get,
-}
+};

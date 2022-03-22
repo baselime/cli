@@ -1,24 +1,21 @@
-import { outputJson, readJson } from "fs-extra";
-import { homedir } from "os";
-import { join } from "path";
+import { writeFileSync } from "fs";
+import yaml from "yaml";
+const packageJson = require("../../../package.json");
 
-export interface UserConfig {
-  apiKey: string;
-  workspace: string;
-  environment: string;
-}
+export async function init(
+  filename: string,
+  application: string,
+  description: string,
+) {
+  const data = {
+    version: packageJson.version,
+    application,
+    description,
+    queries: [],
+    alerts: [],
+    dashboard: [],
+  };
 
-export async function writeUserConfig(
-  profile: string,
-  userConfig: UserConfig,
-): Promise<string> {
-  const configPath = join(homedir(), ".config", "baselime", `${profile}.json`);
-  await outputJson(configPath, userConfig);
-  return configPath;
-}
-
-export async function readUserConfig(profile: string): Promise<UserConfig> {
-  const configPath = join(homedir(), ".config", "baselime", `${profile}.json`);
-  const userConfig = await readJson(configPath);
-  return userConfig;
+  const d = yaml.stringify(data);
+  writeFileSync(filename, d);
 }

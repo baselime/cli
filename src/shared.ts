@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { EOL } from "os";
 import { setAxiosAuth } from "./services/api/clients";
-import { readUserConfig } from "./services/config";
+import { readUserAuth } from "./services/auth";
 
 export interface BaseOptions {
   profile?: string;
@@ -29,7 +29,7 @@ export function userConfigNotFound(profile: string) {
 
 export async function authenticate(profile: string) {
   try {
-    const config = await readUserConfig(profile);
+    const config = await readUserAuth(profile);
     setAxiosAuth(config.apiKey);
   } catch (_) {
     userConfigNotFound(profile);
@@ -38,8 +38,19 @@ export async function authenticate(profile: string) {
 }
 
 export const tableChars = {
-  'top': '═', 'top-mid': '╤', 'top-left': '╔', 'top-right': '╗'
-  , 'bottom': '═', 'bottom-mid': '╧', 'bottom-left': '╚', 'bottom-right': '╝'
-  , 'left': '║', 'left-mid': '╟', 'mid': '─', 'mid-mid': '┼'
-  , 'right': '║', 'right-mid': '╢', 'middle': '│'
+  top: "═",
+  "top-mid": "╤",
+  "top-left": "╔",
+  "top-right": "╗",
+  bottom: "═",
+  "bottom-mid": "╧",
+  "bottom-left": "╚",
+  "bottom-right": "╝",
+  left: "║",
+  "left-mid": "╟",
+  mid: "─",
+  "mid-mid": "┼",
+  right: "║",
+  "right-mid": "╢",
+  middle: "│",
 };

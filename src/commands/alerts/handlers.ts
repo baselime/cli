@@ -12,4 +12,4 @@ async function list(json: boolean) {
 
 export default {
   list,
-}
+};

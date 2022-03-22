@@ -1,10 +1,9 @@
 import { client } from "../clients";
 
-
 export interface QueryParameters {
   groupBys?: string[];
   namespaces?: Array<{
-    type: string,
+    type: string;
     value: string;
   }>;
   filters?: Array<QueryFilter>;
@@ -18,12 +17,12 @@ export interface QueryParameters {
 export interface QueryFilter {
   key: string;
   operation: string;
-  value: string | number | boolean | { key: string; };
+  value: string | number | boolean | { key: string };
   type: string;
 }
 
 export interface Query {
-  parameters: QueryParameters,
+  parameters: QueryParameters;
   id: string;
   name: string;
   description: string;
@@ -34,7 +33,6 @@ export interface Query {
   updated?: string;
 }
 
-
 async function queriesList(): Promise<Query[]> {
   const res = (await client.get("/queries")).data;
   return res.queries;
@@ -42,4 +40,4 @@ async function queriesList(): Promise<Query[]> {
 
 export default {
   queriesList,
-}
+};
