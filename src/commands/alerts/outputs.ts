@@ -11,10 +11,10 @@ function list(alerts: Alert[], json: boolean) {
   }
   var table = new Table({
     chars: tableChars,
-    head: ["id", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["id", "application", "ref", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alerts.forEach((alert) => {
-    table.push([alert.id, alert.name, alert.created]);
+    table.push([alert.id, alert.application, alert.ref, alert.name, alert.created]);
   });
   process.stdout.write(`${EOL}${table.toString()}${EOL}`);
   process.stdout.write(

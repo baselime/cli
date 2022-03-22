@@ -11,10 +11,10 @@ function list(queries: Query[], json: boolean) {
   }
   var table = new Table({
     chars: tableChars,
-    head: ["id", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["id", "application", "ref", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   queries.forEach((query) => {
-    table.push([query.id, query.name, query.created]);
+    table.push([query.id, query.application, query.ref, query.name, query.created]);
   });
   process.stdout.write(`${EOL}${table.toString()}${EOL}`);
   process.stdout.write(

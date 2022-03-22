@@ -26,6 +26,8 @@ export interface Alert {
   environmentId: string;
   userId: string;
   enabled: boolean;
+  ref: string;
+  application: string;
   channels: AlertChannels[];
   created?: string;
   updated?: string;

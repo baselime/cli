@@ -28,6 +28,8 @@ export interface Query {
   description: string;
   workspaceId: string;
   environmentId: string;
+  ref: string;
+  application: string;
   userId: string;
   created?: string;
   updated?: string;
