@@ -9,7 +9,7 @@ function list(alerts: Alert[], json: boolean) {
     process.stdout.write(JSON.stringify({ alerts }, null, 4));
     return;
   }
-  var table = new Table({
+  const table = new Table({
     chars: tableChars,
     head: ["id", "application", "ref", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
