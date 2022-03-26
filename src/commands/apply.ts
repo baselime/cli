@@ -49,7 +49,7 @@ export async function handler(argv: Arguments<Options>) {
     switch (subcommand) {
       case subCommand.check: {
         if (!id) {
-          throw new Error("Id missing");
+          throw new Error("id missing");
         }
         await handlers.check(application, id, !!json);
         break;

@@ -12,10 +12,13 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .options({
       ...baseOptions,
       application: { type: "string", desc: "application name", alias: "a" },
+      id: { type: "string", desc: "id", },
+      from: { type: "string", desc: "start of the query", },
+      to: { type: "string", desc: "end of the query", },
     })
     .positional("subcommand", {
       type: "string",
-      choices: ["list", "create"],
+      choices: ["list", "run"],
     })
     .example([
       ["$0 queries <subcommand>"],
@@ -24,7 +27,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { subcommand, profile = "default", json, application } = argv;
+  const { subcommand, profile = "default", json, application, id, from, to } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
@@ -32,8 +35,11 @@ export async function handler(argv: Arguments<Options>) {
     case subCommand.list:
       await handlers.list(!!json, application);
       break;
-    case subCommand.create:
-      console.log("create");
+    case subCommand.run:
+      if (!id || !from || !to) {
+        throw new Error("id missing");
+      }
+      await handlers.createRun(!!json, id, from, to);
       break;
     default:
       process.exit(1);
@@ -42,5 +48,5 @@ export async function handler(argv: Arguments<Options>) {
 
 export enum subCommand {
   list = "list",
-  create = "create",
+  run = "run",
 }

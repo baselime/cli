@@ -9,7 +9,7 @@ function check(deployment: Deployment, json: boolean) {
     process.stdout.write(JSON.stringify({ deployment }, null, 4));
     return;
   }
-  var table = new Table({
+  const table = new Table({
     chars: tableChars,
     head: ["id", "application", "Status", "Created", "Updated"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
