@@ -1,11 +1,9 @@
 import { client } from "../clients";
 
 export interface QueryParameters {
+  dataset: string;
   groupBys?: string[];
-  namespaces?: Array<{
-    type: string;
-    value: string;
-  }>;
+  namespaces?: string[];
   filters?: Array<QueryFilter>;
   filterCombination: "AND" | "OR";
   calculations: Array<{
