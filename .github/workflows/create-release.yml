@@ -101,6 +101,9 @@ jobs:
         with:
           node-version: '14.x'
           registry-url: 'https://npm.pkg.github.com'
+          scope: "@baselime"
+
+      - run: echo "registry=https://npm.pkg.github.com/@baselime" >> .npmrc
 
       - name: Publish to GitHub registry
         continue-on-error: true
@@ -132,8 +135,8 @@ jobs:
 
       - name: Compute checksums
         run: |
-          sha256sum baselime-macos-x64-"$RELEASE_VERSION".tar.gz >> checksums.md
-          sha256sum baselime-linux-x64-"$RELEASE_VERSION".tar.gz >> checksums.md
+          sha256sum baselime-macos-x64-${{ env.RELEASE_VERSION }}.tar.gz >> checksums.md
+          sha256sum baselime-linux-x64-${{ env.RELEASE_VERSION }}.tar.gz >> checksums.md
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -142,7 +145,7 @@ jobs:
           body_path: checksums.md
           files: |
             LICENSE
-            baselime-macos-x64-"$RELEASE_VERSION".tar.gz
-            baselime-linux-x64-"$RELEASE_VERSION".tar.gz
+            baselime-macos-x64-${{ env.RELEASE_VERSION }}.tar.gz
+            baselime-linux-x64-${{ env.RELEASE_VERSION }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
