@@ -1,6 +1,6 @@
 import { Arguments, CommandBuilder } from "yargs";
 
-import { baseOptions } from "../shared";
+import { baseOptions, printError } from "../shared";
 import spinner from "../services/spinner/index";
 import { init } from "../services/config";
 import { Options } from "./init/types";
@@ -15,7 +15,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .options({
       ...baseOptions,
     })
-    .example([["$0 init"]]);
+    .example([["$0 init"]])
+    .fail((_, err, yargs) => {
+      printError(err, yargs);
+    });
 };
 
 export async function handler(argv: Arguments<Options>) {

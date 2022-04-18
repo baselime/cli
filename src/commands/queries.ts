@@ -1,5 +1,5 @@
 import { Arguments, CommandBuilder } from "yargs";
-import { authenticate, baseOptions, userConfigNotFound } from "../shared";
+import { authenticate, baseOptions, printError, userConfigNotFound } from "../shared";
 import { Options } from "./queries/types";
 import handlers from "./queries/handlers";
 import spinner from "../services/spinner/index";
@@ -23,7 +23,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       ["$0 queries <subcommand>"],
       ["$0 queries <subcommand>  --profile prod"],
-    ]);
+    ])
+    .fail((_, err, yargs) => {
+      printError(err, yargs);
+    });
 };
 
 export async function handler(argv: Arguments<Options>) {
@@ -36,10 +39,16 @@ export async function handler(argv: Arguments<Options>) {
       await handlers.list(!!json, application);
       break;
     case subCommand.run:
-      if (!id || !from || !to) {
-        throw new Error("id missing");
+      const args: Record<string, boolean> = {
+        id: !!id,
+        from: !!from,
+        to: !!to,
       }
-      await handlers.createRun(!!json, id, from, to);
+      if (Object.values(args).some(v => v === false)) {
+        const keys = Object.keys(args).filter(a => args[a] === false)
+        throw new Error(`the following arguments are required: ${keys.map(key => `--${key}`)}`);
+      }
+      await handlers.createRun(!!json, id!, from!, to!);
       break;
     default:
       process.exit(1);

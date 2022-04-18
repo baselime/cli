@@ -1,13 +1,13 @@
 import { Arguments, CommandBuilder } from "yargs";
 
 import api from "../services/api/api";
-import { baseOptions } from "../shared";
+import { baseOptions, printError } from "../shared";
 import * as prompts from "./auth/prompts";
 import * as outputs from "./auth/outputs";
 import { readUserAuth, writeUserAuth } from "../services/auth";
 import { Options } from "./auth/types";
 import spinner from "../services/spinner/index";
-import { EOL } from "os";
+
 
 export const command = "auth";
 export const desc = "Authenticate a user";
@@ -18,7 +18,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       email: { type: "string", desc: "user email", alias: "e" },
     })
-    .example([["$0 auth"], ["$0 auth --email hi@example.com --profile prod"]]);
+    .example([["$0 auth"], ["$0 auth --email hi@example.com --profile prod"]])
+    .fail((_, err, yargs) => {
+      printError(err, yargs);
+    });
 };
 
 export async function handler(argv: Arguments<Options>) {
@@ -41,7 +44,7 @@ export async function handler(argv: Arguments<Options>) {
 
   const accountEmail = email ?? (await prompts.promptForEmail());
 
-  s.start(`Sending email verification request ${EOL}`);
+  s.start(`Sending email verification request`);
   await api.generateOneTimePassword(accountEmail);
   s.succeed();
 

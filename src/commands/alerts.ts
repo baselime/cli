@@ -1,8 +1,9 @@
 import { Arguments, CommandBuilder } from "yargs";
-import { authenticate, baseOptions, userConfigNotFound } from "../shared";
+import { authenticate, baseOptions, printError, userConfigNotFound } from "../shared";
 import spinner from "../services/spinner/index";
 import handlers from "./alerts/handlers";
 import { Options } from "./alerts/types";
+import chalk from "chalk";
 
 export const command = "alerts <subcommand> [parameters]";
 export const desc = "Operations on alerts";
@@ -20,7 +21,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       ["$0 alerts <subcommand>"],
       ["$0 alerts <subcommand>  --profile prod"],
-    ]);
+    ])
+    .fail((_, err, yargs) => {
+      printError(err, yargs);
+    });
 };
 
 export async function handler(argv: Arguments<Options>) {
