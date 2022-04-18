@@ -6,6 +6,7 @@ import { readFileSync } from "fs";
 import { Options } from "./apply/types";
 import yaml from "yaml";
 import handlers from "./apply/handlers";
+import chalk from "chalk";
 
 export const command = "apply [subcommand]";
 export const desc = "Executes changes to the observability configs";
@@ -32,7 +33,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       ["$0 apply"],
       ["$0 apply --config .baselime.yml --profile prod"],
-    ]);
+    ])
+    .fail((msg, err, yargs) => {
+      console.log(`${yargs.help()}\n\n`);
+      console.error(`${chalk.redBright("baselime: error:")} ${err.message}`);
+      process.exit(1);
+    });
 };
 
 export async function handler(argv: Arguments<Options>) {
@@ -49,7 +55,7 @@ export async function handler(argv: Arguments<Options>) {
     switch (subcommand) {
       case subCommand.check: {
         if (!id) {
-          throw new Error("id missing");
+          throw new Error("The following arguments are required: --id");
         }
         await handlers.check(application, id, !!json);
         break;
