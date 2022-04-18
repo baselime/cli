@@ -1,5 +1,5 @@
+# Build binaries for macOS and Linux, publish Node.js packages, create release
 name: build-publish-release
-description: Build binaries for macOS and Linux, publish Node.js packages, create release
 
 on:
   workflow_dispatch:
