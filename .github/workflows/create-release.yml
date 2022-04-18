@@ -32,13 +32,13 @@ jobs:
       - name: Create tarball
         run: |
           mv bin/macos/baselime baselime
-          tar -cvzf baselime-macos-x64-"$RELEASE_VERSION"--"$RELEASE_VERSION"-.tar.gz baselime
+          tar -cvzf baselime-macos-x64-"$RELEASE_VERSION".tar.gz baselime
 
       - name: Upload tarball artifact
         uses: actions/upload-artifact@v2
         with:
           name: bin-macos
-          path: baselime-macos-x64-"$RELEASE_VERSION"-.tar.gz
+          path: baselime-macos-x64-${{ env.RELEASE_VERSION }}.tar.gz
 
   build-linux:
     runs-on: ubuntu-latest
@@ -64,13 +64,13 @@ jobs:
       - name: Create tarball
         run: |
           mv bin/linux/baselime baselime
-          tar -cvzf baselime-linux-x64-"$RELEASE_VERSION"-.tar.gz baselime
+          tar -cvzf baselime-linux-x64-"$RELEASE_VERSION".tar.gz baselime
 
       - name: Upload tarball artifact
         uses: actions/upload-artifact@v2
         with:
           name: bin-linux
-          path: baselime-linux-x64-"$RELEASE_VERSION"-.tar.gz
+          path: baselime-linux-x64-${{ env.RELEASE_VERSION }}.tar.gz
 
   publish-node-packages:
     runs-on: ubuntu-latest
@@ -132,8 +132,8 @@ jobs:
 
       - name: Compute checksums
         run: |
-          sha256sum baselime-macos-x64-"$RELEASE_VERSION"-.tar.gz >> checksums.md
-          sha256sum baselime-linux-x64-"$RELEASE_VERSION"-.tar.gz >> checksums.md
+          sha256sum baselime-macos-x64-"$RELEASE_VERSION".tar.gz >> checksums.md
+          sha256sum baselime-linux-x64-"$RELEASE_VERSION".tar.gz >> checksums.md
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -142,7 +142,7 @@ jobs:
           body_path: checksums.md
           files: |
             LICENSE
-            baselime-macos-x64-"$RELEASE_VERSION"-.tar.gz
-            baselime-linux-x64-"$RELEASE_VERSION"-.tar.gz
+            baselime-macos-x64-"$RELEASE_VERSION".tar.gz
+            baselime-linux-x64-"$RELEASE_VERSION".tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
