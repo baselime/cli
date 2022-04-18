@@ -33,8 +33,8 @@ export interface Alert {
   updated?: string;
 }
 
-async function alertsList(application?: string): Promise<Alert[]> {
-  const res = (await client.get("/alerts", { params: { application } })).data;
+async function alertsList(application?: string, ref?: string): Promise<Alert[]> {
+  const res = (await client.get("/alerts", { params: { application, ref } })).data;
   return res.alerts;
 }
 

@@ -33,8 +33,8 @@ export interface Query {
   updated?: string;
 }
 
-async function queriesList(application?: string): Promise<Query[]> {
-  const res = (await client.get("/queries", { params: { application } })).data;
+async function queriesList(application?: string, ref?: string): Promise<Query[]> {
+  const res = (await client.get("/queries", { params: { application, ref } })).data;
   return res.queries;
 }
 

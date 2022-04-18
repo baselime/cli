@@ -12,12 +12,20 @@ async function list(json: boolean, application?: string) {
   outputs.list(queries, json);
 }
 
-async function createRun(json: boolean, id: string, from: string, to: string) {
+async function createRun(json: boolean, from: string, to: string, id?: string, application?: string, ref?: string) {
+  const s = spinner.get();
+  s.start("Running the query");
+
+  if (!id) {
+    if (!application || !ref) {
+      throw new Error(`the following arguments are required: --id or --application and --ref`);
+    }
+    id = (await api.queriesList(application, ref))[0].id;
+  }
+
   const now = dayjs();
   const f = now.subtract(parse(from), "milliseconds");
   const t = to === "now" ? now : now.subtract(parse(to), "milliseconds");
-  const s = spinner.get();
-  s.start("Running the query");
   const { queryRun, calculations: { aggregates, bins } } = await api.queryRunCreate({
     queryId: id,
     timeframe: {
