@@ -1,0 +1,140 @@
+name: Build binaries for macOS and Linux, publish Node.js packages, create release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      
+      - name: Setup
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Package
+        run: |
+          npm ci
+          npm run build
+          npm run package:macos
+
+      - name: Create tarball
+        run: |
+          mv bin/macos/baselime baselime
+          tar -cvzf baselime-macos-x64-"$RELEASE_VERSION"--"$RELEASE_VERSION"-.tar.gz baselime
+
+      - name: Upload tarball artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: bin-macos
+          path: baselime-macos-x64-"$RELEASE_VERSION"-.tar.gz
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Setup
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+
+      - name: Package
+        run: |
+          npm ci
+          npm run build
+          npm run package:linux
+
+      - name: Create tarball
+        run: |
+          mv bin/linux/baselime baselime
+          tar -cvzf baselime-linux-x64-"$RELEASE_VERSION"-.tar.gz baselime
+
+      - name: Upload tarball artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: bin-linux
+          path: baselime-linux-x64-"$RELEASE_VERSION"-.tar.gz
+
+  publish-node-packages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Build and publish to npm registry
+        continue-on-error: true
+        run: |
+          npm ci
+          npm run build
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: Publish to GitHub registry
+        continue-on-error: true
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-release:
+    needs: [build-macos, build-linux, publish-node-packages]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Download macos tarball
+        uses: actions/download-artifact@v2
+        with:
+          name: bin-macos
+
+      - name: Download linux tarball
+        uses: actions/download-artifact@v2
+        with:
+          name: bin-linux
+
+      - name: Compute checksums
+        run: |
+          sha256sum baselime-macos-x64-"$RELEASE_VERSION"-.tar.gz >> checksums.md
+          sha256sum baselime-linux-x64-"$RELEASE_VERSION"-.tar.gz >> checksums.md
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          body_path: checksums.md
+          files: |
+            LICENSE
+            baselime-macos-x64-"$RELEASE_VERSION"-.tar.gz
+            baselime-linux-x64-"$RELEASE_VERSION"-.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
