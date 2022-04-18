@@ -1,26 +1,15 @@
 import chalk from "chalk";
-import { EOL } from "os";
+
 
 export function welcome() {
-  process.stdout.write(`
-  ${chalk.bold(chalk.greenBright("👋 Welcome to Baselime"))}
-
-  Observability for serverless
-
-  ${EOL}`);
+  console.log(`${chalk.bold(chalk.greenBright("Welcome to Baselime"))}\n`);
 }
 
 export function userConfigFound(profile: string) {
-  process.stdout.write(`
-  You're already authenticated as ${chalk.cyan(profile)} 👌
-  If you would like to configure a new profile, run the following:
-
-  ${chalk.bold(`$ baselime auth --profile ${chalk.cyan("new_profile_name")}`)}
-
-  ${EOL}`);
+  console.log(`You're already authenticated as ${chalk.cyan(profile)} 👌\n\nIf you would like to configure a new profile, run the following:\n${chalk.bold(`$ baselime auth --profile ${chalk.cyan("<new_profile_name>")}`)}\n`);
 }
 
 export function credentialsConfigured(path: string) {
-  process.stdout.write(`✨ API Key written to ${chalk.cyan(path)}`);
+  console.log(`✨ API Key written to ${chalk.cyan(path)}`);
   process.exit(0);
 }

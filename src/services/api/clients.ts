@@ -1,6 +1,6 @@
 import axios from "axios";
 import chalk from "chalk";
-import { EOL } from "os";
+import spinner from "../../services/spinner/index";
 require("dotenv").config();
 
 const { BASELIME_BASE_URL = "https://go.baselime.io/v1/" } = process.env;
@@ -25,11 +25,10 @@ client.interceptors.response.use(
     return response;
   },
   function (error) {
-    process.stdout.write(`
-    ${chalk.red(chalk.bold("There was an error contacting our servers."))}
-    ${error}
-    ${EOL}`);
-    process.exit(1);
+    const s = spinner.get();
+    s.fail();
+    console.log(`${chalk.red(chalk.bold(error))}`);
+    throw error;
   },
 );
 
@@ -38,18 +37,17 @@ publicClient.interceptors.response.use(
     return response;
   },
   function (error) {
-    process.stdout.write(`
-    ${chalk.red(chalk.bold("There was an error contacting our servers."))}
-    ${error}
-    ${EOL}`);
-    process.exit(1);
+    const s = spinner.get();
+    s.fail();
+    console.log(`${chalk.red(chalk.bold(error))}`);
+    throw error;
   },
 );
 
 export function setAxiosAuth(apiKey: string) {
   client.interceptors.request.use(function (config) {
     if (!apiKey) {
-      process.exit(1);
+      throw Error(`Unable to locate credentials. You can configure credentials by running "baselime auth"`);
     }
     if (!config.headers) return config;
     config.headers["x-api-key"] = apiKey || "";

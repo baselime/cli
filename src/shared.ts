@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { EOL } from "os";
+
 import { setAxiosAuth } from "./services/api/clients";
 import { readUserAuth } from "./services/auth";
 
@@ -18,13 +18,13 @@ export const baseOptions = {
 } as const;
 
 export function userConfigNotFound(profile: string) {
-  process.stdout.write(`
-  🚩 ${chalk.red(`You're not authenticated as ${chalk.bold(profile)}`)}
-  Run the following to configure ${chalk.bold(chalk.red(profile))}:
+  console.log(`🚩 ${chalk.red(`You're not authenticated as ${chalk.bold(profile)}`)}\nRun the following to configure ${chalk.bold(chalk.red(profile))}:\n${chalk.bold(`$ baselime auth --profile ${chalk.cyan(`${profile}`)}`)}`);
+}
 
-  ${chalk.bold(`$ baselime auth --profile ${chalk.cyan(`${profile}`)}`)}
-
-  ${EOL}`);
+export function printError(err: Error, yargs: any) {
+  console.log(`${yargs.help()}\n\n`);
+  console.error(`${chalk.redBright("baselime: error:")} ${err.message || "unknown error"}`);
+  process.exit(1);
 }
 
 export async function authenticate(profile: string) {

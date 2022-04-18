@@ -1,6 +1,6 @@
 import { Query } from "../../services/api/paths/queries";
 import Table from "cli-table3";
-import { EOL } from "os";
+
 import { tableChars } from "../../shared";
 import chalk from "chalk";
 import { Bin, QueryRun } from "../../services/api/paths/query-runs";
@@ -10,7 +10,7 @@ const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
 function list(queries: Query[], json: boolean) {
   if (json) {
-    process.stdout.write(JSON.stringify({ queries }, null, 4));
+    console.log(JSON.stringify({ queries }, null, 4));
     return;
   }
   const table = new Table({
@@ -20,15 +20,13 @@ function list(queries: Query[], json: boolean) {
   queries.forEach((query) => {
     table.push([query.id, query.application, query.ref, query.name, query.created]);
   });
-  process.stdout.write(`${EOL}${table.toString()}${EOL}`);
-  process.stdout.write(
-    `${EOL}✨ ${chalk.bold(chalk.cyan(`${queries.length} queries${EOL}`))}`,
-  );
+  console.log(table.toString());
+  console.log(`✨ ${chalk.bold(chalk.cyan(`${queries.length} queries`))}`);
 }
 
 function getQueryRun(queryRun: QueryRun, aggregates: Record<string, any>, bins: Bin[], events: Event[], json: boolean) {
   if (json) {
-    process.stdout.write(JSON.stringify({ queryRun, aggregates, bins, events }, null, 4));
+    console.log(JSON.stringify({ queryRun, aggregates, bins, events }, null, 4));
     return;
   }
   const runTable = new Table({
@@ -46,9 +44,9 @@ function getQueryRun(queryRun: QueryRun, aggregates: Record<string, any>, bins: 
   Object.keys(aggregates).forEach((key: string) => {
     aggregatesTable.push([key, aggregates[key]]);
   });
-  process.stdout.write(`${EOL}${runTable.toString()}${EOL}`);
-  process.stdout.write(`${EOL}${aggregatesTable.toString()}${EOL}`);
-  process.stdout.write(`${EOL}Follow this url: https://console.${BASELIME_DOMAIN}/workspaces/${queryRun.workspaceId}/envs/${queryRun.environmentId}/queries/${queryRun.queryId}/${queryRun.id}${EOL}`)
+  console.log(runTable.toString());
+  console.log(aggregatesTable.toString());
+  console.log(`Follow this url: https://console.${BASELIME_DOMAIN}/workspaces/${queryRun.workspaceId}/envs/${queryRun.environmentId}/queries/${queryRun.queryId}/${queryRun.id}`)
 }
 
 export default {
