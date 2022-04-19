@@ -125,7 +125,7 @@ jobs:
 
       - name: Set current date
         run: |
-          echo "RELEASE_DATE=$(date + "%d %B %Y")" >> $GITHUB_ENV
+          echo "RELEASE_DATE=$(date +"%d %B %Y")" >> $GITHUB_ENV
 
       - name: Download macos tarball
         uses: actions/download-artifact@v2
