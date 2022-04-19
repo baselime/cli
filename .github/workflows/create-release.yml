@@ -139,7 +139,7 @@ jobs:
 
       - name: Compute checksums
         run: |
-          "# ${{ env.RELEASE_VERSION }} (${{ env.RELEASE_DATE }})" >> checksums.md
+          echo "# ${{ env.RELEASE_VERSION }} (${{ env.RELEASE_DATE }})" >> checksums.md
           baselime-macos-x64-${{ env.RELEASE_VERSION }}.tar.gz >> checksums.md
           baselime-linux-x64-${{ env.RELEASE_VERSION }}.tar.gz >> checksums.md
 
