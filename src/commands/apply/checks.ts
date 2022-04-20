@@ -46,6 +46,15 @@ async function apply(file: string) {
   s.start("Checking the configuration file...");
   const { queries, alerts } = yaml.parse(file);
 
+  if (!isObject(queries)) {
+    throw new Error("invalid queries object format");
+  }
+
+
+  if (!isObject(alerts)) {
+    throw new Error("invalid alerts object format");
+  }
+
   const alertsKeys = Object.keys(alerts);
   const queriesKeys = Object.keys(queries);
 
@@ -53,7 +62,7 @@ async function apply(file: string) {
     try {
       const alert = await alertSchema.validate(alerts[ref]);
       const query = queriesKeys.find(ref => ref === alert.parameters.query);
-      if(!query) {
+      if (!query) {
         throw new Error(`the following query was not found in this application: ${alert.parameters.query}`);
       }
     } catch (error) {
@@ -75,6 +84,10 @@ async function apply(file: string) {
 
   await Promise.all([...alertsPromises, ...queriesPromises]);
   s.succeed("Valid configuration file");
+}
+
+function isObject(val: any): boolean {
+  return typeof val === 'object' && !Array.isArray(val) && val !== null;
 }
 
 export default {

@@ -11,9 +11,9 @@ export async function init(
     version: packageJson.version,
     application,
     description,
-    queries: [],
-    alerts: [],
-    dashboard: [],
+    queries: {},
+    alerts: {},
+    dashboards: {},
   };
 
   const d = yaml.stringify(data);
