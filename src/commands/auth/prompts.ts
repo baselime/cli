@@ -21,7 +21,7 @@ export async function promptForEmail(): Promise<string> {
     },
   });
 
-  return accountEmail;
+  return accountEmail.trim();
 }
 
 export async function promptForOneTimePassword(email: string): Promise<string> {
@@ -42,7 +42,7 @@ export async function promptForOneTimePassword(email: string): Promise<string> {
     },
   });
 
-  return otp;
+  return otp.trim();
 }
 
 export async function promptReplaceExistingProfile(

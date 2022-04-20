@@ -22,7 +22,7 @@ export async function application(): Promise<string> {
     },
   });
 
-  return application;
+  return application.trim();
 }
 
 export async function description(): Promise<string> {
@@ -42,7 +42,7 @@ export async function description(): Promise<string> {
     },
   });
 
-  return description;
+  return description.trim();
 }
 
 export async function promptReplaceExistingConfig(
