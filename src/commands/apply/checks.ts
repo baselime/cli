@@ -3,7 +3,7 @@ import { object, string, number, array, boolean, mixed } from 'yup';
 import spinner from "../../services/spinner/index";
 
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
-const alertDestinations = ["email"];
+const alertChannels = ["email"];
 const filterCombinations = ["AND", "OR"];
 
 const alertSchema = object({
@@ -19,8 +19,8 @@ const alertSchema = object({
     duration: number().strict().required(),
   }).required(),
   enabled: boolean().notRequired(),
-  destinations: array().of(object({
-    type: string().oneOf(alertDestinations).required(),
+  channels: array().of(object({
+    type: string().oneOf(alertChannels).required(),
     target: string().required(),
   })).required(),
 });
