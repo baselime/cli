@@ -3,8 +3,8 @@ import { object, string, number, array, boolean, mixed } from 'yup';
 import spinner from "../../services/spinner/index";
 
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
-const alertChannels = ["email"];
 const filterCombinations = ["AND", "OR"];
+const channelTypes = ["email"];
 
 const alertSchema = object({
   name: string().notRequired(),
@@ -19,10 +19,13 @@ const alertSchema = object({
     duration: number().strict().required(),
   }).required(),
   enabled: boolean().notRequired(),
-  channels: array().of(object({
-    type: string().oneOf(alertChannels).required(),
-    target: string().required(),
-  })).required(),
+  channels: array().of(string().required()).required(),
+});
+
+const channelSchema = object({
+  name: string().notRequired(),
+  type: string().oneOf(channelTypes).required(),
+  targets: array().of(string().email().required())
 });
 
 const queriesSchema = object({
@@ -44,26 +47,37 @@ const queriesSchema = object({
 async function apply(file: string) {
   const s = spinner.get();
   s.start("Checking the configuration file...");
-  const { queries, alerts } = yaml.parse(file);
+  let { queries, alerts, channels } = yaml.parse(file);
+  queries ||= {};
+  alerts ||= {};
+  channels ||= {};
+
+  if (!isObject(channels)) {
+    throw new Error("invalid channels object format");
+  }
 
   if (!isObject(queries)) {
     throw new Error("invalid queries object format");
   }
-
 
   if (!isObject(alerts)) {
     throw new Error("invalid alerts object format");
   }
 
   const alertsKeys = Object.keys(alerts);
+  const channelsKeys = Object.keys(channels);
   const queriesKeys = Object.keys(queries);
 
   const alertsPromises = alertsKeys.map(async ref => {
     try {
       const alert = await alertSchema.validate(alerts[ref]);
       const query = queriesKeys.find(ref => ref === alert.parameters.query);
+      const missingChannels = alert.channels.filter(ref => !channelsKeys.includes(ref))
       if (!query) {
         throw new Error(`the following query was not found in this application: ${alert.parameters.query}`);
+      }
+      if (missingChannels.length) {
+        throw new Error(`the following channels were not found in this application: ${missingChannels.join(", ")}`);
       }
     } catch (error) {
       const message = `alert: ${ref}: ${error}`;
@@ -74,13 +88,23 @@ async function apply(file: string) {
 
   const queriesPromises = queriesKeys.map(async ref => {
     try {
-      const query = await queriesSchema.validate(queries[ref]);
+      await queriesSchema.validate(queries[ref]);
     } catch (error) {
       const message = `query: ${ref}: ${error}`;
       s.fail(message);
       throw new Error(message);
     }
   });
+
+  const channelsPromises = channelsKeys.map(async ref => {
+    try {
+      await channelSchema.validate(channels[ref]);
+    } catch (error) {
+      const message = `channel: ${ref}: ${error}`;
+      s.fail(message);
+      throw new Error(message);
+    }
+  })
 
   await Promise.all([...alertsPromises, ...queriesPromises]);
   s.succeed("Valid configuration file");
