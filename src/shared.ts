@@ -23,7 +23,6 @@ export function userConfigNotFound(profile: string) {
 
 export function printError(err: Error, yargs: any) {
   console.log(`${yargs.help()}\n\n`);
-  console.error(`${chalk.redBright("baselime: error:")} ${err.message || "unknown error"}`);
   process.exit(1);
 }
 

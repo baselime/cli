@@ -1,8 +1,8 @@
-import spinner from "../../services/spinner/index";
-import api from "../../services/api/api";
 import chalk from "chalk";
 import outputs from "./outputs";
 import checks from "./checks";
+import api from "../../../services/api/api";
+import spinner from "../../../services/spinner";
 
 async function apply(file: string, application: string, version: string) {
   const s = spinner.get();

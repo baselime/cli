@@ -1,6 +1,6 @@
 import { prompt } from "enquirer";
 import * as yup from "yup";
-import { Workspace } from "../../services/api/paths/auth";
+import { Workspace } from "../../../services/api/paths/auth";
 import chalk from "chalk";
 
 export async function promptForEmail(): Promise<string> {

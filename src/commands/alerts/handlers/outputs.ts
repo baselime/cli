@@ -1,8 +1,8 @@
 import Table from "cli-table3";
 
-import { tableChars } from "../../shared";
+import { tableChars } from "../../../shared";
 import chalk from "chalk";
-import { Alert } from "../../services/api/paths/alerts";
+import { Alert } from "../../../services/api/paths/alerts";
 
 function list(alerts: Alert[], json: boolean) {
   if (json) {

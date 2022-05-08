@@ -1,46 +1,16 @@
-import { Arguments, CommandBuilder } from "yargs";
-import { authenticate, baseOptions, printError, userConfigNotFound } from "../shared";
-import spinner from "../services/spinner/index";
-import handlers from "./alerts/handlers";
-import { Options } from "./alerts/types";
-import chalk from "chalk";
+import { CommandBuilder } from "yargs";
+import { baseOptions } from "../shared";
+import { BaseOptions } from "vm";
 
-export const command = "alerts <subcommand> [parameters]";
+export const command = "alerts <command> [parameters]";
 export const desc = "Operations on alerts";
 
-export const builder: CommandBuilder<Options, Options> = (yargs) => {
+export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
   return yargs
     .options({
       ...baseOptions,
-      application: { type: "string", desc: "application name", alias: "a" },
     })
-    .positional("subcommand", {
-      type: "string",
-      choices: ["list"],
-    })
-    .example([
-      ["$0 alerts <subcommand>"],
-      ["$0 alerts <subcommand>  --profile prod"],
-    ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
-    });
+    .commandDir("alerts")
+    .strict()
 };
 
-export async function handler(argv: Arguments<Options>) {
-  const { subcommand, profile = "default", json, application } = argv;
-  spinner.init(!!argv.quiet);
-  await authenticate(profile);
-
-  switch (subcommand) {
-    case subCommand.list:
-      await handlers.list(!!json, application);
-      break;
-    default:
-      process.exit(1);
-  }
-}
-
-export enum subCommand {
-  list = "list",
-}

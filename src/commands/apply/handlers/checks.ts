@@ -1,6 +1,6 @@
 import yaml from "yaml";
 import { object, string, number, array, boolean, mixed } from 'yup';
-import spinner from "../../services/spinner/index";
+import spinner from "../../../services/spinner/index";
 
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
 const filterCombinations = ["AND", "OR"];

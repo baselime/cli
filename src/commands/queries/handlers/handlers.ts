@@ -1,5 +1,5 @@
-import spinner from "../../services/spinner/index";
-import api from "../../services/api/api";
+import spinner from "../../../services/spinner/index";
+import api from "../../../services/api/api";
 import outputs from "./outputs";
 import parse from 'parse-duration'
 import dayjs from "dayjs";
@@ -18,7 +18,7 @@ async function createRun(json: boolean, from: string, to: string, id?: string, a
 
   if (!id) {
     if (!application || !ref) {
-      throw new Error(`the following arguments are required: --id or --application and --ref`);
+      throw new Error(`The following arguments are required: --id or --application and --ref`);
     }
     id = (await api.queriesList(application, ref))[0].id;
   }

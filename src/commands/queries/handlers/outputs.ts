@@ -1,9 +1,9 @@
-import { Query } from "../../services/api/paths/queries";
+import { Query } from "../../../services/api/paths/queries";
 import Table from "cli-table3";
 
-import { tableChars } from "../../shared";
+import { tableChars } from "../../../shared";
 import chalk from "chalk";
-import { Bin, QueryRun } from "../../services/api/paths/query-runs";
+import { Bin, QueryRun } from "../../../services/api/paths/query-runs";
 import dayjs from "dayjs";
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
@@ -42,6 +42,7 @@ function getQueryRun(queryRun: QueryRun, aggregates: Record<string, any>, bins: 
   });
 
   Object.keys(aggregates).forEach((key: string) => {
+    if(key === "_count") return;
     aggregatesTable.push([key, aggregates[key]]);
   });
   console.log(runTable.toString());

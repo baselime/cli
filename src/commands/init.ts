@@ -1,16 +1,15 @@
 import { Arguments, CommandBuilder } from "yargs";
 
-import { baseOptions, printError } from "../shared";
+import { BaseOptions, baseOptions, printError } from "../shared";
 import spinner from "../services/spinner/index";
 import { init } from "../services/config";
-import { Options } from "./init/types";
-import * as prompts from "./init/prompts";
+import * as prompts from "./init/handlers/prompts";
 import { existsSync } from "fs";
 
 export const command = "init";
 export const desc = "Initialises a .baselime.yml config file";
 
-export const builder: CommandBuilder<Options, Options> = (yargs) => {
+export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
   return yargs
     .options({
       ...baseOptions,
@@ -21,7 +20,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     });
 };
 
-export async function handler(argv: Arguments<Options>) {
+export async function handler(argv: Arguments<BaseOptions>) {
   const s = spinner.init(!!argv.quiet);
 
   const filename = ".baselime.yml";

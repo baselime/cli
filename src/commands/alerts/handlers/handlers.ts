@@ -1,6 +1,6 @@
-import spinner from "../../services/spinner/index";
-import api from "../../services/api/api";
-import outputs from "./outputs";
+import spinner from "../../../services/spinner/index";
+import api from "../../../services/api/api";
+import outputs from "../handlers/outputs";
 
 async function list(json: boolean, application?: string) {
   const s = spinner.get();

@@ -1,8 +1,8 @@
 import Table from "cli-table3";
 
-import { tableChars } from "../../shared";
 import chalk from "chalk";
-import { Deployment } from "../../services/api/paths/polaris";
+import { Deployment } from "../../../services/api/paths/polaris";
+import { tableChars } from "../../../shared";
 
 function check(deployment: Deployment, json: boolean) {
   if (json) {

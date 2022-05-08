@@ -1,13 +1,15 @@
 import { Arguments, CommandBuilder } from "yargs";
 
 import api from "../services/api/api";
-import { baseOptions, printError } from "../shared";
-import * as prompts from "./auth/prompts";
-import * as outputs from "./auth/outputs";
+import { BaseOptions, baseOptions, printError } from "../shared";
+import * as prompts from "./auth/handlers/prompts";
+import * as outputs from "./auth/handlers/outputs";
 import { readUserAuth, writeUserAuth } from "../services/auth";
-import { Options } from "./auth/types";
 import spinner from "../services/spinner/index";
 
+export interface Options extends BaseOptions {
+  email?: string;
+}
 
 export const command = "auth";
 export const desc = "Authenticate a user";
@@ -27,15 +29,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
 
-  const { email, profile = "default" } = argv;
+  const { email, profile } = argv;
 
   outputs.welcome();
 
   try {
-    const config = await readUserAuth(profile);
+    const config = await readUserAuth(profile!);
     if (config) {
-      outputs.userConfigFound(profile);
-      const res = await prompts.promptReplaceExistingProfile(profile);
+      outputs.userConfigFound(profile!);
+      const res = await prompts.promptReplaceExistingProfile(profile!);
       if (!res) {
         process.exit(0);
       }
@@ -61,7 +63,7 @@ export async function handler(argv: Arguments<Options>) {
   s.start("Setting up your workstation");
   const apiKey = await api.getApiKey(workspaceId, environmentId, otp);
 
-  const path = await writeUserAuth(profile, {
+  const path = await writeUserAuth(profile!, {
     apiKey,
     workspace: workspaceId,
     environment: environmentId,
