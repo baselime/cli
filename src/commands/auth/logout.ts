@@ -39,5 +39,5 @@ export async function handler(argv: Arguments<Options>) {
   const { profile } = argv;
   s.start("Deleting credentials from your workstation");
   deleteUserAuth(profile);
-  s.succeed();
+  s.succeed("Deleted credentials from your workstation");
 }
