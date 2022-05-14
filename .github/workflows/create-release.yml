@@ -146,7 +146,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          prerelease: true
+          prerelease: false
           body_path: checksums.md
           files: |
             LICENSE
