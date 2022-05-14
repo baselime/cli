@@ -1,0 +1,43 @@
+import { BaseOptions } from "vm";
+import { Arguments, CommandBuilder } from "yargs";
+import api from "../../services/api/api";
+import { deleteUserAuth, readUserAuth, writeUserAuth } from "../../services/auth";
+import spinner from "../../services/spinner";
+import { printError } from "../../shared";
+import { credentialsConfigured, userConfigFound, welcome } from "./handlers/outputs";
+import { promptForEmail, promptForEnvironment, promptForOneTimePassword, promptReplaceExistingProfile } from "./handlers/prompts";
+
+
+export interface Options extends BaseOptions {
+  profile: string;
+}
+
+export const command = "logout [args]";
+export const desc = "Remove locally-stored credentials for an environment";
+
+export const builder: CommandBuilder<Options, Options> = (yargs) => {
+  return yargs
+    .options({
+      profile: { type: "string", desc: "Alias of the profile", default: "default" },
+    })
+    .example([
+      [`
+      # Intercatively select the environment to log out of:
+      $0 auth logout
+
+      # Provide parameters on the command-line:
+      $0 auth logout --profile prod
+      `]
+    ])
+    .fail((_, err, yargs) => {
+      printError(err, yargs);
+    });
+};
+
+export async function handler(argv: Arguments<Options>) {
+  const s = spinner.init(!!argv.quiet);
+  const { profile } = argv;
+  s.start("Deleting credentials from your workstation");
+  deleteUserAuth(profile);
+  s.succeed();
+}

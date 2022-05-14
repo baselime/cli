@@ -1,4 +1,4 @@
-import { outputJson, readJson } from "fs-extra";
+import { outputJson, readJson, remove} from "fs-extra";
 import { homedir } from "os";
 import { join } from "path";
 
@@ -14,6 +14,14 @@ export async function writeUserAuth(
 ): Promise<string> {
   const configPath = join(homedir(), ".config", "baselime", `${profile}.json`);
   await outputJson(configPath, userConfig);
+  return configPath;
+}
+
+export async function deleteUserAuth(
+  profile: string,
+): Promise<string> {
+  const configPath = join(homedir(), ".config", "baselime", `${profile}.json`);
+  await remove(configPath);
   return configPath;
 }
 
