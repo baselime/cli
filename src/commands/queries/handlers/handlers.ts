@@ -3,16 +3,17 @@ import api from "../../../services/api/api";
 import outputs from "./outputs";
 import parse from 'parse-duration'
 import dayjs from "dayjs";
+import { OutputFormat } from "../../../shared";
 
-async function list(json: boolean, application?: string) {
+async function list(format: OutputFormat, application?: string) {
   const s = spinner.get();
   s.start("Fetching your queries");
   const queries = await api.queriesList(application);
   s.succeed();
-  outputs.list(queries, json);
+  outputs.list(queries, format);
 }
 
-async function createRun(json: boolean, from: string, to: string, id?: string, application?: string, ref?: string) {
+async function createRun(format: OutputFormat, from: string, to: string, id?: string, application?: string, ref?: string) {
   const s = spinner.get();
   s.start("Running the query");
 
@@ -34,7 +35,7 @@ async function createRun(json: boolean, from: string, to: string, id?: string, a
     }
   });
   s.succeed();
-  outputs.getQueryRun(queryRun, aggregates, bins, [], json);
+  outputs.getQueryRun(queryRun, aggregates, bins, [], format);
 }
 
 export default {

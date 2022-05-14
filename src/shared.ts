@@ -6,15 +6,15 @@ import { readUserAuth } from "./services/auth";
 export interface BaseOptions {
   profile?: string;
   quiet?: boolean;
-  "api-key"?: string;
-  json?: boolean;
+  format?: OutputFormat;
 }
+
+export type OutputFormat = "json" | "table";
 
 export const baseOptions = {
   profile: { type: "string", default: "default" },
-  "api-key": { type: "string" },
-  quiet: { type: "boolean", default: false, alias: "q" },
-  json: { type: "boolean", default: false, conflicts: "output" },
+  quiet: { type: "boolean", default: false, },
+  format: { type: "string", desc: "Format to output the data in", default: "table", choices: ["table", "json"] },
 } as const;
 
 export function userConfigNotFound(profile: string) {
@@ -22,7 +22,7 @@ export function userConfigNotFound(profile: string) {
 }
 
 export function printError(err: Error, yargs: any) {
-  console.log(`${yargs.help()}\n\n`);
+  console.log(`\n${yargs.help()}\n\n`);
   process.exit(1);
 }
 

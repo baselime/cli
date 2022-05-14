@@ -106,7 +106,7 @@ async function apply(file: string) {
     }
   })
 
-  await Promise.all([...alertsPromises, ...queriesPromises]);
+  await Promise.all([...alertsPromises, ...queriesPromises, ...channelsPromises]);
   s.succeed("Valid configuration file");
 }
 

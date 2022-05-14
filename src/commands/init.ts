@@ -1,27 +1,42 @@
 import { Arguments, CommandBuilder } from "yargs";
 
-import { BaseOptions, baseOptions, printError } from "../shared";
-import spinner from "../services/spinner/index";
-import { init } from "../services/config";
-import * as prompts from "./init/handlers/prompts";
 import { existsSync } from "fs";
+import { BaseOptions, printError } from "../shared";
+import spinner from "../services/spinner";
+import * as prompts from "./applications/handlers/prompts";
+import { init } from "../services/config";
+
+export interface Options extends BaseOptions {
+  application?: string;
+  description?: string;
+}
 
 export const command = "init";
-export const desc = "Initialises a .baselime.yml config file";
+export const desc = "Prepare your working directory for other commands";
 
-export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
+export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
-      ...baseOptions,
+      application: { type: "string", desc: "Name of the application", alias: "app" },
+      description: { type: "string", desc: "Description of the application" },
     })
-    .example([["$0 init"]])
+    .example([
+      [`
+      # Intercatively initialise an application:
+      $0 init
+
+      # Provide parameters on the command-line:
+      $0 init --application <application_name> --description <description>
+      `]
+    ])
     .fail((_, err, yargs) => {
       printError(err, yargs);
     });
 };
 
-export async function handler(argv: Arguments<BaseOptions>) {
+export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
+  let { application, description } = argv;
 
   const filename = ".baselime.yml";
 
@@ -32,8 +47,8 @@ export async function handler(argv: Arguments<BaseOptions>) {
     }
   }
 
-  const application = await prompts.application();
-  const description = await prompts.description();
+  application ??= await prompts.application();
+  description ??= await prompts.description();
 
   s.start("Generating your config file");
   init(filename, application, description);

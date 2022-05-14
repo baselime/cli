@@ -10,8 +10,8 @@ export interface Options extends BaseOptions {
   config?: string;
 }
 
-export const command = "apply [command]";
-export const desc = "Executes changes to the observability configs";
+export const command = "apply";
+export const desc = "Create or update observability configurations";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -19,15 +19,16 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       config: {
         type: "string",
-        desc: "config file",
+        desc: "The configuration file to execute",
         alias: "c",
         default: ".baselime.yml",
       },
     })
-    .commandDir("apply")
     .example([
-      ["$0 apply"],
-      ["$0 apply --config .baselime.yml --profile prod"],
+      [`
+      $0 apply
+      $0 apply --config .baselime.yml --profile prod`,
+      ],
     ])
     .fail((_, err, yargs) => {
       printError(err, yargs);

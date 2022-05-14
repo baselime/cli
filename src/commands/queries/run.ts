@@ -1,6 +1,6 @@
 import { Arguments, CommandBuilder } from "yargs";
 import spinner from "../../services/spinner";
-import { authenticate, BaseOptions, baseOptions, printError } from "../../shared";
+import { authenticate, BaseOptions, printError } from "../../shared";
 import handlers from "./handlers/handlers";
 
 export interface Options extends BaseOptions {
@@ -11,21 +11,26 @@ export interface Options extends BaseOptions {
   to?: string;
 }
 
-export const command = "run [parameters]";
-export const desc = "Runs queries";
+export const command = "run [args]";
+export const desc = "Run a query";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
-      ...baseOptions,
-      application: { type: "string", desc: "application name", alias: "a" },
-      ref: { type: "string", desc: "query reference", },
-      id: { type: "string", desc: "id", },
-      from: { type: "string", desc: "start of the query run", default: "1hour" },
-      to: { type: "string", desc: "end of the query run", default: "to" },
+      application: { type: "string", desc: "Name of the application", alias: "app" },
+      ref: { type: "string", desc: "Query reference", },
+      id: { type: "string", desc: "Query id", },
+      from: { type: "string", desc: "Start time of the query run - may also be relative eg: 1h, 20mins", default: "1hour" },
+      to: { type: "string", desc: "End time of the query run - may also be relative eg: 1h, 20mins, now", default: "now" },
     })
     .example([
-      ["$0 queries run"],
+      [`
+      # Run a query passing its id:
+      $0 queries run --id <query_id> --from 3hours --to now
+
+      # Run a query passing its application and ref:
+      $0 queries run --application <application_name> --ref <query_ref> --from 2days --to 1day
+      `],
     ])
     .fail((_, err, yargs) => {
       printError(err, yargs);
@@ -33,9 +38,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, json, application, from, to, id, ref } = argv;
+  const { profile, format, application, from, to, id, ref } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile!);
-  await handlers.createRun(!!json, from!, to!, id, application, ref);
+  await handlers.createRun(format!, from!, to!, id, application, ref);
 }
 
