@@ -13,7 +13,7 @@ export interface Options extends BaseOptions {
   profile?: string;
 }
 
-export const command = "login [args]";
+export const command = "login";
 export const desc = "Obtain and save credentials for an environment";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {

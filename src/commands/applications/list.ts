@@ -7,7 +7,7 @@ export interface Options extends BaseOptions {
   application?: string;
 }
 
-export const command = "list [args]";
+export const command = "list";
 export const desc = "List all the applications";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {

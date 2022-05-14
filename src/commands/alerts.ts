@@ -2,7 +2,7 @@ import { CommandBuilder } from "yargs";
 import { baseOptions } from "../shared";
 import { BaseOptions } from "vm";
 
-export const command = "alerts <command> [args]";
+export const command = "alerts";
 export const desc = "Manage alerts";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
@@ -16,6 +16,7 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     `]
     ])
     .commandDir("alerts")
+    .demandCommand()
     .strict()
 };
 

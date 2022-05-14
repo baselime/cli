@@ -1,7 +1,7 @@
 import { CommandBuilder } from "yargs";
 import { BaseOptions, baseOptions } from "../shared";
 
-export const command = "applications <command> [args]";
+export const command = "applications";
 export const desc = "Manage applications";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
@@ -16,5 +16,6 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     `]
     ])
     .commandDir("applications")
+    .demandCommand()
     .strict()
 };

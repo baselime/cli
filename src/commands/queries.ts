@@ -1,7 +1,7 @@
 import { CommandBuilder } from "yargs";
 import { BaseOptions, baseOptions } from "../shared";
 
-export const command = "queries <command> [args]";
+export const command = "queries";
 export const desc = "Manage queries";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
@@ -16,5 +16,6 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     `]
     ])
     .commandDir("queries")
+    .demandCommand()
     .strict()
 };

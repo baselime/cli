@@ -11,7 +11,7 @@ export interface Options extends BaseOptions {
   to?: string;
 }
 
-export const command = "run [args]";
+export const command = "run";
 export const desc = "Run a query";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {

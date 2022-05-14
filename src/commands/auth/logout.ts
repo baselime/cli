@@ -12,7 +12,7 @@ export interface Options extends BaseOptions {
   profile: string;
 }
 
-export const command = "logout [args]";
+export const command = "logout";
 export const desc = "Remove locally-stored credentials for an environment";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {

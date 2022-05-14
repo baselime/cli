@@ -1,7 +1,7 @@
 import { CommandBuilder } from "yargs";
 import { BaseOptions, baseOptions } from "../shared";
 
-export const command = "auth <command> [args]";
+export const command = "auth";
 export const desc = "Manage authentication state";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
@@ -13,5 +13,6 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     `]
     ])
     .commandDir("auth")
+    .demandCommand()
     .strict()
 };
