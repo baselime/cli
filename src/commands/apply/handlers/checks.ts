@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import yaml from "yaml";
 import { object, string, number, array, boolean, mixed } from 'yup';
 import spinner from "../../../services/spinner/index";
@@ -44,9 +45,10 @@ const queriesSchema = object({
   })
 });
 
-async function apply(file: string) {
+async function validate(file: string) {
   const s = spinner.get();
   s.start("Checking the configuration file...");
+
   let { queries, alerts, channels } = yaml.parse(file);
   queries ||= {};
   alerts ||= {};
@@ -81,7 +83,8 @@ async function apply(file: string) {
       }
     } catch (error) {
       const message = `alert: ${ref}: ${error}`;
-      s.fail(message);
+      s.fail(chalk.bold(chalk.red("Alert validation error")));
+      console.log(message);
       throw new Error(message);
     }
   });
@@ -91,7 +94,8 @@ async function apply(file: string) {
       await queriesSchema.validate(queries[ref]);
     } catch (error) {
       const message = `query: ${ref}: ${error}`;
-      s.fail(message);
+      s.fail(chalk.bold(chalk.red("Query validation error")));
+      console.log(message);
       throw new Error(message);
     }
   });
@@ -101,7 +105,8 @@ async function apply(file: string) {
       await channelSchema.validate(channels[ref]);
     } catch (error) {
       const message = `channel: ${ref}: ${error}`;
-      s.fail(message);
+      s.fail(chalk.bold(chalk.red("Channel validation error")));
+      console.log(message);
       throw new Error(message);
     }
   })
@@ -115,5 +120,5 @@ function isObject(val: any): boolean {
 }
 
 export default {
-  apply,
+  validate,
 }
