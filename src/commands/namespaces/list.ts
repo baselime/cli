@@ -16,8 +16,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
       dataset: { type: "string", desc: "The dataset", default: "logs" },
-      from: { type: "string", desc: "Start time of the query run - may also be relative eg: 1h, 20mins", default: "1hour" },
-      to: { type: "string", desc: "End time of the query run - may also be relative eg: 1h, 20mins, now", default: "now" },
+      from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
+      to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
     })
     .example([
       [`

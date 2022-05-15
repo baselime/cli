@@ -20,8 +20,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       application: { type: "string", desc: "Name of the application", alias: "app" },
       ref: { type: "string", desc: "Query reference", },
       id: { type: "string", desc: "Query id", },
-      from: { type: "string", desc: "Start time of the query run - may also be relative eg: 1h, 20mins", default: "1hour" },
-      to: { type: "string", desc: "End time of the query run - may also be relative eg: 1h, 20mins, now", default: "now" },
+      from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
+      to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
     })
     .example([
       [`
