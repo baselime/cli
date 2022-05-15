@@ -2,6 +2,7 @@ import chalk from "chalk";
 
 import { setAxiosAuth } from "./services/api/clients";
 import { readUserAuth } from "./services/auth";
+import * as os from "os";
 
 export interface BaseOptions {
   profile: string;
@@ -22,7 +23,13 @@ export function userConfigNotFound(profile: string) {
 }
 
 export function printError(err: Error, yargs: any) {
-  console.log(`\n${yargs.help()}\n\n`);
+  console.log(chalk.grey(`
+Environment: ${os.platform()}, node ${process.version} 
+Docs: docs.baselime.io
+Support: forum.baselime.io
+Bugs: github.com/baselime/cli/issues
+  `))
+  console.log(`${yargs.help()}`);
   process.exit(1);
 }
 

@@ -10,6 +10,7 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
       [`
       $0 auth login
       $0 auth logout
+      $0 auth status
     `]
     ])
     .commandDir("auth")
