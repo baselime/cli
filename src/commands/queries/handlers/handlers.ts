@@ -1,9 +1,8 @@
 import spinner from "../../../services/spinner/index";
 import api from "../../../services/api/api";
 import outputs from "./outputs";
-import parse from 'parse-duration'
-import dayjs from "dayjs";
 import { OutputFormat } from "../../../shared";
+import { getTimeframe } from "../../../services/timeframes/timeframes";
 
 async function list(format: OutputFormat, application?: string) {
   const s = spinner.get();
@@ -24,15 +23,10 @@ async function createRun(format: OutputFormat, from: string, to: string, id?: st
     id = (await api.queriesList(application, ref))[0].id;
   }
 
-  const now = dayjs();
-  const f = now.subtract(parse(from), "milliseconds");
-  const t = to === "now" ? now : now.subtract(parse(to), "milliseconds");
+
   const { queryRun, calculations: { aggregates, bins } } = await api.queryRunCreate({
     queryId: id,
-    timeframe: {
-      from: f.valueOf(),
-      to: t.valueOf(),
-    }
+    timeframe: getTimeframe(from, to),
   });
   s.succeed();
   outputs.getQueryRun(queryRun, aggregates, bins, [], format);

@@ -4,6 +4,7 @@ import alerts from "./paths/alerts";
 import deployments from "./paths/deployments";
 import queryRuns from "./paths/query-runs";
 import applications from "./paths/applications";
+import namespaces from "./paths/namespaces";
 
 export default {
   ...auth,
@@ -12,4 +13,5 @@ export default {
   ...deployments,
   ...queryRuns,
   ...applications,
+  ...namespaces,
 };
