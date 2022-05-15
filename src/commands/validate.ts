@@ -39,7 +39,7 @@ export async function handler(argv: Arguments<Options>) {
   const { config, profile } = argv;
   spinner.init(!!argv.quiet);
 
-  await authenticate(profile!);
+  await authenticate(profile);
 
   const file = readFileSync(config!).toString();
   await handlers.validate(file);

@@ -4,9 +4,9 @@ import { setAxiosAuth } from "./services/api/clients";
 import { readUserAuth } from "./services/auth";
 
 export interface BaseOptions {
-  profile?: string;
-  quiet?: boolean;
-  format?: OutputFormat;
+  profile: string;
+  quiet: boolean;
+  format: OutputFormat;
 }
 
 export type OutputFormat = "json" | "table";

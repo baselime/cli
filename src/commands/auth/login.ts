@@ -10,7 +10,7 @@ import { promptForEmail, promptForEnvironment, promptForOneTimePassword, promptR
 
 export interface Options extends BaseOptions {
   email?: string;
-  profile?: string;
+  profile: string;
 }
 
 export const command = "login";
@@ -44,10 +44,10 @@ export async function handler(argv: Arguments<Options>) {
   welcome();
 
   try {
-    const config = await readUserAuth(profile!);
+    const config = await readUserAuth(profile);
     if (config) {
-      userConfigFound(profile!);
-      const res = await promptReplaceExistingProfile(profile!);
+      userConfigFound(profile);
+      const res = await promptReplaceExistingProfile(profile);
       if (!res) {
         process.exit(0);
       }
@@ -71,7 +71,7 @@ export async function handler(argv: Arguments<Options>) {
   s.start("Setting up your workstation");
   const apiKey = await api.getApiKey(workspaceId, environmentId, otp);
 
-  const path = await writeUserAuth(profile!, {
+  const path = await writeUserAuth(profile, {
     apiKey,
     workspace: workspaceId,
     environment: environmentId,
