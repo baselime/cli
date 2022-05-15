@@ -28,7 +28,7 @@ client.interceptors.response.use(
     const s = spinner.get();
     s.fail();
     const response = error.response?.data;
-    const message = response ? `${response.status} - ${response.message}` : error.message
+    const message = response ? `${response.status || "Error"} - ${response.message}` : error.message
     console.log(`${chalk.red(chalk.bold(message))}`);
     throw error;
   },
