@@ -1,7 +1,7 @@
 import { prompt } from "enquirer";
 import * as yup from "yup";
-import { Workspace } from "../../../services/api/paths/auth";
 import chalk from "chalk";
+import { Workspace } from "../../../services/api/paths/auth";
 
 export async function promptForEmail(): Promise<string> {
   const accountEmailSchema = yup.string().email().required();

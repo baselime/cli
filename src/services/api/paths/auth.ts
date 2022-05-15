@@ -1,5 +1,13 @@
-import { publicClient } from "../clients";
+import { client, publicClient } from "../clients";
 
+export interface APIKey {
+  userId: string;
+  environmentId: string;
+  workspaceId: string;
+  permissions: KeyPermissions
+  created: string;
+  updated: string;
+}
 export interface Workspace {
   id: string;
   name: string;
@@ -18,6 +26,17 @@ export interface Environment {
   id: string;
   region: string;
   account: string;
+}
+
+
+export interface KeyPermissions {
+  events: boolean;
+  queries: boolean;
+  dashboards: boolean;
+  alerts: boolean;
+  defects: boolean;
+  applications: boolean;
+  environments: boolean;
 }
 
 async function generateOneTimePassword(email: string) {
@@ -46,8 +65,14 @@ async function getApiKey(
   return apiKey;
 }
 
+async function getApiKeyPermissions(): Promise<{ key: APIKey; workspace: Workspace; environment: Environment }> {
+  const { key, workspace, environment } = (await client.get("auth")).data
+  return { key, workspace, environment };
+}
+
 export default {
   generateOneTimePassword,
   getWorkspacesByOneTimePassword,
   getApiKey,
+  getApiKeyPermissions,
 };
