@@ -3,11 +3,12 @@ import chalk from "chalk";
 import { setAxiosAuth } from "./services/api/clients";
 import { readUserAuth } from "./services/auth";
 import * as os from "os";
-
+import { hideBin } from "yargs/helpers";
 export interface BaseOptions {
   profile: string;
   quiet: boolean;
   format: OutputFormat;
+  debug: boolean;
 }
 
 export type OutputFormat = "json" | "table";
@@ -15,6 +16,7 @@ export type OutputFormat = "json" | "table";
 export const baseOptions = {
   profile: { type: "string", default: "default" },
   quiet: { type: "boolean", default: false, },
+  debug: { type: "boolean", default: false, alias: "d" },
   format: { type: "string", desc: "Format to output the data in", default: "table", choices: ["table", "json"] },
 } as const;
 
@@ -28,7 +30,11 @@ Environment: ${os.platform()}, node ${process.version}
 Docs: docs.baselime.io
 Support: forum.baselime.io
 Bugs: github.com/baselime/cli/issues
-  `))
+  `));
+  const argv = hideBin(process.argv);
+  if (err instanceof Error && (argv.includes("-d") || argv.includes("--debug"))) {
+    console.error(err);
+  }
   console.log(`${yargs.help()}`);
   process.exit(1);
 }
