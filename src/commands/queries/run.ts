@@ -7,8 +7,8 @@ export interface Options extends BaseOptions {
   application?: string;
   ref?: string;
   id?: string;
-  from?: string;
-  to?: string;
+  from: string;
+  to: string;
 }
 
 export const command = "run";
@@ -41,6 +41,6 @@ export async function handler(argv: Arguments<Options>) {
   const { profile, format, application, from, to, id, ref } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
-  await handlers.createRun(format!, from!, to!, id, application, ref);
+  await handlers.createRun(format, from, to, id, application, ref);
 }
 
