@@ -16,17 +16,6 @@ export interface QueryRun {
   updated?: string;
 }
 
-export interface Event {
-  _namespace: string;
-  _timestamp: number;
-  _source: string;
-  _logId: string;
-  _baselimeId: string;
-  _now?: number;
-  _stream: string;
-  [key: string]: any;
-}
-
 export interface Bin {
   bin: string;
   [key: string]: number | string;
