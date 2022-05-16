@@ -7,12 +7,12 @@ import { promisify } from "util";
 import dayjs from "dayjs";
 const wait = promisify(setTimeout);
 
-async function stream(format: OutputFormat, dataset: string, from: string, to: string, follow: boolean) {
+async function stream(format: OutputFormat, dataset: string, from: string, to: string, namespaces: string[], follow: boolean) {
   const s = spinner.get();
   if (!follow) {
     s.start("Streaming your events");
     const { from: f, to: t } = getTimeframe(from, to);
-    const events = await api.getEvents(dataset, f, t, [], 0, 1000);
+    const events = await api.getEvents(dataset, f, t, namespaces, 0, 1000);
     s.succeed();
     outputs.stream(events, format);
     return;
@@ -20,7 +20,7 @@ async function stream(format: OutputFormat, dataset: string, from: string, to: s
 
   let { from: f, to: t } = getTimeframe("1minute", "now");
   while (true) {
-    const events = await api.getEvents(dataset, f, t, [], 0, 1000);
+    const events = await api.getEvents(dataset, f, t, namespaces, 0, 1000);
     const now = dayjs();
     f = t - 1;
     // go back 5 seconds in order to account for events delivery time
