@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-import { setAxiosAuth } from "./services/api/clients";
+import { client, setAxiosAuth } from "./services/api/clients";
 import { readUserAuth } from "./services/auth";
 import * as os from "os";
 import { hideBin } from "yargs/helpers";
@@ -27,6 +27,7 @@ export function userConfigNotFound(profile: string) {
 export function printError(err: Error, yargs: any) {
   console.log(chalk.grey(`
 Environment: ${os.platform()}, node ${process.version} 
+Backend: ${client.defaults.baseURL}
 Docs: docs.baselime.io
 Support: forum.baselime.io
 Bugs: github.com/baselime/cli/issues
