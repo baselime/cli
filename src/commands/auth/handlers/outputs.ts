@@ -26,7 +26,7 @@ export function status(key: APIKey, workspace: Workspace, environment: Environme
     chars: tableChars,
     head: ["Workspace", "Environment", "userId"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  table.push([`${workspace.name} (id: ${workspace.id})`, `${environment.alias} (alias: ${environment.id})`, key.userId,]);
+  table.push([`${workspace.name} (id: ${workspace.id})`, `${environment.id} (alias: ${environment.alias})`, key.userId,]);
 
   const permissionsTable = new Table({
     chars: tableChars,
