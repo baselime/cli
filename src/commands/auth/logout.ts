@@ -1,11 +1,9 @@
 import { BaseOptions } from "vm";
 import { Arguments, CommandBuilder } from "yargs";
-import api from "../../services/api/api";
-import { deleteUserAuth, readUserAuth, writeUserAuth } from "../../services/auth";
+import { deleteUserAuth } from "../../services/auth";
 import spinner from "../../services/spinner";
 import { printError } from "../../shared";
-import { credentialsConfigured, userConfigFound, welcome } from "./handlers/outputs";
-import { promptForEmail, promptForEnvironment, promptForOneTimePassword, promptReplaceExistingProfile } from "./handlers/prompts";
+
 
 
 export interface Options extends BaseOptions {

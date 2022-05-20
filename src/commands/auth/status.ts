@@ -1,10 +1,8 @@
 import { Arguments, CommandBuilder } from "yargs";
 import api from "../../services/api/api";
-import { readUserAuth, writeUserAuth } from "../../services/auth";
 import spinner from "../../services/spinner";
 import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
-import { credentialsConfigured, status, userConfigFound, welcome } from "./handlers/outputs";
-import { promptForEmail, promptForEnvironment, promptForOneTimePassword, promptReplaceExistingProfile } from "./handlers/prompts";
+import {status } from "./handlers/outputs";
 
 export const command = "status";
 export const desc = "View authentication status";
