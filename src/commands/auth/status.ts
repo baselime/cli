@@ -36,5 +36,5 @@ export async function handler(argv: Arguments<BaseOptions>) {
   const { key, workspace, environment } = await api.getApiKeyPermissions();
   s.succeed();
 
-  status(key, workspace, environment, format);
+  status(profile, key, workspace, environment, format);
 }
