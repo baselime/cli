@@ -8,6 +8,7 @@ const version = () => { return require('../package').version; }
 yargs(hideBin(process.argv))
   .commandDir("commands")
   .demandCommand()
+  .usage("The power of Baselime in the command-line")
   .recommendCommands()
   .wrap(yargs.terminalWidth())
   .help("help", "Show this help output, or the help for a specified command or subcommand")
