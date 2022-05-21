@@ -1,20 +1,28 @@
 import axios from "axios";
 import chalk from "chalk";
+import { hideBin } from "yargs/helpers";
 import spinner from "../../services/spinner/index";
 require("dotenv").config();
+const argv = hideBin(process.argv);
 
-const { BASELIME_BASE_URL = "https://go.baselime.io/v1/" } = process.env;
-const baseUrl = BASELIME_BASE_URL;
+function getBaseUrl(): string {
+  const { BASELIME_BASE_URL = "https://go.baselime.io/v1/" } = process.env;
+  const index = argv.findIndex(val => val === "--endpoint");
+  if (index > -1) {
+    return argv[index + 1];
+  }
+  return BASELIME_BASE_URL;
+}
 
 export const client = axios.create({
-  baseURL: baseUrl,
+  baseURL: getBaseUrl(),
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 export const publicClient = axios.create({
-  baseURL: baseUrl,
+  baseURL: getBaseUrl(),
   headers: {
     "Content-Type": "application/json",
   },
