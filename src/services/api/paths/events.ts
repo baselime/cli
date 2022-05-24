@@ -2,7 +2,7 @@ import { client } from "../clients";
 
 export interface Event {
   _namespace: string;
-  _timestamp: number;
+  _timestamp: string;
   _source: string;
   _logId: string;
   _baselimeId: string;
