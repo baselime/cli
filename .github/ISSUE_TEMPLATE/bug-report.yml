@@ -1,0 +1,60 @@
+name: 🐛 Bug report
+description: Let us know about a bug you found
+body:
+  - type: checkboxes
+    attributes:
+      label: Are you using the latest version of the baselime CLI?
+      description: Latest version can be checked at https://github.com/baselime/cli/releases/latest
+      options:
+        - label: Yes, I'm using the latest version
+          required: true
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists
+      options:
+        - label: I have searched existing issues, it hasn't been reported yet
+          required: true
+  - type: textarea
+    attributes:
+      label: Bug description
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Observability as Code configuration (baselime.yml) content
+      description: |
+        Please provide COMPLETE content of baselime.yml, please insure that:
+        • It consistently reproduces described issue
+        • It's as minimal as possible
+        • Doesn't include any sensitive information
+
+        If not applicable, mark "N/A"
+      render: yaml
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Command, subcommand and used options
+      description: |
+        Please provide the full command name with used options (If not applicable, mark "N/A")
+      placeholder: baselime <command> <subcommand> [...options]
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Command output
+      description: |
+        PLease provide the complete command output.
+
+        If not applicable, mark "N/A"
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Environment information
+      description: '"baselime --version" output'
+      render: shell
+    validations:
+      required: true
