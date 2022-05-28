@@ -1,4 +1,5 @@
 import { client } from "../clients";
+import { NamespaceCombination } from "./queries";
 
 export interface Event {
   _namespace: string;
@@ -12,8 +13,9 @@ export interface Event {
 }
 
 
-export async function getEvents(dataset: string, from: number, to: number, namespaces: string[], offset: number, limit: number): Promise<Event[]> {
-  const res = (await client.get(`/events`, { params: { dataset, from, to, namespaces, offset, limit } })).data;
+export async function getEvents(dataset: string, from: number, to: number, namespaces: string[], namespaceCombination: NamespaceCombination, offset: number, limit: number): Promise<Event[]> {
+  const params = { dataset, from, to, namespaces, offset, limit, namespaceCombination };
+  const res = (await client.get(`/events`, { params })).data;
   return res.events;
 }
 

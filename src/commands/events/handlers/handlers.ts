@@ -7,15 +7,15 @@ import { promisify } from "util";
 import dayjs from "dayjs";
 const wait = promisify(setTimeout);
 import utc from "dayjs/plugin/utc"
+import { NamespaceCombination } from "../../../services/api/paths/queries";
 dayjs.extend(utc);
 
-async function stream(format: OutputFormat, dataset: string, from: string, to: string, namespaces: string[], follow: boolean) {
+async function stream(format: OutputFormat, dataset: string, from: string, to: string, namespaces: string[], combination: NamespaceCombination, follow: boolean) {
   const s = spinner.get();
   if (!follow) {
     s.start("Streaming your events");
     const { from: f, to: t } = getTimeframe(from, to);
-    const events = await api.getEvents(dataset, f, t, namespaces, 0, 100);
-    console.log(events)
+    const events = await api.getEvents(dataset, f, t, namespaces, combination, 0, 100);
     s.succeed();
     outputs.stream(events, format);
     return;
@@ -23,7 +23,7 @@ async function stream(format: OutputFormat, dataset: string, from: string, to: s
 
   let { from: f, to: t } = getTimeframe("1minute", "now");
   while (true) {
-    const events = await api.getEvents(dataset, f, t, namespaces, 0, 100);
+    const events = await api.getEvents(dataset, f, t, namespaces, combination, 0, 100);
     const now = dayjs();
     
     f = events[0] ? dayjs.utc(events[0]._timestamp).valueOf() : f;

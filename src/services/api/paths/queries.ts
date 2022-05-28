@@ -4,6 +4,7 @@ export interface QueryParameters {
   dataset: string;
   groupBys?: string[];
   namespaces?: string[];
+  namespaceCombination?: NamespaceCombination;
   filters?: Array<QueryFilter>;
   filterCombination: "AND" | "OR";
   calculations: Array<{
@@ -31,6 +32,12 @@ export interface Query {
   userId: string;
   created?: string;
   updated?: string;
+}
+
+export enum NamespaceCombination {
+  INCLUDE = "INCLUDE",
+  EXCLUDE = "EXCLUDE",
+  STARTS_WITH = "STARTS_WITH",
 }
 
 async function queriesList(application?: string, ref?: string): Promise<Query[]> {
