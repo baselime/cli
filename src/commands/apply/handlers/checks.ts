@@ -5,6 +5,7 @@ import spinner from "../../../services/spinner/index";
 
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
 const filterCombinations = ["AND", "OR"];
+const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["email"];
 
 const alertSchema = object({
@@ -42,6 +43,7 @@ const queriesSchema = object({
       value: mixed().required(),
     })),
     filterCombination: string().oneOf(filterCombinations).notRequired(),
+    namespaceCombination: string().oneOf(namespaceCombinations).notRequired(),
   })
 });
 
