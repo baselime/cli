@@ -8,6 +8,8 @@ const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["email"];
 
+const queryFilterRegex = new RegExp("^([\\w.]+)\\s:(" + operations.join("|") + ")\\s'?(.*?)'?$");
+
 const alertSchema = object({
   name: string().notRequired(),
   description: string().notRequired(),
@@ -36,12 +38,8 @@ const queriesSchema = object({
   parameters: object({
     dataset: string().required(),
     namespaces: array().of(string()).notRequired(),
-    calculations: array().of(string().matches(/(^[a-zA-Z0-9]*)\(([^\)]+)\)|(COUNT)/i)).notRequired(),
-    filters: array().of(object({
-      key: string().required(),
-      operation: string().oneOf(operations).required(),
-      value: mixed().required(),
-    })),
+    calculations: array().of(string().matches(/(^[a-zA-Z0-9]*)\(([^\)]+)\)|(COUNT)/i)).required(),
+    filters: array().of(string().matches(queryFilterRegex)).notRequired(),
     filterCombination: string().oneOf(filterCombinations).notRequired(),
     namespaceCombination: string().oneOf(namespaceCombinations).notRequired(),
   })
