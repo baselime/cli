@@ -8,17 +8,15 @@ const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["email"];
 
-const queryFilterRegex = new RegExp("^([\\w.]+)\\s:(" + operations.join("|") + ")\\s'?(.*?)'?$");
+const queryFilterRegex = new RegExp("^([\\w.@]+)\\s:(" + operations.join("|") + ")\\s'?(.*?)'?$");
+const alertThresholdRegex = new RegExp("^:(" + operations.filter(o => o != "INCLUDES").join("|") + ")\\s([0-9]*)$");
 
 const alertSchema = object({
   name: string().notRequired(),
   description: string().notRequired(),
   parameters: object({
     query: string().required(),
-    threshold: object({
-      operation: string().oneOf(operations).required(),
-      value: number().required(),
-    }).required(),
+    threshold: string().matches(alertThresholdRegex).required(),
     frequency: number().strict().required().min(1),
     duration: number().strict().required(),
   }).required(),
@@ -103,6 +101,9 @@ async function validate(file: string) {
   const channelsPromises = channelsKeys.map(async ref => {
     try {
       await channelSchema.validate(channels[ref]);
+      if (channels[ref].targets?.includes("example@email.com")) {
+        throw new Error("Please use a valid email address");
+      }
     } catch (error) {
       const message = `channel: ${ref}: ${error}`;
       s.fail(chalk.bold(chalk.red("Channel validation error")));
