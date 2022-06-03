@@ -16,7 +16,7 @@ export interface QueryParameters {
 export interface QueryFilter {
   key: string;
   operation: string;
-  value: string | number | boolean | { key: string };
+  value: string | number | boolean;
   type: string;
 }
 
