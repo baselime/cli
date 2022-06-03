@@ -5,6 +5,7 @@ import { BaseOptions, printError } from "../shared";
 import spinner from "../services/spinner";
 import * as prompts from "./applications/handlers/prompts";
 import { init } from "../services/config";
+import { basename, resolve } from "path";
 
 export interface Options extends BaseOptions {
   application?: string;
@@ -22,7 +23,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     })
     .example([
       [`
-      # Intercatively initialise an application:
+      # Initialise an application:
       $0 init
 
       # Provide parameters on the command-line:
@@ -47,8 +48,8 @@ export async function handler(argv: Arguments<Options>) {
     }
   }
 
-  application ??= await prompts.application();
-  description ??= await prompts.description();
+  application ??= basename(resolve());
+  description ??= "";
 
   s.start("Generating your config file");
   init(filename, application, description);
