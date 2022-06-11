@@ -6,6 +6,7 @@ import queryRuns from "./paths/query-runs";
 import applications from "./paths/applications";
 import namespaces from "./paths/namespaces";
 import events from "./paths/events";
+import cli from "./paths/cli";
 
 export default {
   ...auth,
@@ -16,4 +17,5 @@ export default {
   ...applications,
   ...namespaces,
   ...events,
+  ...cli,
 };
