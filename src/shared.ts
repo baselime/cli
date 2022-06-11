@@ -46,6 +46,7 @@ export async function authenticate(profile: string) {
   try {
     const config = await readUserAuth(profile);
     setAxiosAuth(config.apiKey);
+    return config;
   } catch (_) {
     userConfigNotFound(profile);
     process.exit(1);

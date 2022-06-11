@@ -18,7 +18,7 @@ export function credentialsConfigured(path: string) {
   process.exit(0);
 }
 
-export function status(profile: string, key: APIKey, workspace: Workspace, environment: Environment, format: OutputFormat) {
+export function status(profile: string, key: APIKey, workspace: Workspace, environment: Environment, apiKey: string, format: OutputFormat) {
   const path = getAuthProfilePath(profile);
   if (format === "json") {
     console.log(JSON.stringify({ key, workspace, environment, path }, null, 4));
@@ -26,9 +26,9 @@ export function status(profile: string, key: APIKey, workspace: Workspace, envir
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Workspace", "Environment", "userId"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Workspace", "Environment", "userId", "apiKey"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  table.push([`${workspace.name} (id: ${workspace.id})`, `${environment.id} (alias: ${environment.alias})`, key.userId,]);
+  table.push([`${workspace.name} (id: ${workspace.id})`, `${environment.id} (alias: ${environment.alias})`, key.userId, apiKey]);
 
   const permissionsTable = new Table({
     chars: tableChars,

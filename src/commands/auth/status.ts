@@ -31,10 +31,10 @@ export async function handler(argv: Arguments<BaseOptions>) {
 
   let { profile, format } = argv;
 
-  await authenticate(profile);
+  const config = await authenticate(profile);
   s.start("Fetching your authenticated status");
   const { key, workspace, environment } = await api.getApiKeyPermissions();
   s.succeed();
 
-  status(profile, key, workspace, environment, format);
+  status(profile, key, workspace, environment, config.apiKey, format);
 }
