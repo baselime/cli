@@ -12,16 +12,17 @@ export async function init(
     application,
     description,
     queries: {
-      "lambda-invocations-durations": {
-        name: "The duration of lambda invocations",
-        description: "Statistics on the duration of lambda invocations across the stack",
+      "lambda-cold-start-duration": {
+        name: "Duration of lambda cold-starts",
+        description: "How long do cold starts take on our API?",
         parameters: {
           dataset: "logs",
           calculations: [
-            "MAX(@duration)",
-            "MIN(@duration)",
-            "AVG(@duration)",
-            "P99(@duration)",
+            "MAX(@initDuration)",
+            "MIN(@initDuration)",
+            "AVG(@initDuration)",
+            "P99(@initDuration)",
+            "COUNT"
           ],
           filters: [
             "@message := REPORT"
@@ -31,13 +32,13 @@ export async function init(
       },
     },
     alerts: {
-      "long-lambda-invocations": {
-        name: "A Lambda invocation lasted more than 15seconds",
+      "critical-cold-start-duration": {
+        name: "Lambda cold-starts take more than 2 seconds",
         parameters: {
-          query: "lambda-invocations-durations",
+          query: "lambda-cold-start-durations",
           frequency: 30,
           duration: 30,
-          threshold: ":> 15000",
+          threshold: ":> 2000",
         },
         channels: ["developers"]
       }
