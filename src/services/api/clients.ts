@@ -6,12 +6,12 @@ require("dotenv").config();
 const argv = hideBin(process.argv);
 
 function getBaseUrl(): string {
-  const { BASELIME_BASE_URL = "https://go.baselime.io/v1/" } = process.env;
+  const { BASELIME_DOMAIN = "baselime.io" } = process.env;
   const index = argv.findIndex(val => val === "--endpoint");
   if (index > -1) {
     return argv[index + 1];
   }
-  return BASELIME_BASE_URL;
+  return `https://go.${BASELIME_DOMAIN}/v1/`;
 }
 
 export const client = axios.create({

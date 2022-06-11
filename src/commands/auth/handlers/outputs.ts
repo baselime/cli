@@ -4,6 +4,8 @@ import { OutputFormat, tableChars } from "../../../shared";
 import Table from "cli-table3";
 import { getAuthProfilePath } from "../../../services/auth";
 
+const { BASELIME_DOMAIN = "baselime.io" } = process.env;
+
 
 export function welcome() {
   console.log(`${chalk.bold(chalk.greenBright("Welcome to Baselime"))}\n`);
@@ -39,6 +41,7 @@ export function status(profile: string, key: APIKey, workspace: Workspace, envir
   });
 
   console.log(`\n${path}`);
+  console.log(BASELIME_DOMAIN);
   console.log(table.toString());
   console.log(permissionsTable.toString());
 }
