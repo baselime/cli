@@ -101,9 +101,6 @@ async function validate(file: string) {
   const channelsPromises = channelsKeys.map(async ref => {
     try {
       await channelSchema.validate(channels[ref]);
-      if (channels[ref].targets?.includes("example@email.com")) {
-        throw new Error("Please use a valid email address");
-      }
     } catch (error) {
       const message = `channel: ${ref}: ${error}`;
       s.fail(chalk.bold(chalk.red("Channel validation error")));

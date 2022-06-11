@@ -6,6 +6,7 @@ export async function init(
   filename: string,
   application: string,
   description: string,
+  email: string,
 ) {
   const data = {
     version: packageJson.version,
@@ -47,7 +48,7 @@ export async function init(
       developers: {
         type: "email",
         targets: [
-          "example@email.com"
+          email
         ]
       }
     },

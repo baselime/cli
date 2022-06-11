@@ -1,11 +1,12 @@
 import { Arguments, CommandBuilder } from "yargs";
 
 import { existsSync } from "fs";
-import { BaseOptions, printError } from "../shared";
+import { authenticate, baseOptions, BaseOptions, printError } from "../shared";
 import spinner from "../services/spinner";
 import * as prompts from "./applications/handlers/prompts";
 import { init } from "../services/config";
 import { basename, resolve } from "path";
+import api from "../services/api/api";
 
 export interface Options extends BaseOptions {
   application?: string;
@@ -18,6 +19,7 @@ export const desc = "Prepare your working directory for other commands";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       application: { type: "string", desc: "Name of the application", alias: "app" },
       description: { type: "string", desc: "Description of the application" },
     })
@@ -37,7 +39,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
-  let { application, description } = argv;
+  let { application, description, profile } = argv;
 
   const filename = ".baselime.yml";
 
@@ -48,10 +50,13 @@ export async function handler(argv: Arguments<Options>) {
     }
   }
 
+  await authenticate(profile);
+
   application ??= basename(resolve());
   description ??= "";
 
   s.start("Generating your config file");
-  init(filename, application, description);
+  const user = await api.iamGet();
+  init(filename, application, description, user.email);
   s.succeed(`${filename} Generated`);
 }
