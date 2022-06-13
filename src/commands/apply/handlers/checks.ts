@@ -36,7 +36,7 @@ const queriesSchema = object({
   parameters: object({
     dataset: string().required(),
     namespaces: array().of(string()).notRequired(),
-    calculations: array().of(string().matches(/(^[a-zA-Z0-9]*)\(([^\)]+)\)|(COUNT)/i)).required(),
+    calculations: array().min(1).of(string().matches(/(^[a-zA-Z0-9]*)\(([^\)]+)\)|(COUNT)/i)).required(),
     filters: array().of(string().matches(queryFilterRegex)).notRequired(),
     filterCombination: string().oneOf(filterCombinations).notRequired(),
     namespaceCombination: string().oneOf(namespaceCombinations).notRequired(),
