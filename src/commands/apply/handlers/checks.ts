@@ -21,7 +21,7 @@ const alertSchema = object({
     duration: number().strict().required(),
   }).required(),
   enabled: boolean().notRequired(),
-  channels: array().of(string().required()).required(),
+  channels: array().min(1).of(string().required()).required(),
 });
 
 const channelSchema = object({
