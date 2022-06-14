@@ -21,7 +21,7 @@ export interface Bin {
   [key: string]: number | string;
 }
 
-export interface queryRunGetParams {
+export interface QueryRunGetParams {
   queryId: string;
   id: string;
   events?: boolean;
@@ -31,7 +31,7 @@ export interface queryRunGetParams {
   offset?: number;
 }
 
-export interface queryRunCreateParams {
+export interface QueryRunCreateParams {
   queryId: string;
   timeframe: {
     from: number;
@@ -44,7 +44,7 @@ async function queryRunsList(queryId: string): Promise<QueryRun[]> {
   return res.queryRuns;
 }
 
-async function queryRunGet(params: queryRunGetParams): Promise<{ queryRun: QueryRun[]; events: Event[]; calculations: Record<string, any>; count: number }> {
+async function queryRunGet(params: QueryRunGetParams): Promise<{ queryRun: QueryRun[]; events: Event[]; calculations: Record<string, any>; count: number }> {
   const res = (await client.get(`/query-runs/${params.queryId}/${params.id}`, {
     params: {
       events: params.events,
@@ -57,7 +57,7 @@ async function queryRunGet(params: queryRunGetParams): Promise<{ queryRun: Query
   return res;
 }
 
-async function queryRunCreate(params: queryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { aggregates: Record<string, any>; bins: Bin[] }; }> {
+async function queryRunCreate(params: QueryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { aggregates: Record<string, any>; bins: Bin[] }; }> {
   const res = (await client.post(`/query-runs/`, params)).data;
   return res;
 }

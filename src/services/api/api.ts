@@ -8,6 +8,7 @@ import namespaces from "./paths/namespaces";
 import events from "./paths/events";
 import cli from "./paths/cli";
 import iam from "./paths/iam";
+import environments from "./paths/environments";
 
 export default {
   ...auth,
@@ -20,4 +21,5 @@ export default {
   ...events,
   ...cli,
   ...iam,
+  ...environments,
 };
