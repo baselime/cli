@@ -26,7 +26,7 @@ export async function init(
             "COUNT"
           ],
           filters: [
-            "@message := REPORT"
+            "@type := REPORT"
           ],
           filterCombination: "AND",
         }
