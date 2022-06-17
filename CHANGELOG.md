@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.0.5 (17th June 2022)
+
+- Adds `upgrade` command
+- Improves default query and alert created with `init` command
+- Add `environment setup` command
+- Bug fixes
+
 ### 0.0.4 (3rd June 2022)
 
 - Adds `--follow` flag to `events stream` command
