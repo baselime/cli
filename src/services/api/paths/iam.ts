@@ -5,14 +5,8 @@ export interface User {
 }
 
 async function iamGet(): Promise<User> {
-  try {
-
-    const res = (await client.get("/iam",)).data;
-    return res.user;
-  } catch(error) {
-    console.log(error);
-    throw error;
-  }
+  const res = (await client.get("/iam",)).data;
+  return res.user;
 }
 
 export default {
