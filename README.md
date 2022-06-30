@@ -43,7 +43,7 @@ Installing the CLI globally provides access to the Baselime command.
 curl -s https://get.baselime.io | bash
 ```
 
-### Install using [Homebrew](https://brew.sh) [Coming Soon]
+### Install using [Homebrew](https://brew.sh)
 
 ```shell
 brew tap baselime/tap
