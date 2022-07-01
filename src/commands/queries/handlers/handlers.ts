@@ -24,12 +24,12 @@ async function createRun(format: OutputFormat, from: string, to: string, id?: st
   }
 
 
-  const { queryRun, calculations: { aggregates, bins } } = await api.queryRunCreate({
+  const { queryRun, calculations: { aggregates, series } } = await api.queryRunCreate({
     queryId: id,
     timeframe: getTimeframe(from, to),
   });
   s.succeed();
-  outputs.getQueryRun(queryRun, aggregates, bins, [], format);
+  outputs.getQueryRun(queryRun, aggregates, series, [], format);
 }
 
 export default {
