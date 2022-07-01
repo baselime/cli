@@ -9,6 +9,7 @@ import events from "./paths/events";
 import cli from "./paths/cli";
 import iam from "./paths/iam";
 import environments from "./paths/environments";
+import channels from "./paths/channels";
 
 export default {
   ...auth,
@@ -22,4 +23,5 @@ export default {
   ...cli,
   ...iam,
   ...environments,
+  ...channels,
 };

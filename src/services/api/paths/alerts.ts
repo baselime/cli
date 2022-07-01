@@ -7,11 +7,6 @@ export interface AlertParameters {
   duration: number;
 }
 
-export interface AlertChannels {
-  type: string;
-  target: string;
-}
-
 export interface AlertThreshold {
   operation: string;
   value: number;
@@ -28,7 +23,7 @@ export interface Alert {
   enabled: boolean;
   ref: string;
   application: string;
-  channels: AlertChannels[];
+  channels: string[];
   created?: string;
   updated?: string;
 }
