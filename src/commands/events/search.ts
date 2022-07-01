@@ -1,7 +1,6 @@
-import { BaseOptions } from "vm";
 import { Arguments, CommandBuilder } from "yargs";
 
-import {  printError } from "../../shared";
+import {  BaseOptions, printError } from "../../shared";
 
 
 export const command = "search";

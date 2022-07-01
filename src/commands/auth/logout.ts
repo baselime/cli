@@ -1,8 +1,7 @@
-import { BaseOptions } from "vm";
 import { Arguments, CommandBuilder } from "yargs";
 import { deleteUserAuth } from "../../services/auth";
 import spinner from "../../services/spinner";
-import { printError } from "../../shared";
+import { BaseOptions, printError } from "../../shared";
 
 
 
