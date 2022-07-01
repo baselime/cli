@@ -16,9 +16,12 @@ export interface QueryRun {
   updated?: string;
 }
 
-export interface Bin {
-  bin: string;
-  [key: string]: number | string;
+export interface Series {
+  time: string;
+  data: {
+    _count: number;
+    [key: string]: number | string | undefined;
+  }
 }
 
 export interface QueryRunGetParams {
@@ -57,7 +60,7 @@ async function queryRunGet(params: QueryRunGetParams): Promise<{ queryRun: Query
   return res;
 }
 
-async function queryRunCreate(params: QueryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { aggregates: Record<string, any>; bins: Bin[] }; }> {
+async function queryRunCreate(params: QueryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { aggregates: Record<string, any>; series: Series[] }; }> {
   const res = (await client.post(`/query-runs/`, params)).data;
   return res;
 }

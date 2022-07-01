@@ -3,7 +3,7 @@ import Table from "cli-table3";
 
 import { OutputFormat, tableChars } from "../../../shared";
 import chalk from "chalk";
-import { Bin, QueryRun } from "../../../services/api/paths/query-runs";
+import { QueryRun, Series } from "../../../services/api/paths/query-runs";
 import dayjs from "dayjs";
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
@@ -24,9 +24,9 @@ function list(queries: Query[], format: OutputFormat) {
   console.log(`✨ ${chalk.bold(chalk.cyan(`${queries.length} queries`))}`);
 }
 
-function getQueryRun(queryRun: QueryRun, aggregates: Record<string, any>, bins: Bin[], events: Event[], format: OutputFormat) {
+function getQueryRun(queryRun: QueryRun, aggregates: Record<string, any>, series: Series[], events: Event[], format: OutputFormat) {
   if (format === "json") {
-    console.log(JSON.stringify({ queryRun, aggregates, bins, events }, null, 4));
+    console.log(JSON.stringify({ queryRun, aggregates, series, events }, null, 4));
     return;
   }
   const runTable = new Table({
