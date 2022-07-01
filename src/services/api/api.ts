@@ -10,6 +10,7 @@ import cli from "./paths/cli";
 import iam from "./paths/iam";
 import environments from "./paths/environments";
 import channels from "./paths/channels";
+import charts from "./paths/charts";
 
 export default {
   ...auth,
@@ -24,4 +25,5 @@ export default {
   ...iam,
   ...environments,
   ...channels,
+  ...charts,
 };
