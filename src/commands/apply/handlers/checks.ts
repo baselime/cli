@@ -7,6 +7,7 @@ const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
 const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["email"];
+const groupByTypes = ["string", "number", "boolean"];
 
 const queryFilterRegex = new RegExp("^([\\w.@]+)\\s:(" + operations.join("|") + ")\\s'?(.*?)'?$");
 const alertThresholdRegex = new RegExp("^:(" + operations.filter(o => o != "INCLUDES").join("|") + ")\\s([0-9]*)$");
@@ -40,6 +41,10 @@ const queriesSchema = object({
     filters: array().of(string().matches(queryFilterRegex)).notRequired(),
     filterCombination: string().oneOf(filterCombinations).notRequired(),
     namespaceCombination: string().oneOf(namespaceCombinations).notRequired(),
+    groupBy: object({
+      type: string().oneOf(groupByTypes).min(1).required(),
+      value: string().min(1).required(),
+    }).nullable().notRequired().default(undefined),
   })
 });
 
