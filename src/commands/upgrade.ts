@@ -35,7 +35,7 @@ export async function handler(argv: Arguments<BaseOptions>) {
   if (version === latestVersion) {
     return console.log(`You're currently using the latest version of the Baselime CLI: v${latestVersion}`);
   }
-  const res = execSync(`curl https://get.${BASELIME_DOMAIN} | sh`);
+  const res = execSync(`curl -s https://get.${BASELIME_DOMAIN} | sh`);
   console.log(res.toString());
   console.log(`Upgraded to v${latestVersion}`);
 }
