@@ -24,7 +24,7 @@ function list(queries: Query[], format: OutputFormat) {
   console.log(`✨ ${chalk.bold(chalk.cyan(`${queries.length} queries`))}`);
 }
 
-function getQueryRun(queryRun: QueryRun, aggregates: Record<string, any>, series: Series[], events: Event[], format: OutputFormat) {
+function getQueryRun(queryRun: QueryRun, aggregates: Record<string, number | Record<string, number>>, series: Series[], events: Event[], format: OutputFormat) {
   if (format === "json") {
     console.log(JSON.stringify({ queryRun, aggregates, series, events }, null, 4));
     return;
@@ -36,15 +36,32 @@ function getQueryRun(queryRun: QueryRun, aggregates: Record<string, any>, series
 
   runTable.push([queryRun.id, queryRun.queryId, `${dayjs(queryRun.timeframe.from).format()}`, `${dayjs(queryRun.timeframe.to).format()}`, queryRun.status, queryRun.created]);
 
-  const aggregatesTable = new Table({
-    chars: tableChars,
-    head: ["Aggregate", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
-  });
+  let aggregatesTable: Table.Table;
+  const isGrouped = typeof aggregates._count !== "number";
+  if (isGrouped) {
+    const groups = Object.keys(aggregates._count);
+    const calculationKeys = Object.keys(aggregates).filter(k => k !== "_count")
+    aggregatesTable = new Table({
+      chars: tableChars,
+      head: ["", ...calculationKeys].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    });
 
-  Object.keys(aggregates).forEach((key: string) => {
-    if(key === "_count") return;
-    aggregatesTable.push([key, aggregates[key]]);
-  });
+    groups.forEach(group => {
+      const vals = calculationKeys.map(key => (aggregates as Record<string, Record<string, number>>)[key][group])
+      aggregatesTable.push([group, ...vals]);
+    });
+  } else {
+    aggregatesTable = new Table({
+      chars: tableChars,
+      head: ["Aggregate", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    });
+
+    Object.keys(aggregates).forEach((key: string) => {
+      if (key === "_count") return;
+      aggregatesTable.push([key, (aggregates as Record<string, number>)[key]]);
+    });
+  }
+
   console.log(runTable.toString());
   console.log(aggregatesTable.toString());
   console.log(`Follow this url: https://console.${BASELIME_DOMAIN}/workspaces/${queryRun.workspaceId}/envs/${queryRun.environmentId}/queries/${queryRun.queryId}/${queryRun.id}`)

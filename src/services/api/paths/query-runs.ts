@@ -18,10 +18,12 @@ export interface QueryRun {
 
 export interface Series {
   time: string;
-  data: {
-    _count: number;
-    [key: string]: number | string | undefined;
-  }
+  data: SeriesData
+}
+
+export interface SeriesData {
+  _count: number | Record<string, number>;
+  [key: string]: number | undefined | Record<string, number>;
 }
 
 export interface QueryRunGetParams {
@@ -60,7 +62,7 @@ async function queryRunGet(params: QueryRunGetParams): Promise<{ queryRun: Query
   return res;
 }
 
-async function queryRunCreate(params: QueryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { aggregates: Record<string, any>; series: Series[] }; }> {
+async function queryRunCreate(params: QueryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { series: Series[]; aggregates: Record<string, number | Record<string, number>> }; }> {
   const res = (await client.post(`/query-runs/`, params)).data;
   return res;
 }
