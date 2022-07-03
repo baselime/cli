@@ -63,7 +63,7 @@ async function queryRunGet(params: QueryRunGetParams): Promise<{ queryRun: Query
 }
 
 async function queryRunCreate(params: QueryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { series: Series[]; aggregates: Record<string, number | Record<string, number>> }; }> {
-  const res = (await client.post(`/query-runs/`, params)).data;
+  const res = (await client.post(`/query-runs/`, params, { timeout: 30000 })).data;
   return res;
 }
 
