@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.0.5 (4th July 2022)
+
+- Adds `channels` command
+- Adds `charts` command
+- Add support for queries with `groupBy`
+- Bug fixes
+
 ### 0.0.5 (17th June 2022)
 
 - Adds `upgrade` command
