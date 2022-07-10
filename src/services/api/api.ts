@@ -11,6 +11,7 @@ import iam from "./paths/iam";
 import environments from "./paths/environments";
 import channels from "./paths/channels";
 import charts from "./paths/charts";
+import dashboards from "./paths/dashboards";
 
 export default {
   ...auth,
@@ -26,4 +27,5 @@ export default {
   ...environments,
   ...channels,
   ...charts,
+  ...dashboards,
 };
