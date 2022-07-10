@@ -7,6 +7,7 @@ const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
 const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["email"];
+const chartTypes = ["stats", "timeseries", "bar"];
 const groupByTypes = ["string", "number", "boolean"];
 
 const queryFilterRegex = new RegExp("^([\\w.@]+)\\s:(" + operations.join("|") + ")\\s'?(.*?)'?$");
@@ -48,14 +49,33 @@ const queriesSchema = object({
   })
 });
 
+const dashboardSchema = object({
+  name: string().notRequired(),
+  description: string().notRequired(),
+  charts: array().min(1).of(string().required()).required(),
+});
+
+const chartSchema = object({
+  name: string().notRequired(),
+  type: string().oneOf(chartTypes).required(),
+  parameters: object({
+    query: string().required(),
+    duration: number().strict().required(),
+    xaxis: string().notRequired(),
+    yaxis: string().notRequired(),
+  }).required(),
+});
+
 async function validate(file: string) {
   const s = spinner.get();
   s.start("Checking the configuration file...");
 
-  let { queries, alerts, channels } = yaml.parse(file);
+  let { queries, alerts, channels, charts, dashboards } = yaml.parse(file);
   queries ||= {};
   alerts ||= {};
   channels ||= {};
+  charts ||= {};
+  dashboards ||= {};
 
   if (!isObject(channels)) {
     throw new Error("invalid channels object format");
@@ -69,11 +89,71 @@ async function validate(file: string) {
     throw new Error("invalid alerts object format");
   }
 
+  if (!isObject(charts)) {
+    throw new Error("invalid charts object format");
+  }
+
+  if (!isObject(dashboards)) {
+    throw new Error("invalid dashboards object format");
+  }
+
+  await Promise.all([
+    ...validateAlerts(alerts, queries, channels),
+    ...validateQueries(queries),
+    ...validateChannels(channels),
+    ...validateCharts(charts, queries),
+    ...validateDashboards(dashboards, charts),
+  ]);
+  s.succeed("Valid configuration file");
+}
+
+function isObject(val: any): boolean {
+  return typeof val === 'object' && !Array.isArray(val) && val !== null;
+}
+
+function validateChannels(channels: any) {
+  const s = spinner.get();
+  const channelsKeys = Object.keys(channels);
+
+  const promises = channelsKeys.map(async ref => {
+    try {
+      await channelSchema.validate(channels[ref]);
+    } catch (error) {
+      const message = `channel: ${ref}: ${error}`;
+      s.fail(chalk.bold(chalk.red("Channel validation error")));
+      console.log(message);
+      throw new Error(message);
+    }
+  });
+
+  return promises;
+}
+
+function validateQueries(queries: any) {
+  const s = spinner.get();
+  const queriesKeys = Object.keys(queries);
+
+  const promises = queriesKeys.map(async ref => {
+    try {
+      await queriesSchema.validate(queries[ref]);
+    } catch (error) {
+      const message = `query: ${ref}: ${error}`;
+      s.fail(chalk.bold(chalk.red("Query validation error")));
+      console.log(message);
+      throw new Error(message);
+    }
+  });
+
+  return promises;
+}
+
+function validateAlerts(alerts: any, queries: any, channels: any) {
+  const s = spinner.get();
   const alertsKeys = Object.keys(alerts);
   const channelsKeys = Object.keys(channels);
   const queriesKeys = Object.keys(queries);
 
-  const alertsPromises = alertsKeys.map(async ref => {
+  const promises = alertsKeys.map(async ref => {
     try {
       const alert = await alertSchema.validate(alerts[ref]);
       const query = queriesKeys.find(ref => ref === alert.parameters.query);
@@ -92,34 +172,53 @@ async function validate(file: string) {
     }
   });
 
-  const queriesPromises = queriesKeys.map(async ref => {
+  return promises;
+}
+
+function validateCharts(charts: any, queries: any) {
+  const s = spinner.get();
+  const chartsKeys = Object.keys(charts);
+  const queriesKeys = Object.keys(queries);
+
+  const promises = chartsKeys.map(async ref => {
     try {
-      await queriesSchema.validate(queries[ref]);
+      const chart = await chartSchema.validate(charts[ref]);
+      const query = queriesKeys.find(ref => ref === chart.parameters.query);
+      if (!query) {
+        throw new Error(`the following query was not found in this application: ${chart.parameters.query}`);
+      }
     } catch (error) {
-      const message = `query: ${ref}: ${error}`;
-      s.fail(chalk.bold(chalk.red("Query validation error")));
+      const message = `chart: ${ref}: ${error}`;
+      s.fail(chalk.bold(chalk.red("Chart validation error")));
       console.log(message);
       throw new Error(message);
     }
   });
 
-  const channelsPromises = channelsKeys.map(async ref => {
+  return promises;
+}
+
+function validateDashboards(dashboards: any, charts: any) {
+  const s = spinner.get();
+  const dashboardsKeys = Object.keys(dashboards);
+  const chartsKeys = Object.keys(charts);
+
+  const promises = dashboardsKeys.map(async ref => {
     try {
-      await channelSchema.validate(channels[ref]);
+      const dashboard = await dashboardSchema.validate(dashboards[ref]);
+      const missingCharts = dashboard.charts.filter(ref => !chartsKeys.includes(ref))
+      if (missingCharts.length) {
+        throw new Error(`the following charts were not found in this application: ${missingCharts.join(", ")}`);
+      }
     } catch (error) {
-      const message = `channel: ${ref}: ${error}`;
-      s.fail(chalk.bold(chalk.red("Channel validation error")));
+      const message = `dashboard: ${ref}: ${error}`;
+      s.fail(chalk.bold(chalk.red("Dashboard validation error")));
       console.log(message);
       throw new Error(message);
     }
-  })
+  });
 
-  await Promise.all([...alertsPromises, ...queriesPromises, ...channelsPromises]);
-  s.succeed("Valid configuration file");
-}
-
-function isObject(val: any): boolean {
-  return typeof val === 'object' && !Array.isArray(val) && val !== null;
+  return promises;
 }
 
 export default {
