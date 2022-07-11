@@ -1,6 +1,6 @@
 # Changelog
 
-### 0.0.5 (4th July 2022)
+### 0.0.6 (4th July 2022)
 
 - Adds `channels` command
 - Adds `charts` command
