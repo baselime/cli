@@ -5,6 +5,7 @@ export interface QueryRun {
   queryId: string,
   workspaceId: string;
   environmentId: string;
+  application: string;
   timeframe: {
     from: number;
     to: number;
