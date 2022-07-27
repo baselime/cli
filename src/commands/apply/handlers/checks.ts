@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import yaml from "yaml";
-import { object, string, number, array, boolean, mixed } from 'yup';
+import { object, string, number, array, boolean } from 'yup';
 import spinner from "../../../services/spinner/index";
 
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
@@ -21,18 +21,18 @@ const alertSchema = object({
     threshold: string().matches(alertThresholdRegex).required(),
     frequency: number().strict().required().min(1),
     duration: number().strict().required(),
-  }).required(),
+  }).required().noUnknown(true).strict(),
   enabled: boolean().notRequired(),
   channels: array().min(1).of(string().required()).required(),
-});
+}).noUnknown(true).strict();
 
 const channelSchema = object({
   name: string().notRequired(),
   type: string().oneOf(channelTypes).required(),
   targets: array().of(string().email().required())
-});
+}).noUnknown(true).strict();
 
-const queriesSchema = object({
+const querySchema = object({
   name: string().notRequired(),
   description: string().notRequired(),
   parameters: object({
@@ -45,15 +45,15 @@ const queriesSchema = object({
     groupBy: object({
       type: string().oneOf(groupByTypes).min(1).required(),
       value: string().min(1).required(),
-    }).nullable().notRequired().default(undefined),
-  })
-});
+    }).nullable().notRequired().default(undefined).noUnknown(true).strict(),
+  }).noUnknown(true).required().strict(),
+}).noUnknown(true).strict();
 
 const dashboardSchema = object({
   name: string().notRequired(),
   description: string().notRequired(),
   charts: array().min(1).of(string().required()).required(),
-});
+}).noUnknown(true).strict();
 
 const chartSchema = object({
   name: string().notRequired(),
@@ -63,14 +63,36 @@ const chartSchema = object({
     duration: number().strict().required(),
     xaxis: string().notRequired(),
     yaxis: string().notRequired(),
-  }).required(),
-});
+  }).required().noUnknown(true).strict(),
+}).noUnknown(true).strict();
+
+const baselimeSchema = object({
+  version: string().required(),
+  application: string().required(),
+  description: string().notRequired(),
+  queries: object().notRequired(),
+  alerts: object().notRequired(),
+  charts: object().notRequired(),
+  dashboards: object().notRequired(),
+  channels: object().notRequired(),
+}).noUnknown(true).strict();
 
 async function validate(file: string) {
   const s = spinner.get();
   s.start("Checking the configuration file...");
 
-  let { queries, alerts, channels, charts, dashboards } = yaml.parse(file);
+  const f = yaml.parse(file);
+
+  try {
+    await baselimeSchema.validate(f);
+  } catch(error) {
+    s.fail(chalk.bold(chalk.red("Failed to validate the config file")));
+    const message = `error: ${error}`;
+    console.log(message);
+    throw new Error(message);
+  }
+
+  let { queries, alerts, channels, charts, dashboards } = f;
   queries ||= {};
   alerts ||= {};
   channels ||= {};
@@ -135,7 +157,7 @@ function validateQueries(queries: any) {
 
   const promises = queriesKeys.map(async ref => {
     try {
-      await queriesSchema.validate(queries[ref]);
+      await querySchema.validate(queries[ref]);
     } catch (error) {
       const message = `query: ${ref}: ${error}`;
       s.fail(chalk.bold(chalk.red("Query validation error")));
