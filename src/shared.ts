@@ -28,6 +28,7 @@ export function userConfigNotFound(profile: string) {
 
 export function printError(err: Error, yargs: any) {
   console.log(chalk.grey(`
+Version: ${getVersion()}
 Environment: ${os.platform()}, node ${process.version} 
 Backend: ${client.defaults.baseURL}
 Docs: docs.baselime.io
@@ -41,6 +42,8 @@ Bugs: github.com/baselime/cli/issues
   console.log(`${yargs.help()}`);
   process.exit(1);
 }
+
+export function getVersion() { return require('../package').version; }
 
 export async function authenticate(profile: string) {
   try {

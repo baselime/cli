@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 
-import yargs from "yargs";
+import yargs, { Arguments } from "yargs";
 import { hideBin } from "yargs/helpers";
+import { getVersion } from "./shared";
+import { trackCommand } from "./services/telemetry/telemetry";
 
-const version = () => { return require('../package').version; }
+async function normalizeCredentials(args: Arguments) {
+  const command = args._[0];
+  await trackCommand(command.toString(), args);
+  return;
+}
+
 
 yargs(hideBin(process.argv))
   .commandDir("commands")
@@ -12,7 +19,8 @@ yargs(hideBin(process.argv))
   .recommendCommands()
   .wrap(yargs.terminalWidth())
   .help("help", "Show this help output, or the help for a specified command or subcommand")
-  .version("version", "Show the current Baselime CLI version", version())
+  .version("version", "Show the current Baselime CLI version", getVersion())
   .strict()
+  .middleware(normalizeCredentials, true)
   .alias({ h: "help", v: "version" })
   .argv;
