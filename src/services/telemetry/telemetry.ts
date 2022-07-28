@@ -68,7 +68,7 @@ function notify() {
   console.log(
     `You can learn more, including how to opt-out of this anonymous program, by heading over to:`
   );
-  console.log("https://docs.baselime.io/anonymous-telemetry");
+  console.log("https://docs.baselime.io/cli/anonymous-telemetry");
   console.log();
 }
 
