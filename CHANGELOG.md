@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.0.7 (29th July 2022)
+
+- Adds `dashboards` command
+- Prevents unknown keys in resources schemas
+- Adds collection of telemetry data
+- Bug fixes
+
 ### 0.0.6 (4th July 2022)
 
 - Adds `channels` command
