@@ -16,7 +16,7 @@ export interface Dashboard {
 
 async function dashboardsList(application?: string, ref?: string): Promise<Dashboard[]> {
   const res = (await client.get("/dashboards", { params: { application, ref } })).data;
-  return res.charts;
+  return res.dashboards;
 }
 
 export default {
