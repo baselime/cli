@@ -18,10 +18,10 @@ export enum DeploymentStatus {
 }
 
 
-async function uplaod(preSignedUrl: string, data: string) {
+async function uplaod(preSignedUrl: string, data: string | Buffer) {
   await publicClient.put(preSignedUrl, data, {
     headers: {
-      "content-Type": "application/x-yaml",
+      "content-Type": "application/json",
     },
   });
 }

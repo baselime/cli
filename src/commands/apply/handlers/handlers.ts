@@ -2,13 +2,15 @@ import chalk from "chalk";
 import checks from "./checks";
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
+import { readFileSync } from "fs";
 
 async function apply(config: string) {
   const s = spinner.get();
   const metadata = await validate(config);
   s.start("Checking submission status...");
   const { url, id } = await api.uploadUrlGet(metadata.application, metadata.version);
-  await api.uplaod(url, `${config}/.out/.baselime.json`);
+  const data = readFileSync(`${config}/.out/.baselime.json`, "utf-8").toString();
+  await api.uplaod(url, data);
   s.succeed(
     `Submitted your observability configurations. id: ${chalk.bold(
       chalk.cyan(id),
