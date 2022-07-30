@@ -1,19 +1,27 @@
 import { writeFileSync } from "fs";
-import yaml from "yaml";
 const packageJson = require("../../../package.json");
+import { readdir } from "fs/promises";
+import { Ref, stringify } from "../parser/parser";
 
 export async function init(
-  filename: string,
+  folder: string,
   application: string,
   description: string,
   email: string,
 ) {
-  const data = {
+  const metadata = {
     version: packageJson.version,
     application,
     description,
-    queries: {
-      "lambda-cold-start-duration": {
+  };
+
+  const d = stringify(metadata);
+  writeFileSync(`${folder}/index.yml`, d);
+
+  const data = {
+    "lambda-cold-start-durations": {
+      type: "query",
+      properties: {
         name: "Duration of lambda cold-starts",
         description: "How long do cold starts take on our API?",
         parameters: {
@@ -30,30 +38,50 @@ export async function init(
           ],
           filterCombination: "AND",
         }
-      },
+      }
     },
-    alerts: {
-      "critical-cold-start-duration": {
+    "critical-cold-start-duration": {
+      type: "alert",
+      properties: {
         name: "Lambda cold-starts take more than 2 seconds",
         parameters: {
-          query: "lambda-cold-start-durations",
+          query: new Ref("lambda-cold-start-durations"),
           frequency: 30,
           duration: 30,
           threshold: ":> 2000",
         },
-        channels: ["developers"]
+        channels: [new Ref("developers")]
       }
     },
-    channels: {
-      developers: {
+    developers: {
+      type: "channel",
+      properties: {
         type: "email",
         targets: [
           email
         ]
       }
-    },
+    }
   };
 
-  const d = yaml.stringify(data);
-  writeFileSync(filename, d);
+  const dd = stringify(data);
+  writeFileSync(`${folder}/demo.yml`, dd);
 }
+
+export async function getFileList(dirName: string) {
+  let files: string[] = [];
+  const items = await readdir(dirName, { withFileTypes: true });
+
+  for (const item of items) {
+    if (item.isDirectory()) {
+      files = [
+        ...files,
+        ...(await getFileList(`${dirName}/${item.name}`)),
+      ];
+    } else {
+      files.push(`${dirName}/${item.name}`);
+    }
+  }
+
+  return files;
+};

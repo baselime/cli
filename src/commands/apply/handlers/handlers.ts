@@ -3,12 +3,12 @@ import checks from "./checks";
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 
-async function apply(file: string, application: string, version: string) {
+async function apply(config: string) {
   const s = spinner.get();
-  await validate(file);
+  const metadata = await validate(config);
   s.start("Checking submission status...");
-  const { url, id } = await api.uploadUrlGet(application, version);
-  await api.uplaod(url, file);
+  const { url, id } = await api.uploadUrlGet(metadata.application, metadata.version);
+  await api.uplaod(url, `${config}/.out/.baselime.json`);
   s.succeed(
     `Submitted your observability configurations. id: ${chalk.bold(
       chalk.cyan(id),
@@ -16,8 +16,8 @@ async function apply(file: string, application: string, version: string) {
   );
 }
 
-async function validate(file: string) {
-  await checks.validate(file);
+async function validate(folder: string) {
+  return await checks.validate(folder);
 }
 
 export default {

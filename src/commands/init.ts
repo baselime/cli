@@ -7,6 +7,7 @@ import * as prompts from "./applications/handlers/prompts";
 import { init } from "../services/config";
 import { basename, resolve } from "path";
 import api from "../services/api/api";
+import { mkdirSync } from "fs";
 
 export interface Options extends BaseOptions {
   application?: string;
@@ -41,13 +42,15 @@ export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
   let { application, description, profile } = argv;
 
-  const filename = ".baselime.yml";
+  const folder = ".baselime";
 
-  if (existsSync(`./${filename}`)) {
-    const res = await prompts.promptReplaceExistingConfig(filename);
+  if (existsSync(folder)) {
+    const res = await prompts.promptReplaceExistingConfig(folder);
     if (!res) {
       process.exit(0);
     }
+  } else {
+    mkdirSync(folder);
   }
 
   await authenticate(profile);
@@ -55,8 +58,8 @@ export async function handler(argv: Arguments<Options>) {
   application ??= basename(resolve());
   description ??= "";
 
-  s.start("Generating your config file");
+  s.start("Generating your config folder");
   const user = await api.iamGet();
-  init(filename, application, description, user.email);
-  s.succeed(`${filename} Generated`);
+  init(folder, application, description, user.email);
+  s.succeed(`${folder} Generated`);
 }
