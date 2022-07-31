@@ -175,7 +175,7 @@ async function validate(folder: string): Promise<{ application: string, version:
   ]);
 
   writeOutFile(folder, metadata, resources);
-  s.succeed("Valid configuration file");
+  s.succeed("Valid configuration folder");
   return metadata;
 }
 

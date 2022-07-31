@@ -2,11 +2,11 @@ import { readFile } from "fs/promises";
 import yaml, { Document } from "yaml";
 import chalk from "chalk";
 import spinner from "../spinner/index";
-import { stringifyString } from 'yaml/util'
 
 export async function getResources(filenames: string[]) {
   try {
     const files = await Promise.all(filenames.map(async filename => (await readFile(filename)).toString()));
+    // @ts-ignore
     return yaml.parse(files.join("\n"), { customTags: [ref] });
   } catch (error) {
     const s = spinner.get();
@@ -31,6 +31,7 @@ export async function getMetadata(folder: string) {
 }
 
 export function stringify(data: Record<string, any>): string {
+  // @ts-ignore
   return yaml.stringify(data, { customTags: [ref] });
 }
 
@@ -44,8 +45,8 @@ export class Ref {
 const ref = {
   identify: (value: any) => value.constructor === Ref,
   tag: '!ref',
-  resolve(doc: Document, cst: any) {
-    return cst.strValue;
+  resolve(doc: any, cst: any) {
+    return doc;
   },
   stringify(item: any, ctx: any, onComment: any, onChompKeep: any) {
     return item.value.value;
