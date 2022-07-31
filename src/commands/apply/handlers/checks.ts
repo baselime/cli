@@ -98,7 +98,8 @@ const metadataSchema = object({
 async function validate(folder: string): Promise<{ application: string, version: string; description: string }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
-  const filenames = await getFileList(folder);
+  const filenames = await getFileList(folder, [".yaml", ".yml"]);
+
 
   if (!filenames.includes(`${folder}/index.yml`)) {
     const m = "Please include a index.yml file in the config folder. This file is necessary to define the application and its metadata.";
@@ -116,7 +117,7 @@ async function validate(folder: string): Promise<{ application: string, version:
     throw new Error(message);
   }
 
-  const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && a !== `${folder}/.out/.baselime.json`);
+  const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
   const data = await getResources(resourceFilenames);
   if (!isObject(data)) {

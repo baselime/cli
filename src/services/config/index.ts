@@ -1,6 +1,7 @@
 import { writeFileSync } from "fs";
 const packageJson = require("../../../package.json");
 import { readdir } from "fs/promises";
+import path from "path";
 import { Ref, stringify } from "../parser/parser";
 
 export async function init(
@@ -68,7 +69,7 @@ export async function init(
   writeFileSync(`${folder}/demo.yml`, dd);
 }
 
-export async function getFileList(dirName: string) {
+export async function getFileList(dirName: string, extensions: string[]) {
   let files: string[] = [];
   const items = await readdir(dirName, { withFileTypes: true });
 
@@ -76,9 +77,12 @@ export async function getFileList(dirName: string) {
     if (item.isDirectory()) {
       files = [
         ...files,
-        ...(await getFileList(`${dirName}/${item.name}`)),
+        ...(await getFileList(`${dirName}/${item.name}`, extensions)),
       ];
-    } else {
+    } else if (item.isFile()) {
+      if (!extensions.includes(path.extname(item.name))) {
+        continue;
+      }
       files.push(`${dirName}/${item.name}`);
     }
   }
