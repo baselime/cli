@@ -9,5 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["test"]
+  "exclude": [
+    "test"
+  ]
 }

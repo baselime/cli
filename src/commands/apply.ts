@@ -19,15 +19,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       config: {
         type: "string",
-        desc: "The configuration file to execute",
+        desc: "The configuration folder to execute",
         alias: "c",
-        default: ".baselime.yml",
+        default: ".baselime",
       },
     })
     .example([
       [`
       $0 apply
-      $0 apply --config .baselime.yml --profile prod`,
+      $0 apply --config .baselime --profile prod`,
       ],
     ])
     .fail((_, err, yargs) => {
@@ -41,9 +41,6 @@ export async function handler(argv: Arguments<Options>) {
 
   await authenticate(profile);
 
-  const file = readFileSync(config!).toString();
-  const { version, application } = yaml.parse(file);
-
-  await handlers.apply(file, application, version);
+  await handlers.apply(config!);
 }
 

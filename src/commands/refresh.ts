@@ -15,15 +15,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       config: {
         type: "string",
-        desc: "The configuration file to execute",
+        desc: "The configuration folder to execute",
         alias: "c",
-        default: ".baselime.yml",
+        default: ".baselime",
       },
     })
     .example([
       [`
       $0 refresh
-      $0 refresh --config .baselime.yml --profile prod`,
+      $0 refresh --config .baselime --profile prod`,
       ],
     ])
     .fail((_, err, yargs) => {

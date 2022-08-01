@@ -6,7 +6,7 @@ export async function promptReplaceExistingConfig(
   const { confirm } = await prompt<{ confirm: boolean }>({
     type: "confirm",
     name: "confirm",
-    message: `Replace config file ${filename}?`,
+    message: `Replace config folder ${filename}?`,
   });
 
   return confirm;
