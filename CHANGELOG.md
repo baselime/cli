@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.0.8 (1st August 2022)
+
+- Migrate to using a `.baselime` folder rather than a `.baselime.yml` file
+
 ### 0.0.7 (29th July 2022)
 
 - Adds `dashboards` command

@@ -1,6 +1,6 @@
 {
   "name": "@baselime/cli",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "./build/cli.js",
   "bin": {
@@ -15,7 +15,9 @@
   ],
   "keywords": [
     "cli",
-    "observability"
+    "observability",
+    "observability as code",
+    "OaC"
   ],
   "author": "Baselime <boris@baselime.io> (baselime.io)",
   "license": "MIT",
