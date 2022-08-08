@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { object, string, number, array, boolean } from 'yup';
+import { object, string, number, array, boolean, InferType } from 'yup';
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
@@ -15,6 +15,7 @@ const groupByTypes = ["string", "number", "boolean"];
 
 const queryFilterRegex = new RegExp("^([\\w.@]+)\\s:(" + operations.join("|") + ")\\s'?(.*?)'?$");
 const alertThresholdRegex = new RegExp("^:(" + operations.filter(o => o != "INCLUDES").join("|") + ")\\s([0-9]*)$");
+
 
 const alertSchema = object({
   type: string().equals(["alert"]),
@@ -94,6 +95,20 @@ const metadataSchema = object({
   application: string().required(),
   description: string().notRequired(),
 }).noUnknown(true).strict();
+
+export type DeploymentQuery = InferType<typeof querySchema>;
+export type DeploymentAlert = InferType<typeof alertSchema>;
+export type DeploymentChannel = InferType<typeof channelSchema>;
+export type DeploymentChart = InferType<typeof chartSchema>;
+export type DeploymentDashboard = InferType<typeof dashboardSchema>;
+
+export interface DeploymentResources {
+  queries: DeploymentQuery[];
+  alerts: DeploymentAlert[];
+  channels: DeploymentChannel[];
+  charts: DeploymentChart[];
+  dashboards: DeploymentDashboard[];
+}
 
 async function validate(folder: string): Promise<{ application: string, version: string; description: string }> {
   const s = spinner.get();

@@ -8,10 +8,12 @@ import { init } from "../services/config";
 import { basename, resolve } from "path";
 import api from "../services/api/api";
 import { mkdirSync } from "fs";
+import { isUrl } from "../utils";
 
 export interface Options extends BaseOptions {
   application?: string;
   description?: string;
+  template?: string;
 }
 
 export const command = "init";
@@ -23,6 +25,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       application: { type: "string", desc: "Name of the application", alias: "app" },
       description: { type: "string", desc: "Description of the application" },
+      template: { type: "string", desc: "Template to intitialise the application with" },
     })
     .example([
       [`
@@ -31,6 +34,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
       # Provide parameters on the command-line:
       $0 init --application <application_name> --description <description>
+
+      # Provide a template on the command-line:
+      # The template can be either a local template within Baselime or a public URL to a template
+
+      $0 init --application <application_name> --template @<workspace>/<template>
+      $0 init --application <application_name> --template <template-url>
       `]
     ])
     .fail((_, err, yargs) => {
@@ -40,7 +49,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
-  let { application, description, profile } = argv;
+  let { application, description, profile, template } = argv;
 
   const folder = ".baselime";
 
@@ -57,9 +66,15 @@ export async function handler(argv: Arguments<Options>) {
 
   application ??= basename(resolve());
   description ??= "";
+  template ??= "";
+
+  if (isUrl(template)) {
+    s.fail("Support for public URL as templates is coming soon.");
+    return;
+  }
 
   s.start("Generating your config folder");
   const user = await api.iamGet();
-  init(folder, application, description, user.email);
+  init(folder, application, description, template, user.email,);
   s.succeed(`${folder} Generated`);
 }

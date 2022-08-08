@@ -12,6 +12,7 @@ import environments from "./paths/environments";
 import channels from "./paths/channels";
 import charts from "./paths/charts";
 import dashboards from "./paths/dashboards";
+import templates from "./paths/templates";
 
 export default {
   ...auth,
@@ -28,4 +29,5 @@ export default {
   ...channels,
   ...charts,
   ...dashboards,
+  ...templates,
 };
