@@ -26,12 +26,12 @@ async function templatesList(): Promise<Template[]> {
   return res.templates;
 }
 
-async function templateGetPublic(workspaceId: string, template: string): Promise<Template> {
-  const res = (await publicClient.get(`/templates/public/${workspaceId}/${template}`)).data;
+async function templateGet(workspaceId: string, template: string, isPublic: boolean = false): Promise<Template> {
+  const res = (await client.get(`/templates/${workspaceId}/${template}`, { params: { public: isPublic } })).data;
   return res.template;
 }
 
 export default {
   templatesList,
-  templateGetPublic,
+  templateGet,
 };

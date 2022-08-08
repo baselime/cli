@@ -27,7 +27,7 @@ export async function init(
   if (templateUrl) {
     const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
 
-    const template = await api.templateGetPublic(workspaceId, templateName);
+    const template = await api.templateGet(workspaceId, templateName, true);
 
     const { resources: { queries, alerts, dashboards, charts, channels } } = template;
 
