@@ -17,6 +17,7 @@ export interface Template {
 
 export interface Variable {
   ref: string;
+  type: "string" | "number" | "boolean"; 
   description?: string;
   default?: any;
 }

@@ -6,8 +6,7 @@ import spinner from "../spinner/index";
 export async function getResources(filenames: string[]) {
   try {
     const files = await Promise.all(filenames.map(async filename => (await readFile(filename)).toString()));
-    // @ts-ignore
-    return yaml.parse(files.join("\n"), { customTags: [ref] });
+    return parse(files.join("\n"));
   } catch (error) {
     const s = spinner.get();
     const message = `${(error as any).message || 'Error parsing file'}`;
@@ -30,9 +29,14 @@ export async function getMetadata(folder: string) {
   }
 }
 
+export function parse(s: string): Record<string, any> {
+  // @ts-ignore
+  return yaml.parse(s, { customTags: [ref, variable] });
+}
+
 export function stringify(data: Record<string, any>): string {
   // @ts-ignore
-  return yaml.stringify(data, { customTags: [ref] });
+  return yaml.stringify(data, { customTags: [ref, variable] });
 }
 
 export class Ref {
@@ -42,11 +46,30 @@ export class Ref {
   }
 }
 
+export class Var {
+  public value;
+  constructor(value: string) {
+    this.value = value;
+  }
+}
+
+
 const ref = {
   identify: (value: any) => value.constructor === Ref,
   tag: '!ref',
   resolve(doc: any, cst: any) {
     return doc;
+  },
+  stringify(item: any, ctx: any, onComment: any, onChompKeep: any) {
+    return item.value.value;
+  }
+}
+
+const variable = {
+  identify: (value: any) => value.constructor === Var,
+  tag: '!var',
+  resolve(doc: any, cst: any) {
+    return `<var>${doc}</var>`;
   },
   stringify(item: any, ctx: any, onComment: any, onChompKeep: any) {
     return item.value.value;

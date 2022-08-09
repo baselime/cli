@@ -2,9 +2,11 @@ import { writeFileSync } from "fs";
 const packageJson = require("../../../package.json");
 import { readdir } from "fs/promises";
 import path from "path";
+import { promptTemplateVariables } from "../../commands/applications/handlers/prompts";
 import { parseTemplateName } from "../../utils";
 import api from "../api/api";
 import { Ref, stringify } from "../parser/parser";
+import spinner from "../spinner";
 
 export async function init(
   folder: string,
@@ -13,6 +15,7 @@ export async function init(
   templateUrl: string,
   email: string,
 ) {
+  const s = spinner.get();
   const metadata = {
     version: packageJson.version,
     application,
@@ -22,14 +25,15 @@ export async function init(
   const d = stringify(metadata);
   writeFileSync(`${folder}/index.yml`, d);
 
-  let data: Record<string, any> = {};
 
   if (templateUrl) {
+    const data: Record<string, any> = {};
+
     const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
 
     const template = await api.templateGet(workspaceId, templateName, true);
 
-    const { resources: { queries, alerts, dashboards, charts, channels } } = template;
+    const { resources: { queries, alerts, dashboards, charts, channels }, variables } = template;
 
     queries.forEach((elt) => {
       data[elt.ref!] = { type: "query", properties: elt.properties }
@@ -64,54 +68,71 @@ export async function init(
       };
     });
 
-  } else {
-    data = {
-      "lambda-cold-start-durations": {
-        type: "query",
-        properties: {
-          name: "Duration of lambda cold-starts",
-          description: "How long do cold starts take on our API?",
-          parameters: {
-            dataset: "logs",
-            calculations: [
-              "MAX(@initDuration)",
-              "MIN(@initDuration)",
-              "AVG(@initDuration)",
-              "P99(@initDuration)",
-              "COUNT"
-            ],
-            filters: [
-              "@type := REPORT"
-            ],
-            filterCombination: "AND",
-          }
+    let dd = stringify(data);
+
+    if (variables.length) {
+      const vars: Record<string, any> = await promptTemplateVariables(variables);
+
+      variables.forEach(variable => {
+        const { ref } = variable;
+        const value = vars[ref] || variable.default;
+        if (!value) {
+          s.fail(`Please provide a value for all variables: ${variable.ref} is missing and doesn't have a default value`);
+          return;
         }
-      },
-      "critical-cold-start-duration": {
-        type: "alert",
-        properties: {
-          name: "Lambda cold-starts take more than 2 seconds",
-          parameters: {
-            query: new Ref("lambda-cold-start-durations"),
-            frequency: 30,
-            duration: 30,
-            threshold: ":> 2000",
-          },
-          channels: [new Ref("developers")]
-        }
-      },
-      developers: {
-        type: "channel",
-        properties: {
-          type: "email",
-          targets: [
-            email
-          ]
-        }
-      }
-    };
+        dd = dd.replace(`<var>${ref}</var>`, value);
+      })
+    }
+
+    writeFileSync(`${folder}/${application}.yml`, dd);
+    return;
   }
 
+  const data = {
+    "lambda-cold-start-durations": {
+      type: "query",
+      properties: {
+        name: "Duration of lambda cold-starts",
+        description: "How long do cold starts take on our API?",
+        parameters: {
+          dataset: "logs",
+          calculations: [
+            "MAX(@initDuration)",
+            "MIN(@initDuration)",
+            "AVG(@initDuration)",
+            "P99(@initDuration)",
+            "COUNT"
+          ],
+          filters: [
+            "@type := REPORT"
+          ],
+          filterCombination: "AND",
+        }
+      }
+    },
+    "critical-cold-start-duration": {
+      type: "alert",
+      properties: {
+        name: "Lambda cold-starts take more than 2 seconds",
+        parameters: {
+          query: new Ref("lambda-cold-start-durations"),
+          frequency: 30,
+          duration: 30,
+          threshold: ":> 2000",
+        },
+        channels: [new Ref("developers")]
+      }
+    },
+    developers: {
+      type: "channel",
+      properties: {
+        type: "email",
+        targets: [
+          email
+        ]
+      }
+    }
+  };
 
   const dd = stringify(data);
   writeFileSync(`${folder}/${application}.yml`, dd);
