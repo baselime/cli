@@ -80,7 +80,7 @@ export async function init(
           s.fail(`Please provide a value for all variables: ${variable.ref} is missing and doesn't have a default value`);
           return;
         }
-        dd = dd.replace(`<var>${ref}</var>`, value);
+        dd = dd.replaceAll(`<var>${ref}</var>`, value);
       })
     }
 
