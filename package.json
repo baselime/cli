@@ -44,7 +44,6 @@
     "enquirer": "^2.3.6",
     "figlet": "^1.5.2",
     "fs-extra": "^10.1.0",
-    "open": "^8.4.0",
     "ora": "^5.4.1",
     "parse-duration": "^1.0.2",
     "yaml": "^2.1.1",

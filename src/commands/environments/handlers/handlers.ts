@@ -16,7 +16,9 @@ async function setup(format: OutputFormat, type: string, params: { account: stri
     alias,
   });
 
-  open(url);
+  s.succeed("Generated your CloudFormation template");
+  console.log(`Follow this url to complete seting up your AWS Account`);
+  console.log(url);
 }
 
 export default {
