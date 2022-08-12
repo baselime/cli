@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.0.9 (12th August 2022)
+
+- Add support for templates when initialising a new application with `baselime init`
+- Bug fixes
+
 ### 0.0.8 (1st August 2022)
 
 - Migrate to using a `.baselime` folder rather than a `.baselime.yml` file
