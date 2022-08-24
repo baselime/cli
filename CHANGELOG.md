@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.0.10 (24th August 2022)
+
+- Add support for `slack` and `webhook` channel types
+- Bug fixes
+
 ### 0.0.9 (12th August 2022)
 
 - Add support for templates when initialising a new application with `baselime init`
