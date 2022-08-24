@@ -9,7 +9,7 @@ import { getMetadata, getResources } from "../../../services/parser/parser";
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
 const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
-const channelTypes = ["email"];
+const channelTypes = ["email", "slack", "webhook"];
 const chartTypes = ["stats", "timeseries", "bar"];
 const groupByTypes = ["string", "number", "boolean"];
 
@@ -40,7 +40,7 @@ const channelSchema = object({
   properties: object({
     name: string().notRequired(),
     type: string().oneOf(channelTypes).required(),
-    targets: array().of(string().email().required())
+    targets: array().of(string().required())
   }).required().noUnknown(true).strict(),
 }).noUnknown(true).strict();
 
@@ -51,12 +51,12 @@ const querySchema = object({
     name: string().required(),
     description: string().notRequired(),
     parameters: object({
-      dataset: string().required(),
+      dataset: string().required().typeError('Dataset must be set to an existing dataset, i.e logs.'),
       namespaces: array().of(string()).notRequired(),
-      calculations: array().min(1).of(string().matches(/(^[a-zA-Z0-9]*)\(([^\)]+)\)|(COUNT)/)).required(),
+      calculations: array().min(1).of(string().matches(/(^[a-zA-Z0-9]*)\(([^\)]+)\)|(COUNT)/)).required().typeError('Must include at least 1 valid calculation.'),
       filters: array().of(string().matches(queryFilterRegex)).notRequired(),
-      filterCombination: string().oneOf(filterCombinations).notRequired(),
-      namespaceCombination: string().oneOf(namespaceCombinations).notRequired(),
+      filterCombination: string().oneOf(filterCombinations).notRequired().typeError('filterCombination must be set to AND or OR.'),
+      namespaceCombination: string().oneOf(namespaceCombinations).notRequired().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
       groupBy: object({
         type: string().oneOf(groupByTypes).min(1).required(),
         value: string().min(1).required(),
