@@ -44,6 +44,10 @@ const channelSchema = object({
   }).required().noUnknown(true).strict(),
 }).noUnknown(true).strict();
 
+const webhookSchema = object({
+  webhook: string().url().required()
+})
+
 const querySchema = object({
   type: string().equals(["query"]),
   ref: string().notRequired(),
@@ -206,6 +210,12 @@ function validateChannels(channels: any) {
   const promises = channelsKeys.map(async ref => {
     try {
       await channelSchema.validate(channels[ref]);
+
+      if(channels[ref].properties.type === 'webhook') {
+        const promises = channels[ref].properties.targets.map((webhook: any) =>  webhookSchema.validate({ webhook: webhook }))
+        await Promise.all(promises)
+      }
+      
     } catch (error) {
       const message = `channel: ${ref}: ${error}`;
       s.fail(chalk.bold(chalk.red("Channel validation error")));
