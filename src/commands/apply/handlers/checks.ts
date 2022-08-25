@@ -45,8 +45,12 @@ const channelSchema = object({
 }).noUnknown(true).strict();
 
 const webhookSchema = object({
-  webhook: string().url().required()
-})
+  webhook: string().url().required().typeError('Webhook must be valid URL')
+});
+
+const emailSchema = object({
+  email: string().email().required()
+});
 
 const querySchema = object({
   type: string().equals(["query"]),
@@ -209,10 +213,17 @@ function validateChannels(channels: any) {
 
   const promises = channelsKeys.map(async ref => {
     try {
-      await channelSchema.validate(channels[ref]);
+      const channel = channels[ref]; 
+      await channelSchema.validate(channel);
 
-      if(channels[ref].properties.type === 'webhook') {
-        const promises = channels[ref].properties.targets.map((webhook: any) =>  webhookSchema.validate({ webhook: webhook }))
+
+      if(channel.properties.type === 'webhook') {
+        const promises = channel.properties.targets.map((webhook: string) =>  webhookSchema.validate({ webhook }))
+        await Promise.all(promises)
+      }
+
+      if(channel.properties.type === 'email') {
+        const promises = channel.properties.targets.map((email: string) =>  emailSchema.validate({ email }))
         await Promise.all(promises)
       }
       
