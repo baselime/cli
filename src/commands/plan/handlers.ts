@@ -29,6 +29,7 @@ async function plan(config: string) {
   const diff = await api.diffsCreate({
     application: metadata.application,
     resources,
+    reverse: false,
   });
 
   const { queries, alerts, dashboards, channels, charts } = diff;
