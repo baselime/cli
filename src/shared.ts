@@ -4,6 +4,8 @@ import { client, setAxiosAuth } from "./services/api/clients";
 import { readUserAuth } from "./services/auth";
 import * as os from "os";
 import { hideBin } from "yargs/helpers";
+import spinner from "./services/spinner";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
 export interface BaseOptions {
   profile: string;
   quiet: boolean;
@@ -73,3 +75,20 @@ export const tableChars = {
   "right-mid": "╢",
   middle: "│",
 };
+
+export function writeOutFile(folder: string, metadata: Record<string, any>, resources: Record<string, any>) {
+  const s = spinner.get();
+
+  const dir = `${folder}/.out`;
+  try {
+    if (!existsSync(dir)) {
+      mkdirSync(dir);
+    }
+    writeFileSync(`${dir}/.baselime.json`, JSON.stringify({ ...metadata, resources }, null, 2));
+  } catch (error) {
+    const m = `folder: ${folder} - failed to create out file`;
+    s.fail(chalk.bold(chalk.red("Validation error")));
+    console.log(m);
+    throw new Error(m);
+  }
+}

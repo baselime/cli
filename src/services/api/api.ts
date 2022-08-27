@@ -13,6 +13,7 @@ import channels from "./paths/channels";
 import charts from "./paths/charts";
 import dashboards from "./paths/dashboards";
 import templates from "./paths/templates";
+import diffs from "./paths/diffs";
 
 export default {
   ...auth,
@@ -30,4 +31,5 @@ export default {
   ...charts,
   ...dashboards,
   ...templates,
+  ...diffs,
 };

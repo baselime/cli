@@ -118,7 +118,9 @@ export interface DeploymentResources {
   dashboards: DeploymentDashboard[];
 }
 
-async function validate(folder: string): Promise<{ application: string, version: string; description: string }> {
+export interface DeploymentMetadata { application: string, version: string; description: string }
+
+async function validate(folder: string): Promise<{ metadata: DeploymentMetadata, resources: DeploymentResources }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
   const filenames = await getFileList(folder, [".yaml", ".yml"]);
@@ -198,9 +200,8 @@ async function validate(folder: string): Promise<{ application: string, version:
     ...validateDashboards(dashboards, charts),
   ]);
 
-  writeOutFile(folder, metadata, resources);
   s.succeed("Valid configuration folder");
-  return metadata;
+  return { metadata, resources };
 }
 
 function isObject(val: any): boolean {
@@ -213,20 +214,20 @@ function validateChannels(channels: any) {
 
   const promises = channelsKeys.map(async ref => {
     try {
-      const channel = channels[ref]; 
+      const channel = channels[ref];
       await channelSchema.validate(channel);
 
 
-      if(channel.properties.type === 'webhook') {
-        const promises = channel.properties.targets.map((webhook: string) =>  webhookSchema.validate({ webhook }))
+      if (channel.properties.type === 'webhook') {
+        const promises = channel.properties.targets.map((webhook: string) => webhookSchema.validate({ webhook }))
         await Promise.all(promises)
       }
 
-      if(channel.properties.type === 'email') {
-        const promises = channel.properties.targets.map((email: string) =>  emailSchema.validate({ email }))
+      if (channel.properties.type === 'email') {
+        const promises = channel.properties.targets.map((email: string) => emailSchema.validate({ email }))
         await Promise.all(promises)
       }
-      
+
     } catch (error) {
       const message = `channel: ${ref}: ${error}`;
       s.fail(chalk.bold(chalk.red("Channel validation error")));
@@ -320,25 +321,6 @@ function validateDashboards(dashboards: any[], charts: any[]) {
 
   return promises;
 }
-
-
-function writeOutFile(folder: string, metadata: Record<string, any>, resources: Record<string, any>) {
-  const s = spinner.get();
-
-  const dir = `${folder}/.out`;
-  try {
-    if (!existsSync(dir)) {
-      mkdirSync(dir);
-    }
-    writeFileSync(`${dir}/.baselime.json`, JSON.stringify({ ...metadata, resources }, null, 2));
-  } catch (error) {
-    const m = `folder: ${folder} - failed to create out file`;
-    s.fail(chalk.bold(chalk.red("Validation error")));
-    console.log(m);
-    throw new Error(m);
-  }
-}
-
 
 export default {
   validate,
