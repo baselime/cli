@@ -16,7 +16,7 @@ function getYamlString(obj: { status: statusType; value: Record<string, any> }) 
     return [chalk.yellowBright.bold("~~"), chalk.yellowBright(stringify(value))];
   }
   if (status === statusType.VALUE_DELETED) {
-    return [chalk.redBright.bold("~~"), chalk.redBright(stringify(value))];
+    return [chalk.redBright.bold("--"), chalk.redBright(stringify(value))];
   }
   return [];
 }
