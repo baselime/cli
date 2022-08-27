@@ -5,7 +5,7 @@ import { hideBin } from "yargs/helpers";
 import { getVersion } from "./shared";
 import { trackCommand } from "./services/telemetry/telemetry";
 
-async function normalizeCredentials(args: Arguments) {
+async function track(args: Arguments) {
   const command = args._[0];
   await trackCommand(command.toString(), args);
   return;
@@ -21,6 +21,6 @@ yargs(hideBin(process.argv))
   .help("help", "Show this help output, or the help for a specified command or subcommand")
   .version("version", "Show the current Baselime CLI version", getVersion())
   .strict()
-  .middleware(normalizeCredentials, false)
+  .middleware(track, false)
   .alias({ h: "help", v: "version" })
   .argv;
