@@ -2,7 +2,7 @@ import chalk from "chalk";
 import api from "../../services/api/api";
 import { Ref, stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import checks from "../apply/handlers/checks";
+import checks, { DeploymentMetadata, DeploymentResources } from "../apply/handlers/checks";
 import Table from "cli-table3";
 import { statusType } from "../../services/api/paths/diffs";
 
@@ -22,8 +22,12 @@ function getYamlString(obj: { status: statusType; value: Record<string, any> }) 
 }
 
 async function plan(config: string) {
-  const s = spinner.get();
   const { metadata, resources } = await checks.validate(config);
+  await verifyPlan(metadata, resources);
+}
+
+export async function verifyPlan(metadata: DeploymentMetadata, resources: DeploymentResources) {
+  const s = spinner.get();
   s.start("Completing baselime plan...");
 
   const diff = await api.diffsCreate({
