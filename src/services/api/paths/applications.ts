@@ -20,7 +20,13 @@ async function applicationGet(name: string): Promise<Application> {
   return res.application;
 }
 
+async function applicationDelete(name: string): Promise<Application> {
+  const res = (await client.delete(`/applications/${name}`)).data;
+  return res.application;
+}
+
 export default {
   applicationsList,
   applicationGet,
+  applicationDelete,
 };

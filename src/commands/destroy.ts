@@ -1,6 +1,8 @@
 import { Arguments, CommandBuilder } from "yargs";
+import spinner from "../services/spinner";
 
-import { BaseOptions, baseOptions, printError } from "../shared";
+import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
+import handlers from "./destroy/handlers/handlers";
 
 export interface Options extends BaseOptions {
   config?: string;
@@ -33,6 +35,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   const { config, profile } = argv;
-  console.log("Coming soon.")
+  spinner.init(!!argv.quiet);
+
+  await authenticate(profile);
+
+  await handlers.destroy(config!);
 }
 
