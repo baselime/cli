@@ -5,7 +5,6 @@ export interface Channel {
   environmentId: string;
   id: string;
   application: string;
-  ref: string;
   name: string;
   type: ChannelTypes;
   targets: string[];
@@ -19,8 +18,8 @@ export enum ChannelTypes {
 }
 
 
-async function channelsList(application?: string, ref?: string): Promise<Channel[]> {
-  const res = (await client.get("/channels", { params: { application, ref } })).data;
+async function channelsList(application?: string): Promise<Channel[]> {
+  const res = (await client.get("/channels", { params: { application } })).data;
   return res.channels;
 }
 

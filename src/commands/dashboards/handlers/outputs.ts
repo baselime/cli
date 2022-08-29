@@ -11,10 +11,10 @@ function list(charts: Dashboard[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Id", "Application", "Ref", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Application", "Id", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   charts.forEach((channel) => {
-    table.push([channel.id, channel.application, channel.ref, channel.name, channel.created]);
+    table.push([channel.application, channel.id, channel.name, channel.created]);
   });
   console.log(`${table.toString()}`);
   console.log(`✨ ${chalk.bold(chalk.cyan(`${charts.length} dashboards`))}`);

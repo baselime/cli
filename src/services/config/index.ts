@@ -36,11 +36,11 @@ export async function init(
     const { resources: { queries, alerts, dashboards, charts, channels }, variables } = template;
 
     queries.forEach((elt) => {
-      data[elt.ref!] = { type: "query", properties: elt.properties }
+      data[elt.id!] = { type: "query", properties: elt.properties }
     });
 
     alerts.forEach((elt) => {
-      data[elt.ref!] = {
+      data[elt.id!] = {
         type: "alert",
         properties: {
           ...elt.properties,
@@ -51,18 +51,18 @@ export async function init(
     });
 
     channels.forEach((elt) => {
-      data[elt.ref!] = { type: "channel", properties: elt.properties }
+      data[elt.id!] = { type: "channel", properties: elt.properties }
     });
 
     charts.forEach((elt) => {
-      data[elt.ref!] = {
+      data[elt.id!] = {
         type: "chart",
         properties: { ...elt.properties, parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) } }
       };
     });
 
     dashboards.forEach((elt) => {
-      data[elt.ref!] = {
+      data[elt.id!] = {
         type: "dashboard",
         properties: { ...elt.properties, charts: elt.properties.charts.map(c => new Ref(c)) }
       };

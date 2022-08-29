@@ -21,15 +21,14 @@ export interface Alert {
   environmentId: string;
   userId: string;
   enabled: boolean;
-  ref: string;
   application: string;
   channels: string[];
   created?: string;
   updated?: string;
 }
 
-async function alertsList(application?: string, ref?: string): Promise<Alert[]> {
-  const res = (await client.get("/alerts", { params: { application, ref } })).data;
+async function alertsList(application?: string): Promise<Alert[]> {
+  const res = (await client.get("/alerts", { params: { application } })).data;
   return res.alerts;
 }
 

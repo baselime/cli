@@ -40,7 +40,7 @@ async function plan(config: string) {
     if (status === statusType.VALUE_UNCHANGED) return;
 
     const value: Record<string, any> = {};
-    value[resource.ref!] = { type: "query", properties: resource.properties }
+    value[resource.id!] = { type: "query", properties: resource.properties }
     table.push(getYamlString({ status, value }));
   });
 
@@ -49,7 +49,7 @@ async function plan(config: string) {
     if (status === statusType.VALUE_UNCHANGED) return;
 
     const value: Record<string, any> = {};
-    value[resource.ref!] = {
+    value[resource.id!] = {
       type: "alert",
       properties: {
         ...resource.properties,
@@ -64,7 +64,7 @@ async function plan(config: string) {
     if (status === statusType.VALUE_UNCHANGED) return;
 
     const value: Record<string, any> = {};
-    value[resource.ref!] = { type: "channel", properties: resource.properties };
+    value[resource.id!] = { type: "channel", properties: resource.properties };
     table.push(getYamlString({ status, value }));
   });
   charts.forEach(c => {
@@ -72,7 +72,7 @@ async function plan(config: string) {
     if (status === statusType.VALUE_UNCHANGED) return;
 
     const value: Record<string, any> = {};
-    value[resource.ref!] = {
+    value[resource.id!] = {
       type: "chart",
       properties: { ...resource.properties, parameters: { ...resource.properties.parameters, query: new Ref(resource.properties.parameters.query) } }
     };
@@ -83,7 +83,7 @@ async function plan(config: string) {
     const { status, resource } = d;
     if (status === statusType.VALUE_UNCHANGED) return;
     const value: Record<string, any> = {};
-    value[resource.ref!] = {
+    value[resource.id!] = {
       type: "dashboard",
       properties: { ...resource.properties, charts: resource.properties.charts.map((c: string) => new Ref(c)) }
     };

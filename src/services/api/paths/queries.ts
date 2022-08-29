@@ -27,7 +27,6 @@ export interface Query {
   description: string;
   workspaceId: string;
   environmentId: string;
-  ref: string;
   application: string;
   userId: string;
   created?: string;
@@ -40,8 +39,8 @@ export enum NamespaceCombination {
   STARTS_WITH = "STARTS_WITH",
 }
 
-async function queriesList(application?: string, ref?: string): Promise<Query[]> {
-  const res = (await client.get("/queries", { params: { application, ref } })).data;
+async function queriesList(application?: string): Promise<Query[]> {
+  const res = (await client.get("/queries", { params: { application } })).data;
   return res.queries;
 }
 

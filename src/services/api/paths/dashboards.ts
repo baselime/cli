@@ -5,7 +5,6 @@ export interface Dashboard {
   environmentId: string;
   id: string;
   application: string;
-  ref: string;
   name: string;
   description: string;
   charts: string[];
@@ -14,8 +13,8 @@ export interface Dashboard {
   updated?: string;
 }
 
-async function dashboardsList(application?: string, ref?: string): Promise<Dashboard[]> {
-  const res = (await client.get("/dashboards", { params: { application, ref } })).data;
+async function dashboardsList(application?: string): Promise<Dashboard[]> {
+  const res = (await client.get("/dashboards", { params: { application } })).data;
   return res.dashboards;
 }
 

@@ -12,19 +12,12 @@ async function list(format: OutputFormat, application?: string) {
   outputs.list(queries, format);
 }
 
-async function createRun(format: OutputFormat, from: string, to: string, id?: string, application?: string, ref?: string) {
+async function createRun(format: OutputFormat, from: string, to: string, application: string, id: string) {
   const s = spinner.get();
   s.start("Running the query");
 
-  if (!id) {
-    if (!application || !ref) {
-      throw new Error(`The following arguments are required: --id or --application and --ref`);
-    }
-    id = (await api.queriesList(application, ref))[0].id;
-  }
-
-
   const { queryRun, calculations: { aggregates, series } } = await api.queryRunCreate({
+    application,
     queryId: id,
     timeframe: getTimeframe(from, to),
   });

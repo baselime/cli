@@ -19,7 +19,7 @@ const alertThresholdRegex = new RegExp("^:(" + operations.filter(o => o != "INCL
 
 const alertSchema = object({
   type: string().equals(["alert"]),
-  ref: string().notRequired(),
+  id: string().required(),
   properties: object({
     name: string().required(),
     description: string().notRequired(),
@@ -36,7 +36,7 @@ const alertSchema = object({
 
 const channelSchema = object({
   type: string().equals(["channel"]),
-  ref: string().notRequired(),
+  id: string().required(),
   properties: object({
     name: string().notRequired(),
     type: string().oneOf(channelTypes).required(),
@@ -54,7 +54,7 @@ const emailSchema = object({
 
 const querySchema = object({
   type: string().equals(["query"]),
-  ref: string().notRequired(),
+  id: string().required(),
   properties: object({
     name: string().required(),
     description: string().notRequired(),
@@ -75,7 +75,7 @@ const querySchema = object({
 
 const dashboardSchema = object({
   type: string().equals(["dashboard"]),
-  ref: string().notRequired(),
+  id: string().required(),
   properties: object({
     name: string().required(),
     description: string().notRequired(),
@@ -85,7 +85,7 @@ const dashboardSchema = object({
 
 const chartSchema = object({
   type: string().equals(["chart"]),
-  ref: string().notRequired(),
+  id: string().required(),
   properties: object({
     name: string().required(),
     type: string().oneOf(chartTypes).required(),
@@ -159,32 +159,32 @@ async function validate(folder: string): Promise<{ metadata: DeploymentMetadata,
     dashboards: [] as any[],
   }
 
-  Object.keys(data).forEach(ref => {
-    const resource = data[ref];
+  Object.keys(data).forEach(id => {
+    const resource = data[id];
     if (!isObject(resource)) {
-      const m = `${ref}: invalid object format`;
+      const m = `${id}: invalid object format`;
       s.fail(chalk.bold(chalk.red(`Validation error - ${m}`)));
       throw new Error(m);
     }
     const { type } = resource;
     switch (type) {
       case "query":
-        resources.queries.push({ ...resource, ref, type: undefined });
+        resources.queries.push({ ...resource, id, type: undefined });
         break;
       case "alert":
-        resources.alerts.push({ ...resource, ref, type: undefined });
+        resources.alerts.push({ ...resource, id, type: undefined });
         break;
       case "channel":
-        resources.channels.push({ ...resource, ref, type: undefined });
+        resources.channels.push({ ...resource, id, type: undefined });
         break;
       case "chart":
-        resources.charts.push({ ...resource, ref, type: undefined });
+        resources.charts.push({ ...resource, id, type: undefined });
         break;
       case "dashboard":
-        resources.dashboards.push({ ...resource, ref, type: undefined });
+        resources.dashboards.push({ ...resource, id, type: undefined });
         break;
       default:
-        const m = `${ref}: unknown resource type, ${type}`;
+        const m = `${id}: unknown resource type, ${type}`;
         s.fail(chalk.bold(chalk.red(`Validation error - ${m}`)));
         throw new Error(m);
     }
@@ -212,9 +212,9 @@ function validateChannels(channels: any) {
   const s = spinner.get();
   const channelsKeys = Object.keys(channels);
 
-  const promises = channelsKeys.map(async ref => {
+  const promises = channelsKeys.map(async id => {
     try {
-      const channel = channels[ref];
+      const channel = channels[id];
       await channelSchema.validate(channel);
 
 
@@ -229,7 +229,7 @@ function validateChannels(channels: any) {
       }
 
     } catch (error) {
-      const message = `channel: ${ref}: ${error}`;
+      const message = `channel: ${id}: ${error}`;
       s.fail(chalk.bold(chalk.red("Channel validation error")));
       console.log(message);
       throw new Error(message);
@@ -246,7 +246,7 @@ function validateQueries(queries: any[]) {
     try {
       await querySchema.validate(item);
     } catch (error) {
-      const message = `query: ${item.ref}: ${error}`;
+      const message = `query: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.red("Query validation error")));
       console.log(message);
       throw new Error(message);
@@ -262,8 +262,8 @@ function validateAlerts(alerts: any[], queries: any[], channels: any[]) {
   const promises = alerts.map(async item => {
     try {
       const alert = await alertSchema.validate(item);
-      const query = queries.find(query => query.ref === alert.properties.parameters.query);
-      const missingChannels = alert.properties.channels.filter(ref => !channels.some(c => c.ref === ref))
+      const query = queries.find(query => query.id === alert.properties.parameters.query);
+      const missingChannels = alert.properties.channels.filter(id => !channels.some(c => c.id === id))
       if (!query) {
         throw new Error(`the following query was not found in this application: ${alert.properties.parameters.query}`);
       }
@@ -271,7 +271,7 @@ function validateAlerts(alerts: any[], queries: any[], channels: any[]) {
         throw new Error(`the following channels were not found in this application: ${missingChannels.join(", ")}`);
       }
     } catch (error) {
-      const message = `alert: ${item.ref}: ${error}`;
+      const message = `alert: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.red("Alert validation error")));
       console.log(message);
       throw new Error(message);
@@ -286,12 +286,12 @@ function validateCharts(charts: any[], queries: any[]) {
   const promises = charts.map(async item => {
     try {
       const chart = await chartSchema.validate(item);
-      const query = queries.find(query => query.ref === chart.properties.parameters.query);
+      const query = queries.find(query => query.id === chart.properties.parameters.query);
       if (!query) {
         throw new Error(`the following query was not found in this application: ${chart.properties.parameters.query}`);
       }
     } catch (error) {
-      const message = `chart: ${item.ref}: ${error}`;
+      const message = `chart: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.red("Chart validation error")));
       console.log(message);
       throw new Error(message);
@@ -307,12 +307,12 @@ function validateDashboards(dashboards: any[], charts: any[]) {
   const promises = dashboards.map(async item => {
     try {
       const dashboard = await dashboardSchema.validate(item);
-      const missingCharts = dashboard.properties.charts.filter(ref => !charts.some(c => c.ref === ref))
+      const missingCharts = dashboard.properties.charts.filter(id => !charts.some(c => c.id === id))
       if (missingCharts.length) {
         throw new Error(`the following charts were not found in this application: ${missingCharts.join(", ")}`);
       }
     } catch (error) {
-      const message = `dashboard: ${item.ref}: ${error}`;
+      const message = `dashboard: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.red("Dashboard validation error")));
       console.log(message);
       throw new Error(message);

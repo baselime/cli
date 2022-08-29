@@ -15,10 +15,10 @@ function list(queries: Query[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Id", "Application", "Ref", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Application", "Id", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   queries.forEach((query) => {
-    table.push([query.id, query.application, query.ref, query.name, query.created]);
+    table.push([query.application, query.id, query.name, query.created]);
   });
   console.log(table.toString());
   console.log(`✨ ${chalk.bold(chalk.cyan(`${queries.length} queries`))}`);

@@ -11,10 +11,10 @@ function list(channels: Channel[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Id", "Application", "Ref", "Name", "Targets", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Application", "Id", "Name", "Targets", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   channels.forEach((channel) => {
-    table.push([channel.id, channel.application, channel.ref, channel.name, JSON.stringify(channel.targets), channel.created]);
+    table.push([channel.application, channel.id, channel.name, JSON.stringify(channel.targets), channel.created]);
   });
   console.log(`${table.toString()}`);
   console.log(`✨ ${chalk.bold(chalk.cyan(`${channels.length} channels`))}`);

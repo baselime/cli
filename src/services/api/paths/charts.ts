@@ -5,7 +5,6 @@ export interface Chart {
   environmentId: string;
   id: string;
   application: string;
-  ref: string;
   name: string;
   type: ChartType;
   parameters?: ChartParameters;
@@ -27,8 +26,8 @@ enum ChartType {
   BAR = "bar",
 }
 
-async function chartsList(application?: string, ref?: string): Promise<Chart[]> {
-  const res = (await client.get("/charts", { params: { application, ref } })).data;
+async function chartsList(application?: string): Promise<Chart[]> {
+  const res = (await client.get("/charts", { params: { application } })).data;
   return res.charts;
 }
 
