@@ -15,11 +15,11 @@ const groupByTypes = ["string", "number", "boolean"];
 
 const queryFilterRegex = new RegExp("^([\\w.@]+)\\s:(" + operations.join("|") + ")\\s'?(.*?)'?$");
 const alertThresholdRegex = new RegExp("^:(" + operations.filter(o => o != "INCLUDES").join("|") + ")\\s([0-9]*)$");
-
+const idRegex = /^[a-zA-Z0-9-_]+$/;
 
 const alertSchema = object({
   type: string().equals(["alert"]),
-  id: string().required(),
+  id: string().required().matches(idRegex),
   properties: object({
     name: string().required(),
     description: string().notRequired(),
@@ -36,7 +36,7 @@ const alertSchema = object({
 
 const channelSchema = object({
   type: string().equals(["channel"]),
-  id: string().required(),
+  id: string().required().matches(idRegex),
   properties: object({
     name: string().notRequired(),
     type: string().oneOf(channelTypes).required(),
@@ -54,7 +54,7 @@ const emailSchema = object({
 
 const querySchema = object({
   type: string().equals(["query"]),
-  id: string().required(),
+  id: string().required().matches(idRegex),
   properties: object({
     name: string().required(),
     description: string().notRequired(),
@@ -75,7 +75,7 @@ const querySchema = object({
 
 const dashboardSchema = object({
   type: string().equals(["dashboard"]),
-  id: string().required(),
+  id: string().required().matches(idRegex),
   properties: object({
     name: string().required(),
     description: string().notRequired(),
@@ -85,7 +85,7 @@ const dashboardSchema = object({
 
 const chartSchema = object({
   type: string().equals(["chart"]),
-  id: string().required(),
+  id: string().required().matches(idRegex),
   properties: object({
     name: string().required(),
     type: string().oneOf(chartTypes).required(),
@@ -100,7 +100,7 @@ const chartSchema = object({
 
 const metadataSchema = object({
   version: string().required(),
-  application: string().required(),
+  application: string().required().matches(idRegex),
   description: string().notRequired(),
 }).noUnknown(true).strict();
 
