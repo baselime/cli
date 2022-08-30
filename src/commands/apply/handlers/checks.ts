@@ -2,7 +2,6 @@ import chalk from "chalk";
 import { object, string, number, array, boolean, InferType } from 'yup';
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { getMetadata, getResources } from "../../../services/parser/parser";
 
 
