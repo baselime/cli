@@ -7,11 +7,12 @@ import { writeOutFile } from "../../../shared";
 import { verifyPlan } from "../../plan/handlers";
 import * as prompts from "./prompts";
 
-async function apply(config: string) {
+async function apply(config: string, skip: boolean = false) {
   const s = spinner.get();
   const { metadata, resources } = await validate(config);
   await verifyPlan(metadata, resources);
-  const res = await prompts.promptApply();
+
+  const res = skip ? true : await prompts.promptApply();
   
   if (!res) {
     process.exit(0);

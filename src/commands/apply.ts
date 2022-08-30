@@ -8,6 +8,7 @@ import handlers from "./apply/handlers/handlers";
 
 export interface Options extends BaseOptions {
   config?: string;
+  yes?: boolean;
 }
 
 export const command = "apply";
@@ -23,6 +24,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         alias: "c",
         default: ".baselime",
       },
+      yes: {
+        type: "boolean",
+        desc: "Skip the manual validation of changes",
+        alias: "y",
+        default: false,
+      },
     })
     .example([
       [`
@@ -36,11 +43,11 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { config, profile } = argv;
+  const { config, profile, yes } = argv;
   spinner.init(!!argv.quiet);
 
   await authenticate(profile);
 
-  await handlers.apply(config!);
+  await handlers.apply(config!, yes!);
 }
 
