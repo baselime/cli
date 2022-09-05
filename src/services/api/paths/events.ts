@@ -1,3 +1,4 @@
+import { stringify } from "qs";
 import { client } from "../clients";
 import { NamespaceCombination } from "./queries";
 
@@ -12,10 +13,20 @@ export interface Event {
   [key: string]: any;
 }
 
+export interface Series {
+  time: string;
+  data: SeriesData;
+}
 
-export async function getEvents(dataset: string, from: number, to: number, namespaces: string[], namespaceCombination: NamespaceCombination, offset: number, limit: number): Promise<Event[]> {
-  const params = { dataset, from, to, namespaces, offset, limit, namespaceCombination };
-  const res = (await client.get(`/events`, { params })).data;
+export interface SeriesData {
+  _count: number | Record<string, number>;
+  [key: string]: number | undefined | Record<string, number>;
+}
+
+
+export async function getEvents(datasets: string[], from: number, to: number, namespaces: string[], namespaceCombination: NamespaceCombination, offset: number, limit: number): Promise<{ events: Event[]; fields: { name: string, type: string, }[]; series: Series[]; count: number; timeframe: { from: number; to: number; } }> {
+  const params = { datasets, from, to, namespaces, offset, limit, namespaceCombination };
+  const res = (await client.get(`/events/?${stringify(params)}`)).data;
   return res.events;
 }
 

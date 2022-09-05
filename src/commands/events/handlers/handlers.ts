@@ -10,25 +10,25 @@ import utc from "dayjs/plugin/utc"
 import { NamespaceCombination } from "../../../services/api/paths/queries";
 dayjs.extend(utc);
 
-async function stream(format: OutputFormat, dataset: string, from: string, to: string, namespaces: string[], combination: NamespaceCombination, follow: boolean) {
+async function stream(format: OutputFormat, datasets: string[], from: string, to: string, namespaces: string[], combination: NamespaceCombination, follow: boolean) {
   const s = spinner.get();
   if (!follow) {
     s.start("Streaming your events");
     const { from: f, to: t } = getTimeframe(from, to);
-    const events = await api.getEvents(dataset, f, t, namespaces, combination, 0, 100);
+    const events = await api.getEvents(datasets, f, t, namespaces, combination, 0, 100);
     s.succeed();
-    outputs.stream(events, format);
+    outputs.stream(events.events, format);
     return;
   }
 
   let { from: f, to: t } = getTimeframe("1minute", "now");
   while (true) {
-    const events = await api.getEvents(dataset, f, t, namespaces, combination, 0, 100);
+    const events = await api.getEvents(datasets, f, t, namespaces, combination, 0, 100);
     const now = dayjs();
     
-    f = events[0] ? dayjs.utc(events[0]._timestamp).valueOf() : f;
+    f = events.events[0] ? dayjs.utc(events.events[0]._timestamp).valueOf() : f;
     t = now.valueOf();
-    outputs.stream(events, format);
+    outputs.stream(events.events, format);
     await wait(2000);
   }
 }

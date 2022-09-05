@@ -6,7 +6,7 @@ import handlers from "./handlers/handlers";
 import { NamespaceCombination } from "../../services/api/paths/queries";
 
 export interface Options extends BaseOptions {
-  dataset: string;
+  datasets: string[];
   from: string;
   to: string;
   follow: boolean;
@@ -20,10 +20,10 @@ export const desc = `Stream a dataset`;
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
-      dataset: {
-        type: "string",
-        desc: "The dataset to stream",
-        default: "logs",
+      datasets: {
+        type: "array",
+        desc: "The datasets to stream",
+        default: [],
       },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
@@ -34,10 +34,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       [`
       # Stream a dataset
-      $0 stream --dataset <dataset_name> --from 3hours to now
+      $0 stream --datasets <dataset_name> --from 3hours to now
       
       # Stream multiple namespaces in a dataset
-      $0 stream --dataset <dataset_name> --namespaces <space_1> <space_2>`,
+      $0 stream --datasets <dataset_name> --namespaces <space_1> <space_2>`,
       ],
     ])
     .fail((_, err, yargs) => {
@@ -46,9 +46,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, dataset, from, to, format, follow, namespaces, combination } = argv;
+  const { profile, datasets, from, to, format, follow, namespaces, combination } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
-  await handlers.stream(format, dataset, from, to, namespaces, combination.toUpperCase() as NamespaceCombination, follow);
+  await handlers.stream(format, datasets, from, to, namespaces, combination.toUpperCase() as NamespaceCombination, follow);
 }
 
