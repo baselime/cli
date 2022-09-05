@@ -1,4 +1,8 @@
 # Changelog
+
+### 0.0.12 (5th September 2022)
+
+- Bug fixes
 ### 0.0.11 (2nd September 2022)
 
 - Implement `plan` and `destroy` commands
