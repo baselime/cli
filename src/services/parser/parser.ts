@@ -19,7 +19,8 @@ export async function getResources(filenames: string[]) {
 export async function getMetadata(folder: string) {
   try {
     const file = (await readFile(`${folder}/index.yml`)).toString()
-    return yaml.parse(file);
+    const metadata = yaml.parse(file);
+    return metadata;
   } catch (error) {
     const s = spinner.get();
     const message = `${(error as any).message || 'Error parsing metadata file'}`;

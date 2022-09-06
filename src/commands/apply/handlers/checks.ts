@@ -101,6 +101,7 @@ const metadataSchema = object({
   version: string().required(),
   application: string().required().matches(idRegex),
   description: string().notRequired(),
+  namespaces: array().of(string()).notRequired(),
 }).noUnknown(true).strict();
 
 export type DeploymentQuery = InferType<typeof querySchema>;
@@ -117,7 +118,7 @@ export interface DeploymentResources {
   dashboards: DeploymentDashboard[];
 }
 
-export interface DeploymentMetadata { application: string, version: string; description: string }
+export interface DeploymentMetadata { application: string, version: string; description: string; namespaces?: string[] }
 
 async function validate(folder: string): Promise<{ metadata: DeploymentMetadata, resources: DeploymentResources }> {
   const s = spinner.get();

@@ -6,6 +6,7 @@ export interface DiffCreateRequest {
   resources: DeploymentResources;
   application: string;
   reverse: boolean;
+  namespaces?: string[];
 }
 
 enum ResourceTypes {

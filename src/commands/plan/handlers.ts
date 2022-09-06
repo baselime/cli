@@ -32,6 +32,7 @@ export async function verifyPlan(metadata: DeploymentMetadata, resources: Deploy
 
   const diff = await api.diffsCreate({
     application: metadata.application,
+    namespaces: metadata.namespaces,
     resources,
     reverse: false,
   });
