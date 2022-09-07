@@ -1,9 +1,12 @@
 import { Arguments, CommandBuilder } from "yargs";
+import spinner from "../services/spinner";
 
-import { BaseOptions, baseOptions, printError } from "../shared";
+import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
+import handlers from "./refresh/handlers";
 
 export interface Options extends BaseOptions {
   config?: string;
+  yes?: boolean;
 }
 
 export const command = "refresh";
@@ -19,6 +22,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         alias: "c",
         default: ".baselime",
       },
+      yes: {
+        type: "boolean",
+        desc: "Skip the manual validation of changes",
+        alias: "y",
+        default: false,
+      },
     })
     .example([
       [`
@@ -32,7 +41,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { config, profile } = argv;
-  console.log("Coming soon.")
+  spinner.init(!!argv.quiet);
+  const { config, profile, yes } = argv;
+  await authenticate(profile);
+  await handlers.refresh(config!, yes!);
 }
 

@@ -10,7 +10,8 @@ import * as prompts from "./prompts";
 async function apply(config: string, skip: boolean = false) {
   const s = spinner.get();
   const { metadata, resources } = await validate(config);
-  await verifyPlan(metadata, resources);
+  s.start("Completing baselime plan...");
+  await verifyPlan(metadata, resources, false);
 
   const res = skip ? true : await prompts.promptApply();
   

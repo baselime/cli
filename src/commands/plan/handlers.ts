@@ -4,39 +4,30 @@ import { Ref, stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import checks, { DeploymentMetadata, DeploymentResources } from "../apply/handlers/checks";
 import Table from "cli-table3";
-import { statusType } from "../../services/api/paths/diffs";
-
-function getYamlString(obj: { status: statusType; value: Record<string, any> }) {
-  const { status, value } = obj;
-
-  if (status === statusType.VALUE_CREATED) {
-    return [chalk.greenBright.bold("++"), chalk.greenBright(stringify(value))];
-  }
-  if (status === statusType.VALUE_UPDATED) {
-    return [chalk.yellowBright.bold("~~"), chalk.yellowBright(stringify(value))];
-  }
-  if (status === statusType.VALUE_DELETED) {
-    return [chalk.redBright.bold("--"), chalk.redBright(stringify(value))];
-  }
-  return [];
-}
+import { DiffResponse, statusType } from "../../services/api/paths/diffs";
+import applications from "../../services/api/paths/applications";
 
 async function plan(config: string) {
+  const s = spinner.get();
   const { metadata, resources } = await checks.validate(config);
-  await verifyPlan(metadata, resources);
+  s.start("Completing baselime plan...");
+  await verifyPlan(metadata, resources, false);
 }
 
-export async function verifyPlan(metadata: DeploymentMetadata, resources: DeploymentResources) {
-  const s = spinner.get();
-  s.start("Completing baselime plan...");
-
+export async function verifyPlan(metadata: DeploymentMetadata, resources: DeploymentResources, reverse: boolean) {
   const diff = await api.diffsCreate({
     application: metadata.application,
     namespaces: metadata.namespaces,
     resources,
-    reverse: false,
+    reverse,
   });
 
+  displayDiff(metadata.application, diff);
+  return diff;
+}
+
+export async function displayDiff(application: string, diff: DiffResponse) {
+  const s = spinner.get();
   const { queries, alerts, dashboards, channels, charts } = diff;
   const table = new Table();
 
@@ -95,15 +86,31 @@ export async function verifyPlan(metadata: DeploymentMetadata, resources: Deploy
     table.push(getYamlString({ status, value }));
   });
 
+  console.log("\n\n" + chalk.bold(chalk.cyanBright(`Application: ${application}`)))
   console.log("\n\n" + table.toString() + "\n\n");
 
   const allResources = [...queries, ...alerts, ...channels, ...charts, ...dashboards];
   s.succeed(chalk.bold(
-    `Plan
+    `Resources
     ${chalk.greenBright(allResources.filter(r => r.status === statusType.VALUE_CREATED).length + " to add")}
     ${chalk.yellowBright(allResources.filter(r => r.status === statusType.VALUE_UPDATED).length + " to change")}
     ${chalk.redBright(allResources.filter(r => r.status === statusType.VALUE_DELETED).length + " to destroy")}`
   ));
+}
+
+function getYamlString(obj: { status: statusType; value: Record<string, any> }) {
+  const { status, value } = obj;
+
+  if (status === statusType.VALUE_CREATED) {
+    return [chalk.greenBright.bold("++"), chalk.greenBright(stringify(value))];
+  }
+  if (status === statusType.VALUE_UPDATED) {
+    return [chalk.yellowBright.bold("~~"), chalk.yellowBright(stringify(value))];
+  }
+  if (status === statusType.VALUE_DELETED) {
+    return [chalk.redBright.bold("--"), chalk.redBright(stringify(value))];
+  }
+  return [];
 }
 
 export default {

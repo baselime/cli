@@ -5,7 +5,7 @@ import path from "path";
 import { promptTemplateVariables } from "../../commands/applications/handlers/prompts";
 import { parseTemplateName } from "../../utils";
 import api from "../api/api";
-import { Ref, stringify } from "../parser/parser";
+import { Ref, stringify, stringifyResources } from "../parser/parser";
 import spinner from "../spinner";
 
 export async function init(
@@ -27,48 +27,15 @@ export async function init(
 
 
   if (templateUrl) {
-    const data: Record<string, any> = {};
+    
 
     const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
 
     const template = await api.templateGet(workspaceId, templateName, true);
 
-    const { resources: { queries, alerts, dashboards, charts, channels }, variables } = template;
+    const { resources, variables } = template;
 
-    queries.forEach((elt) => {
-      data[elt.id!] = { type: "query", properties: elt.properties }
-    });
-
-    alerts.forEach((elt) => {
-      data[elt.id!] = {
-        type: "alert",
-        properties: {
-          ...elt.properties,
-          channels: elt.properties.channels.map(c => new Ref(c)),
-          parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) }
-        }
-      };
-    });
-
-    channels.forEach((elt) => {
-      data[elt.id!] = { type: "channel", properties: elt.properties }
-    });
-
-    charts.forEach((elt) => {
-      data[elt.id!] = {
-        type: "chart",
-        properties: { ...elt.properties, parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) } }
-      };
-    });
-
-    dashboards.forEach((elt) => {
-      data[elt.id!] = {
-        type: "dashboard",
-        properties: { ...elt.properties, charts: elt.properties.charts.map(c => new Ref(c)) }
-      };
-    });
-
-    let dd = stringify(data);
+    let data = stringifyResources(resources);
 
     if (variables.length) {
       const vars: Record<string, any> = await promptTemplateVariables(variables);
@@ -80,11 +47,11 @@ export async function init(
           s.fail(`Please provide a value for all variables: ${variable.ref} is missing and doesn't have a default value`);
           return;
         }
-        dd = dd.split(`<var>${ref}</var>`).join(value);
+        data = data.split(`<var>${ref}</var>`).join(value);
       })
     }
 
-    writeFileSync(`${folder}/${application}.yml`, dd);
+    writeFileSync(`${folder}/${application}.yml`, data);
     return;
   }
 

@@ -34,7 +34,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const s = spinner.init(!!argv.quiet);
+  spinner.init(!!argv.quiet);
   const { config, profile } = argv;
   await authenticate(profile);
   await handlers.plan(config as string);

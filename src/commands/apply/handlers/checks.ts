@@ -120,7 +120,7 @@ export interface DeploymentResources {
 
 export interface DeploymentMetadata { application: string, version: string; description: string; namespaces?: string[] }
 
-async function validate(folder: string): Promise<{ metadata: DeploymentMetadata, resources: DeploymentResources }> {
+async function validate(folder: string): Promise<{ metadata: DeploymentMetadata, resources: DeploymentResources, filenames: string[] }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
   const filenames = await getFileList(folder, [".yaml", ".yml"]);
@@ -201,7 +201,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentMetadata,
   ]);
 
   s.succeed("Valid configuration folder");
-  return { metadata, resources };
+  return { metadata, resources, filenames: resourceFilenames };
 }
 
 function isObject(val: any): boolean {

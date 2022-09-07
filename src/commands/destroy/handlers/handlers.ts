@@ -8,7 +8,8 @@ async function destroy(config: string) {
   const s = spinner.get();
   const { metadata } = await checks.validate(config);
   const resources = { queries: [], channels: [], alerts: [], charts: [], dashboards: [] };
-  await verifyPlan(metadata, resources);
+  s.start("Checking resources to destroy...");
+  await verifyPlan(metadata, resources, true);
   const res = await prompts.promptApply();
 
   if (!res) {

@@ -2,6 +2,7 @@ import { readFile } from "fs/promises";
 import yaml, { Document } from "yaml";
 import chalk from "chalk";
 import spinner from "../spinner/index";
+import { DeploymentResources } from "../../commands/apply/handlers/checks";
 
 export async function getResources(filenames: string[]) {
   try {
@@ -30,7 +31,7 @@ export async function getMetadata(folder: string) {
   }
 }
 
-export function parse(s: string): Record<string, any> {
+export function parse(s: string): Record<string, Record<string, any>> {
   // @ts-ignore
   return yaml.parse(s, { customTags: [ref, variable] });
 }
@@ -38,6 +39,66 @@ export function parse(s: string): Record<string, any> {
 export function stringify(data: Record<string, any>): string {
   // @ts-ignore
   return yaml.stringify(data, { customTags: [ref, variable] });
+}
+
+export function stringifyResources(resources: DeploymentResources) {
+  const data: Record<string, any> = {};
+  const { queries, alerts, channels, dashboards, charts } = resources;
+  queries.forEach((elt) => {
+    data[elt.id!] = {
+      type: "query",
+      properties: {
+      ...elt.properties,
+      id: undefined,  
+    }
+    }
+  });
+
+  alerts.forEach((elt) => {
+    data[elt.id!] = {
+      type: "alert",
+      properties: {
+        ...elt.properties,
+        channels: elt.properties.channels.map(c => new Ref(c)),
+        parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) },
+        id: undefined,
+      }
+    };
+  });
+
+  channels.forEach((elt) => {
+    data[elt.id!] = {
+      type: "channel",
+      properties: {
+        ...elt.properties,
+        id: undefined,
+      }
+    }
+  });
+
+  charts.forEach((elt) => {
+    data[elt.id!] = {
+      type: "chart",
+      properties: {
+        ...elt.properties,
+        parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) } },
+        id: undefined,
+    };
+  });
+
+  dashboards.forEach((elt) => {
+    data[elt.id!] = {
+      type: "dashboard",
+      properties: { 
+        ...elt.properties,
+        charts: elt.properties.charts.map(c => new Ref(c)),
+        id: undefined,
+      }
+    };
+  });
+
+  if(!Object.keys(data).length) return ""!
+  return stringify(data);
 }
 
 export class Ref {
