@@ -1,8 +1,9 @@
 import { writeFileSync } from "fs";
 import { readFile } from "fs/promises";
 import { statusType } from "../../services/api/paths/diffs";
-import { parse, stringifyResources } from "../../services/parser/parser";
+import { parse, stringify, stringifyResources } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
+import { getVersion } from "../../shared";
 import checks, { DeploymentAlert, DeploymentChannel, DeploymentChart, DeploymentDashboard, DeploymentQuery, DeploymentResources } from "../apply/handlers/checks";
 import { verifyPlan } from "../plan/handlers";
 import { promptRefresh } from "./prompts";
@@ -20,7 +21,7 @@ async function refresh(config: string, skip: boolean = false) {
     process.exit(0);
   }
 
-  const { queries, alerts, dashboards, channels, charts } = diff;
+  const { resources: { queries, alerts, dashboards, channels, charts }, application: appDiff } = diff;
   const allResources = [
     ...queries,
     ...alerts,
@@ -89,11 +90,18 @@ async function refresh(config: string, skip: boolean = false) {
     const newDashboards = dashboards.filter(d => d.status === statusType.VALUE_CREATED).map(q => q.resource);
     // @ts-ignore
     const dd = stringifyResources({ queries: newQueries, alerts: newAlerts, channels: newChannels, charts: newCharts, dashboards: newDashboards });
-    if(!dd) return;
+    if (!dd) return;
     writeFileSync(`${config}/imported_${(new Date()).valueOf()}.yml`, dd);
   })();
 
-  await Promise.all([...deleteAndUpdatePromises, createPromise]);
+  const applicationPromise = (async () => {
+    const { status, application } = appDiff;
+    if (status === statusType.VALUE_UNCHANGED || status === statusType.VALUE_DELETED) return;
+    const dd = stringify({ version: getVersion(), ...application });
+    writeFileSync(`${config}/index.yml`, dd);
+  })();
+
+  await Promise.all([...deleteAndUpdatePromises, createPromise, applicationPromise]);
 }
 
 

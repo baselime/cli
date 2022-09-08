@@ -28,7 +28,12 @@ export async function verifyPlan(metadata: DeploymentMetadata, resources: Deploy
 
 export async function displayDiff(application: string, diff: DiffResponse) {
   const s = spinner.get();
-  const { queries, alerts, dashboards, channels, charts } = diff;
+  const { resources: { queries, alerts, dashboards, channels, charts }, application: appDiff } = diff;
+
+  const applicationTable = new Table();
+  applicationTable.push(getYamlString({ status: appDiff.status, value: appDiff.application }));
+
+
   const table = new Table();
 
   queries.forEach(q => {
@@ -87,11 +92,26 @@ export async function displayDiff(application: string, diff: DiffResponse) {
   });
 
   console.log("\n\n" + chalk.bold(chalk.cyanBright(`Application: ${application}`)))
+  console.log("\n\n" + applicationTable.toString() + "\n\n");
   console.log("\n\n" + table.toString() + "\n\n");
 
   const allResources = [...queries, ...alerts, ...channels, ...charts, ...dashboards];
+  const applicationStatus = (() => {
+    switch (appDiff.status) {
+      case statusType.VALUE_CREATED:
+        return chalk.greenBright("to be created");
+      case statusType.VALUE_UPDATED:
+        return chalk.yellowBright("to be updated");
+      case statusType.VALUE_DELETED:
+      return chalk.redBright("to be deleted");
+      default:
+        break;
+    }
+  })();
   s.succeed(chalk.bold(
-    `Resources
+    `Application: ${chalk.bold(applicationStatus)}
+    
+  Resources
     ${chalk.greenBright(allResources.filter(r => r.status === statusType.VALUE_CREATED).length + " to add")}
     ${chalk.yellowBright(allResources.filter(r => r.status === statusType.VALUE_UPDATED).length + " to change")}
     ${chalk.redBright(allResources.filter(r => r.status === statusType.VALUE_DELETED).length + " to destroy")}`
