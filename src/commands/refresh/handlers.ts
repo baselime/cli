@@ -37,7 +37,7 @@ async function refresh(config: string, skip: boolean = false) {
 
   const deleteAndUpdatePromises = filenames.map(async filename => {
     const s = (await readFile(filename)).toString();
-    const data = parse(s);
+    const data = parse(s) || {};
     const updatedQueries: DeploymentQuery[] = [];
     const updatedAlerts: DeploymentAlert[] = [];
     const updatedDashboards: DeploymentDashboard[] = [];
