@@ -5,7 +5,7 @@ import spinner from "../../services/spinner";
 import checks, { DeploymentMetadata, DeploymentResources } from "../apply/handlers/checks";
 import Table from "cli-table3";
 import { DiffResponse, statusType } from "../../services/api/paths/diffs";
-import applications from "../../services/api/paths/applications";
+import { blankChars } from "../../shared";
 
 async function plan(config: string) {
   const s = spinner.get();
@@ -30,11 +30,11 @@ export async function displayDiff(application: string, diff: DiffResponse) {
   const s = spinner.get();
   const { resources: { queries, alerts, dashboards, channels, charts }, application: appDiff } = diff;
 
-  const applicationTable = new Table();
+  const applicationTable = new Table({ chars: blankChars });
   applicationTable.push(getYamlString({ status: appDiff.status, value: appDiff.application }));
 
 
-  const table = new Table();
+  const table = new Table({ chars: blankChars });
 
   queries.forEach(q => {
     const { status, resource } = q;
@@ -103,7 +103,7 @@ export async function displayDiff(application: string, diff: DiffResponse) {
       case statusType.VALUE_UPDATED:
         return chalk.yellowBright("to be updated");
       case statusType.VALUE_DELETED:
-      return chalk.redBright("to be deleted");
+        return chalk.redBright("to be deleted");
       default:
         break;
     }

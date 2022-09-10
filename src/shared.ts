@@ -76,6 +76,24 @@ export const tableChars = {
   middle: "│",
 };
 
+export const blankChars = {
+  top: "",
+  "top-mid": "",
+  "top-left": "",
+  "top-right": "",
+  bottom: "",
+  "bottom-mid": "",
+  "bottom-left": "",
+  "bottom-right": "",
+  left: "",
+  "left-mid": "",
+  mid: "",
+  "mid-mid": "",
+  right: "",
+  "right-mid": "",
+  middle: "",
+};
+
 export function writeOutFile(folder: string, metadata: Record<string, any>, resources: Record<string, any>) {
   const s = spinner.get();
 
