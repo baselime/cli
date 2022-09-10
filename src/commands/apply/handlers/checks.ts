@@ -144,7 +144,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentMetadata,
 
   const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
-  const data = await getResources(resourceFilenames);
+  const data = (await getResources(resourceFilenames)) || {};
   if (!isObject(data)) {
     const m = `invalid file format - must be an object`;
     s.fail(chalk.bold(chalk.red(`Validation error - ${m}`)));
