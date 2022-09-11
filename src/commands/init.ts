@@ -4,11 +4,11 @@ import { existsSync } from "fs";
 import { authenticate, baseOptions, BaseOptions, printError } from "../shared";
 import spinner from "../services/spinner";
 import * as prompts from "./applications/handlers/prompts";
-import { init } from "../services/config";
 import { basename, resolve } from "path";
 import api from "../services/api/api";
 import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
+import { init } from "./init/handlers";
 
 export interface Options extends BaseOptions {
   application?: string;
@@ -75,6 +75,6 @@ export async function handler(argv: Arguments<Options>) {
 
   s.start("Generating your config folder");
   const user = await api.iamGet();
-  init(folder, application, description, template, user.email,);
+  await init(folder, application, description, template, user.email,);
   s.succeed(`${folder} Generated`);
 }

@@ -14,6 +14,7 @@ import charts from "./paths/charts";
 import dashboards from "./paths/dashboards";
 import templates from "./paths/templates";
 import diffs from "./paths/diffs";
+import infrastructure from "./paths/infrastructure";
 
 export default {
   ...auth,
@@ -32,4 +33,5 @@ export default {
   ...dashboards,
   ...templates,
   ...diffs,
+  ...infrastructure,
 };
