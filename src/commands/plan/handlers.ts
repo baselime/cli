@@ -109,6 +109,8 @@ export async function displayDiff(application: string, diff: DiffResponse) {
         return chalk.yellowBright("to be updated");
       case statusType.VALUE_DELETED:
         return chalk.redBright("to be deleted");
+      case statusType.VALUE_UNCHANGED:
+        return chalk.whiteBright("unchanged");
       default:
         break;
     }
