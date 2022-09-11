@@ -3,6 +3,7 @@ const packageJson = require("../../../package.json");
 import { readdir } from "fs/promises";
 import path from "path";
 import { promptTemplateVariables } from "../../commands/applications/handlers/prompts";
+import { DeploymentApplication } from "../../commands/apply/handlers/checks";
 import { parseTemplateName } from "../../utils";
 import api from "../api/api";
 import { Ref, stringify, stringifyResources } from "../parser/parser";
@@ -16,10 +17,11 @@ export async function init(
   email: string,
 ) {
   const s = spinner.get();
-  const metadata = {
+  const metadata: DeploymentApplication = {
     version: packageJson.version,
     application,
-    description,
+    description: description || undefined,
+    provider: "aws",
   };
 
   const d = stringify(metadata);

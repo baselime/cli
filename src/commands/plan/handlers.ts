@@ -2,7 +2,7 @@ import chalk from "chalk";
 import api from "../../services/api/api";
 import { Ref, stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import checks, { DeploymentMetadata, DeploymentResources } from "../apply/handlers/checks";
+import checks, { DeploymentApplication, DeploymentResources } from "../apply/handlers/checks";
 import Table from "cli-table3";
 import { DiffResponse, statusType } from "../../services/api/paths/diffs";
 import { blankChars } from "../../shared";
@@ -14,10 +14,15 @@ async function plan(config: string) {
   await verifyPlan(metadata, resources, false);
 }
 
-export async function verifyPlan(metadata: DeploymentMetadata, resources: DeploymentResources, reverse: boolean) {
+export async function verifyPlan(metadata: DeploymentApplication, resources: DeploymentResources, reverse: boolean) {
   const diff = await api.diffsCreate({
     application: metadata.application,
-    namespaces: metadata.namespaces,
+    metadata: {
+      description: metadata.description,
+      provider: metadata.provider,
+      version: metadata.version,
+      infrastructure: metadata.infrastructure
+    },
     resources,
     reverse,
   });

@@ -3,9 +3,16 @@ import { client } from "../clients";
 export interface Application {
   workspaceId: string;
   environmentId: string;
-  name: string;
-  description?: string;
   userId: string;
+  name: string;
+  metadata: {
+    description?: string;
+    provider: string;
+    version: string;
+    infrastructure?: {
+      functions?: string[];
+    }
+  };
   created?: string;
   updated?: string;
 }

@@ -5,8 +5,15 @@ import { client } from "../clients";
 export interface DiffCreateRequest {
   resources: DeploymentResources;
   application: string;
+  metadata: {
+    description?: string;
+    provider: string;
+    version: string;
+    infrastructure?: {
+      functions?: string[];
+    }
+  };
   reverse: boolean;
-  namespaces?: string[];
 }
 
 enum ResourceTypes {
