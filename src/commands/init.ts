@@ -9,6 +9,7 @@ import api from "../services/api/api";
 import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
 import { init } from "./init/handlers";
+import chalk from "chalk";
 
 export interface Options extends BaseOptions {
   application?: string;
@@ -74,6 +75,7 @@ export async function handler(argv: Arguments<Options>) {
   }
 
   s.start("Generating your config folder");
+  console.log(chalk.whiteBright(chalk.bold("\nPrepare to select the serverless functions in this application.")))
   const user = await api.iamGet();
   await init(folder, application, description, template, user.email,);
   s.succeed(`${folder} Generated`);

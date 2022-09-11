@@ -19,10 +19,8 @@ export async function init(
   const s = spinner.get();
   const provider = "aws";
   const fns = await api.functionsList(provider);
-
-  s.start("Fetching the serverless functions in your environment...");
-  const selectedFns = await promptFunctionsSelect(fns.map(fn => fn.name));
-  s.succeed("Fetched the serverless functions in your environment...");
+  s.succeed();
+  const selectedFns = await promptFunctionsSelect(fns.map(fn => fn.name).sort());
   const metadata: DeploymentApplication = {
     version: packageJson.version,
     application,
