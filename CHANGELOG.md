@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.0.14 (12th September 2022)
+
+- Enable setting the `provider` in an application
+- Enable setting the `functions` and `infrastructure` in the `index.yml` for an application
+- List `functions` when running `baselime init` to populate the `infrastructure` field of the `index.yml` 
+- Bug fixes
+
 ### 0.0.13 (8th September 2022)
 
 - Implement `refresh` command
