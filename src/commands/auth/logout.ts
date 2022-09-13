@@ -26,8 +26,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       $0 auth logout --profile prod
       `]
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

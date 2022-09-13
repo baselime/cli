@@ -37,8 +37,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       $0 apply --config .baselime --profile prod`,
       ],
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

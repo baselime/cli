@@ -31,8 +31,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       $0 auth login --email hi@bob.lol --profile prod
       `]
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

@@ -43,8 +43,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       $0 init --application <application_name> --template <template-url>
       `]
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

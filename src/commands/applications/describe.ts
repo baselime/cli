@@ -26,8 +26,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ],
     ])
     .demandOption(["name"])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

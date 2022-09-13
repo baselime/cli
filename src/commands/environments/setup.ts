@@ -35,8 +35,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       $0 environments setup --type aws --account <account_numner> --region <region> --alias <alias>
       `],
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

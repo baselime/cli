@@ -22,8 +22,8 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
       $0 upgrade
       `]
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

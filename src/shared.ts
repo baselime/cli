@@ -28,7 +28,8 @@ export function userConfigNotFound(profile: string) {
   console.log(`${chalk.red(`You're not authenticated as ${chalk.bold(profile)}`)}\nRun the following to configure ${chalk.bold(chalk.red(profile))}:\n${chalk.bold(`$ baselime auth login --profile ${chalk.cyan(`${profile}`)}`)}`);
 }
 
-export function printError(err: Error, yargs: any) {
+export function printError(message: string, err: Error, yargs: any) {
+  console.log(chalk.redBright(chalk.bold(message)));
   console.log(chalk.grey(`
 Version: ${getVersion()}
 Environment: ${os.platform()}, node ${process.version} 
@@ -40,6 +41,8 @@ Bugs: github.com/baselime/cli/issues
   const argv = hideBin(process.argv);
   if (err instanceof Error && (argv.includes("-d") || argv.includes("--debug"))) {
     console.error(err);
+  } else {
+    console.log(chalk.bold("Use the --debug flag to view the complete stack trace."))
   }
   console.log(`${yargs.help()}`);
   process.exit(1);

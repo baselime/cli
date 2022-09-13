@@ -40,8 +40,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       $0 stream --datasets <dataset_name> --namespaces <space_1> <space_2>`,
       ],
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

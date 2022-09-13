@@ -27,8 +27,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       $0 queries run --application <application_name> --id <query_id> --from 2days --to 1day
       `],
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 

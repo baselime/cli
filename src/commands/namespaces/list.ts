@@ -28,8 +28,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       $0 namespaces list --datasets <dataset> --from 3hours --to now
       `],
     ])
-    .fail((_, err, yargs) => {
-      printError(err, yargs);
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
     });
 };
 
