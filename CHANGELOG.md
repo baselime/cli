@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.0.15 (13th September 2022)
+
+- Remove the need for `:` when declaring query filters and alert thresholds
+
 ### 0.0.14 (12th September 2022)
 
 - Enable setting the `provider` in an application
