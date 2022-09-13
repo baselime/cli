@@ -75,7 +75,7 @@ export async function init(
             "COUNT"
           ],
           filters: [
-            "@type := REPORT"
+            "@type = REPORT"
           ],
           filterCombination: "AND",
         }
@@ -89,7 +89,7 @@ export async function init(
           query: new Ref("lambda-cold-start-durations"),
           frequency: 30,
           duration: 30,
-          threshold: ":> 2000",
+          threshold: "> 2000",
         },
         channels: [new Ref("developers")]
       }

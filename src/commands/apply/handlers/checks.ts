@@ -12,8 +12,8 @@ const channelTypes = ["email", "slack", "webhook"];
 const chartTypes = ["stats", "timeseries", "bar"];
 const groupByTypes = ["string", "number", "boolean"];
 
-const queryFilterRegex = new RegExp("^([\\w.@]+)\\s:(" + operations.join("|") + ")\\s'?(.*?)'?$");
-const alertThresholdRegex = new RegExp("^:(" + operations.filter(o => o != "INCLUDES").join("|") + ")\\s([0-9]*)$");
+const queryFilterRegex = new RegExp("^([\\w.@]+)\\s(" + operations.join("|") + ")\\s'?(.*?)'?$");
+const alertThresholdRegex = new RegExp("^(" + operations.filter(o => o != "INCLUDES").join("|") + ")\\s([0-9]*)$");
 const idRegex = /^[a-zA-Z0-9-_]+$/;
 
 const alertSchema = object({
