@@ -5,16 +5,39 @@ import spinner from "../spinner/index";
 import { DeploymentResources } from "../../commands/apply/handlers/checks";
 
 export async function getResources(filenames: string[]) {
-  try {
-    const files = await Promise.all(filenames.map(async filename => (await readFile(filename)).toString()));
-    return parse(files.join("\n"));
-  } catch (error) {
-    const s = spinner.get();
-    const message = `${(error as any).message || 'Error parsing file'}`;
-    s.fail(chalk.bold(chalk.red("Validation error")));
-    console.log(message);
-    throw new Error(message);
-  }
+  const s = spinner.get();
+  const result: Record<string, Record<string, any>> = {};
+
+  const files = await Promise.all(filenames.map(async filename => {
+    try {      
+      return (await readFile(filename)).toString();
+    } catch (error) {
+      const message = `Error reading a file: ${filename}\n${(error as any).message || ''}`;
+      s.fail(chalk.bold(chalk.redBright(`Validation error: ${filename}`)));
+      console.error(message);
+      throw new Error(message);
+    }
+  }));
+
+  files.forEach((file, index) => {
+    try {
+      const data = parse(file);
+      for (const key in data) {
+        if (Object.keys(result).includes(key)) {
+          throw { code: "DUPLICATE_KEY", message: `Map keys must be unique across all config files: ${key} in ${filenames[index]}` };
+        }
+        result[key] = data[key];
+      }
+    } catch (error) {
+      const message = `Error parsing a file\n${(error as any).code || ''}\n${(error as any).message || ''}`;
+      s.fail(chalk.bold(chalk.redBright(`Validation error: ${filenames[index]}`)));
+      console.error(message);
+      throw new Error(message);
+    }
+  });
+
+  return result;
+
 }
 
 export async function getMetadata(folder: string) {
@@ -25,7 +48,7 @@ export async function getMetadata(folder: string) {
   } catch (error) {
     const s = spinner.get();
     const message = `${(error as any).message || 'Error parsing metadata file'}`;
-    s.fail(chalk.bold(chalk.red("Validation error")));
+    s.fail(chalk.bold(chalk.redBright("Validation error")));
     console.log(message);
     throw new Error(message);
   }
@@ -48,9 +71,9 @@ export function stringifyResources(resources: DeploymentResources) {
     data[elt.id!] = {
       type: "query",
       properties: {
-      ...elt.properties,
-      id: undefined,  
-    }
+        ...elt.properties,
+        id: undefined,
+      }
     }
   });
 
@@ -81,15 +104,16 @@ export function stringifyResources(resources: DeploymentResources) {
       type: "chart",
       properties: {
         ...elt.properties,
-        parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) } },
-        id: undefined,
+        parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) }
+      },
+      id: undefined,
     };
   });
 
   dashboards.forEach((elt) => {
     data[elt.id!] = {
       type: "dashboard",
-      properties: { 
+      properties: {
         ...elt.properties,
         charts: elt.properties.charts.map(c => new Ref(c)),
         id: undefined,
@@ -97,7 +121,7 @@ export function stringifyResources(resources: DeploymentResources) {
     };
   });
 
-  if(!Object.keys(data).length) return ""!
+  if (!Object.keys(data).length) return ""!
   return stringify(data);
 }
 
