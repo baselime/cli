@@ -9,7 +9,7 @@ export async function getResources(filenames: string[]) {
   const result: Record<string, Record<string, any>> = {};
 
   const files = await Promise.all(filenames.map(async filename => {
-    try {      
+    try {
       return (await readFile(filename)).toString();
     } catch (error) {
       const message = `Error reading a file: ${filename}\n${(error as any).message || ''}`;
@@ -44,6 +44,9 @@ export async function getMetadata(folder: string) {
   try {
     const file = (await readFile(`${folder}/index.yml`)).toString()
     const metadata = yaml.parse(file);
+    if (metadata.infrastructure && !metadata.infrastructure.functions) {
+      metadata.infrastructure.functions = undefined;
+    }
     return metadata;
   } catch (error) {
     const s = spinner.get();

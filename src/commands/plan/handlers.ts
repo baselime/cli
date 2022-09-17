@@ -38,7 +38,6 @@ export async function displayDiff(application: string, diff: DiffResponse) {
   const applicationTable = new Table({ chars: blankChars });
   applicationTable.push(getYamlString({ status: appDiff.status, value: appDiff.application }));
 
-
   const table = new Table({ chars: blankChars });
 
   queries.forEach(q => {

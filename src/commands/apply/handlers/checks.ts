@@ -103,7 +103,7 @@ const metadataSchema = object({
   description: string().notRequired(),
   provider: string().required().oneOf(["aws"]),
   infrastructure: object({
-    functions: array().of(string()).notRequired(),
+    functions: array().of(string()).notRequired().nullable(),
   }).noUnknown(true).notRequired().strict(),
 }).noUnknown(true).strict();
 
@@ -139,7 +139,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
 
   if (!filenames.includes(`${folder}/index.yml`)) {
     const m = "Please include a index.yml file in the config folder. This file is necessary to define the application and its metadata.";
-    s.fail(chalk.bold(chalk.red(`Validation error - ${m}`)));
+    s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
 
@@ -147,7 +147,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
   try {
     await metadataSchema.validate(metadata);
   } catch (error) {
-    s.fail(chalk.bold(chalk.red("Failed to validate the index.yml file")));
+    s.fail(chalk.bold(chalk.redBright("Failed to validate the index.yml file")));
     const message = `error: ${error}`;
     console.log(message);
     throw new Error(message);
@@ -158,7 +158,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
   const data = (await getResources(resourceFilenames)) || {};
   if (!isObject(data)) {
     const m = `invalid file format - must be an object`;
-    s.fail(chalk.bold(chalk.red(`Validation error - ${m}`)));
+    s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
 
@@ -174,7 +174,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
     const resource = data[id];
     if (!isObject(resource)) {
       const m = `${id}: invalid object format`;
-      s.fail(chalk.bold(chalk.red(`Validation error - ${m}`)));
+      s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
       throw new Error(m);
     }
     const { type } = resource;
@@ -196,7 +196,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
         break;
       default:
         const m = `${id}: unknown resource type, ${type}`;
-        s.fail(chalk.bold(chalk.red(`Validation error - ${m}`)));
+        s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
         throw new Error(m);
     }
   });
@@ -241,7 +241,7 @@ function validateChannels(channels: any) {
 
     } catch (error) {
       const message = `channel: ${id}: ${error}`;
-      s.fail(chalk.bold(chalk.red("Channel validation error")));
+      s.fail(chalk.bold(chalk.redBright("Channel validation error")));
       console.log(message);
       throw new Error(message);
     }
@@ -258,7 +258,7 @@ function validateQueries(queries: any[]) {
       await querySchema.validate(item);
     } catch (error) {
       const message = `query: ${item.id}: ${error}`;
-      s.fail(chalk.bold(chalk.red("Query validation error")));
+      s.fail(chalk.bold(chalk.redBright("Query validation error")));
       console.log(message);
       throw new Error(message);
     }
@@ -283,7 +283,7 @@ function validateAlerts(alerts: any[], queries: any[], channels: any[]) {
       }
     } catch (error) {
       const message = `alert: ${item.id}: ${error}`;
-      s.fail(chalk.bold(chalk.red("Alert validation error")));
+      s.fail(chalk.bold(chalk.redBright("Alert validation error")));
       console.log(message);
       throw new Error(message);
     }
@@ -303,7 +303,7 @@ function validateCharts(charts: any[], queries: any[]) {
       }
     } catch (error) {
       const message = `chart: ${item.id}: ${error}`;
-      s.fail(chalk.bold(chalk.red("Chart validation error")));
+      s.fail(chalk.bold(chalk.redBright("Chart validation error")));
       console.log(message);
       throw new Error(message);
     }
@@ -324,7 +324,7 @@ function validateDashboards(dashboards: any[], charts: any[]) {
       }
     } catch (error) {
       const message = `dashboard: ${item.id}: ${error}`;
-      s.fail(chalk.bold(chalk.red("Dashboard validation error")));
+      s.fail(chalk.bold(chalk.redBright("Dashboard validation error")));
       console.log(message);
       throw new Error(message);
     }
