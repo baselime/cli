@@ -39,6 +39,13 @@ export enum NamespaceCombination {
   STARTS_WITH = "STARTS_WITH",
 }
 
+export interface SearchNeedle {
+  item: string;
+  isRegex: boolean;
+  matchCase: boolean;
+}
+
+
 async function queriesList(application?: string): Promise<Query[]> {
   const res = (await client.get("/queries", { params: { application } })).data;
   return res.queries;

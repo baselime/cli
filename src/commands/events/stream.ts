@@ -14,6 +14,9 @@ export interface Options extends BaseOptions {
   namespaces: string[];
   combination: string;
   filters: string[];
+  needle?: string;
+  regex?: string;
+  "match-case": boolean;
 }
 
 export const command = "stream";
@@ -27,10 +30,13 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         desc: "The datasets to stream",
         default: [],
       },
-      filters: { type: "array", desc: "The filters to apply to the stream", default: [] },
+      filters: { type: "array", desc: "A set of filters to apply to the stream; multiple filters can be passed", default: [] },
+      needle: { type: "string", desc: "A string to search in the stream" },
+      regex: { type: "string", desc: "A regular expression to search in the stream. If there's both a needle and a regex, the regex takes priority" },
+      "match-case": { type: "boolean", desc: "Match case if a needle is specified", default: false },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
-      namespaces: { type: "array", desc: "The namespaces to stream; if no namespace is specified all namespaces will be streamed; multiple namespaces can be passed", default: [] },
+      namespaces: { type: "array", desc: "The namespaces to stream; if no namespace is specified all namespaces are streamed; multiple namespaces can be passed", default: [] },
       combination: { type: "string", desc: "The combination to use when multiple namespaces are specified", default: "include", choices: ["include", "exclude", "starts_with"] },
       follow: { type: "boolean", desc: "Wait for additional data to be appended when the end of streams is reached", default: false, alias: "f" },
     })
@@ -49,11 +55,23 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, datasets, filters, from, to, format, follow, namespaces, combination } = argv;
+  const { profile, datasets, filters, from, to, format, follow, namespaces, combination, needle, "match-case": matchCase, regex } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
   const fs = filters.map(parseFilter);
-  await handlers.stream(format, datasets, fs, from, to, namespaces, combination.toUpperCase() as NamespaceCombination, follow);
+  await handlers.stream({
+    format,
+    datasets,
+    filters: fs,
+    from,
+    to,
+    namespaces,
+    needle,
+    matchCase,
+    regex,
+    combination: combination.toUpperCase() as NamespaceCombination,
+    follow
+  });
 }
 

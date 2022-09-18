@@ -7,15 +7,47 @@ import { promisify } from "util";
 import dayjs from "dayjs";
 const wait = promisify(setTimeout);
 import utc from "dayjs/plugin/utc"
-import { NamespaceCombination, QueryFilter } from "../../../services/api/paths/queries";
+import { NamespaceCombination, QueryFilter, SearchNeedle } from "../../../services/api/paths/queries";
 dayjs.extend(utc);
 
-async function stream(format: OutputFormat, datasets: string[], filters: QueryFilter[], from: string, to: string, namespaces: string[], combination: NamespaceCombination, follow: boolean) {
+async function stream(data: {
+  format: OutputFormat,
+  datasets: string[],
+  filters: QueryFilter[],
+  needle?: string;
+  from: string,
+  to: string,
+  namespaces: string[],
+  combination: NamespaceCombination,
+  follow: boolean,
+  matchCase: boolean,
+  regex?: string,
+}) {
+  const {
+    format,
+    datasets,
+    filters,
+    needle,
+    from,
+    to,
+    namespaces,
+    combination,
+    follow,
+    matchCase,
+    regex,
+  } = data;
   const s = spinner.get();
+
+  const n: SearchNeedle = {
+    item: needle || regex || "",
+    isRegex: !!regex,
+    matchCase,
+  }
+
   if (!follow) {
     s.start("Streaming your events");
     const { from: f, to: t } = getTimeframe(from, to);
-    const events = await api.listEvents(datasets, filters, f, t, namespaces, combination, 0, 100);
+    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, namespaceCombination: combination, offset: 0, limit: 100 });
     s.succeed();
     outputs.stream(events.events, format);
     return;
@@ -23,9 +55,9 @@ async function stream(format: OutputFormat, datasets: string[], filters: QueryFi
 
   let { from: f, to: t } = getTimeframe("1minute", "now");
   while (true) {
-    const events = await api.listEvents(datasets, filters, f, t, namespaces, combination, 0, 100);
+    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, namespaceCombination: combination, offset: 0, limit: 100 });
     const now = dayjs();
-    
+
     f = events.events[0] ? dayjs.utc(events.events[0]._timestamp).valueOf() : f;
     t = now.valueOf();
     outputs.stream(events.events, format);
