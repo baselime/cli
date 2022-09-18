@@ -12,7 +12,6 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     .example([
       [`
       $0 events stream
-      $0 events search --needle <needle>
     `]
     ])
     .commandDir("events")

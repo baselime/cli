@@ -44,6 +44,13 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       [`
       # Stream a dataset
       $0 stream --datasets <dataset_name> --from 3hours to now
+
+      # Stream a dataset with filters and find a needle
+      $0 stream --filters "<key> <operation> <value>" --needle "<needle>" --follow
+      
+      # Stream a dataset with filters and find all events matching a regular expression
+      $0 stream --filters "<key> <operation> <value>" --regex "<regex>" --follow
+      
       
       # Stream multiple namespaces in a dataset
       $0 stream --datasets <dataset_name> --namespaces <space_1> <space_2>`,
