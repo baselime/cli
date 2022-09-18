@@ -7,15 +7,15 @@ import { promisify } from "util";
 import dayjs from "dayjs";
 const wait = promisify(setTimeout);
 import utc from "dayjs/plugin/utc"
-import { NamespaceCombination } from "../../../services/api/paths/queries";
+import { NamespaceCombination, QueryFilter } from "../../../services/api/paths/queries";
 dayjs.extend(utc);
 
-async function stream(format: OutputFormat, datasets: string[], from: string, to: string, namespaces: string[], combination: NamespaceCombination, follow: boolean) {
+async function stream(format: OutputFormat, datasets: string[], filters: QueryFilter[], from: string, to: string, namespaces: string[], combination: NamespaceCombination, follow: boolean) {
   const s = spinner.get();
   if (!follow) {
     s.start("Streaming your events");
     const { from: f, to: t } = getTimeframe(from, to);
-    const events = await api.getEvents(datasets, f, t, namespaces, combination, 0, 100);
+    const events = await api.listEvents(datasets, filters, f, t, namespaces, combination, 0, 100);
     s.succeed();
     outputs.stream(events.events, format);
     return;
@@ -23,7 +23,7 @@ async function stream(format: OutputFormat, datasets: string[], from: string, to
 
   let { from: f, to: t } = getTimeframe("1minute", "now");
   while (true) {
-    const events = await api.getEvents(datasets, f, t, namespaces, combination, 0, 100);
+    const events = await api.listEvents(datasets, filters, f, t, namespaces, combination, 0, 100);
     const now = dayjs();
     
     f = events.events[0] ? dayjs.utc(events.events[0]._timestamp).valueOf() : f;

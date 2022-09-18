@@ -4,6 +4,7 @@ import { authenticate, BaseOptions, printError } from "../../shared";
 import spinner from "../../services/spinner/index";
 import handlers from "./handlers/handlers";
 import { NamespaceCombination } from "../../services/api/paths/queries";
+import { parseFilter } from "../../utils";
 
 export interface Options extends BaseOptions {
   datasets: string[];
@@ -12,6 +13,7 @@ export interface Options extends BaseOptions {
   follow: boolean;
   namespaces: string[];
   combination: string;
+  filters: string[];
 }
 
 export const command = "stream";
@@ -25,6 +27,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         desc: "The datasets to stream",
         default: [],
       },
+      filters: { type: "array", desc: "The filters to apply to the stream", default: [] },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
       namespaces: { type: "array", desc: "The namespaces to stream; if no namespace is specified all namespaces will be streamed; multiple namespaces can be passed", default: [] },
@@ -46,9 +49,11 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, datasets, from, to, format, follow, namespaces, combination } = argv;
+  const { profile, datasets, filters, from, to, format, follow, namespaces, combination } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
-  await handlers.stream(format, datasets, from, to, namespaces, combination.toUpperCase() as NamespaceCombination, follow);
+
+  const fs = filters.map(parseFilter);
+  await handlers.stream(format, datasets, fs, from, to, namespaces, combination.toUpperCase() as NamespaceCombination, follow);
 }
 
