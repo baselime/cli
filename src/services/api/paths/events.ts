@@ -6,6 +6,7 @@ export interface EventsListRequest {
   datasets: string[];
   filters: QueryFilter[];
   needle?: SearchNeedle;
+  application?: string;
   from: number;
   to: number;
   namespaces: string[];

@@ -17,10 +17,11 @@ export interface Options extends BaseOptions {
   needle?: string;
   regex?: string;
   "match-case": boolean;
+  application?: string;
 }
 
 export const command = "stream";
-export const desc = `Stream a dataset`;
+export const desc = `Stream telemetry data to your terminal`;
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -30,6 +31,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         desc: "The datasets to stream",
         default: [],
       },
+      application: { type: "string", desc: "The application to stream. When specified, additional filters and namespaces are combined with the filters of the application", alias: "app" },
       filters: { type: "array", desc: "A set of filters to apply to the stream; multiple filters can be passed", default: [] },
       needle: { type: "string", desc: "A string to search in the stream" },
       regex: { type: "string", desc: "A regular expression to search in the stream. If there's both a needle and a regex, the regex takes priority" },
@@ -45,10 +47,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       # Stream a dataset
       $0 stream --datasets <dataset_name> --from 3hours to now
 
-      # Stream a dataset with filters and find a needle
+      # Stream all datasets with filters and find a needle
       $0 stream --filters "<key> <operation> <value>" --needle "<needle>" --follow
       
-      # Stream a dataset with filters and find all events matching a regular expression
+      # Stream all datasets with filters and find all events matching a regular expression
       $0 stream --filters "<key> <operation> <value>" --regex "<regex>" --follow
       
       
@@ -62,7 +64,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, datasets, filters, from, to, format, follow, namespaces, combination, needle, "match-case": matchCase, regex } = argv;
+  const { profile, datasets, filters, from, to, format, follow, namespaces, combination, needle, "match-case": matchCase, regex, application } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
@@ -78,7 +80,8 @@ export async function handler(argv: Arguments<Options>) {
     matchCase,
     regex,
     combination: combination.toUpperCase() as NamespaceCombination,
-    follow
+    follow,
+    application
   });
 }
 
