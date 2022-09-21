@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.0.17 (21st September 2022)
+
+- Add support for the application flag in the `events stream` command
+
 ### 0.0.16 (19th September 2022)
 
 - Add support for filters and searches in the `events stream` command
