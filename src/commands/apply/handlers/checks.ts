@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { object, string, number, array, boolean, InferType } from 'yup';
+import { object, string, number, array, boolean, InferType, lazy} from 'yup';
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
 import { getMetadata, getResources } from "../../../services/parser/parser";
@@ -25,7 +25,10 @@ const alertSchema = object({
     parameters: object({
       query: string().required(),
       threshold: string().matches(alertThresholdRegex).required(),
-      frequency: number().strict().required().min(1),
+      frequency: lazy((value) =>
+      typeof value === 'string'
+        ? string().strict().required()
+        : number().strict().required().min(1)),
       duration: number().strict().required(),
     }).required().noUnknown(true).strict(),
     enabled: boolean().notRequired(),
