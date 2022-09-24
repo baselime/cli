@@ -6,7 +6,7 @@ import { Event } from "../../../services/api/paths/events";
 
 function stream(events: Event[], format: OutputFormat) {
   events.reverse().forEach((event) => {
-    console.log(chalk.cyan(event._timestamp), chalk.yellow(event._namespace), event._source);
+    console.log(chalk.cyan(event._timestamp), chalk.green(event._dataset), chalk.yellow(event._namespace), event._source);
   });
 }
 

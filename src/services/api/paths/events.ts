@@ -19,6 +19,7 @@ export interface Event {
   _namespace: string;
   _timestamp: string;
   _source: string;
+  _dataset: string;
   _logId: string;
   _baselimeId: string;
   _now?: number;
