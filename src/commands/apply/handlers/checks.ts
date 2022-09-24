@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { object, string, number, array, boolean, InferType, lazy} from 'yup';
+import { object, string, number, array, boolean, InferType, lazy } from 'yup';
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
 import { getMetadata, getResources } from "../../../services/parser/parser";
@@ -26,9 +26,9 @@ const alertSchema = object({
       query: string().required(),
       threshold: string().matches(alertThresholdRegex).required(),
       frequency: lazy((value) =>
-      typeof value === 'string'
-        ? string().strict().required()
-        : number().strict().required().min(1)),
+        typeof value === 'string'
+          ? string().strict().required()
+          : number().strict().required().min(1)),
       duration: number().strict().required(),
     }).required().noUnknown(true).strict(),
     enabled: boolean().notRequired(),
@@ -142,7 +142,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
   const metadata = await getMetadata(folder);
   try {
     const m = await metadataSchema.validate(metadata);
-    if(m.infrastructure.stacks && m.infrastructure.functions) {
+    if (m.infrastructure?.stacks && m.infrastructure?.functions) {
       throw new Error("Can only specify one of infrastructure.stacks or infrastructure.functions");
     }
   } catch (error) {
