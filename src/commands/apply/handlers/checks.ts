@@ -107,7 +107,7 @@ const metadataSchema = object({
   provider: string().required().oneOf(["aws"]),
   infrastructure: object({
     functions: array().of(string()).notRequired().nullable(),
-    stack: string().notRequired(),
+    stacks: array().of(string()).notRequired().nullable(),
   }).noUnknown(true).notRequired().strict(),
 }).noUnknown(true).strict();
 
@@ -116,7 +116,7 @@ export type DeploymentAlert = InferType<typeof alertSchema>;
 export type DeploymentChannel = InferType<typeof channelSchema>;
 export type DeploymentChart = InferType<typeof chartSchema>;
 export type DeploymentDashboard = InferType<typeof dashboardSchema>;
-
+export type DeploymentApplication = InferType<typeof metadataSchema>;
 export interface DeploymentResources {
   queries?: DeploymentQuery[];
   alerts?: DeploymentAlert[];
@@ -125,16 +125,7 @@ export interface DeploymentResources {
   dashboards?: DeploymentDashboard[];
 }
 
-export interface DeploymentApplication {
-  provider: string;
-  application: string;
-  version: string;
-  description?: string;
-  infrastructure?: {
-    functions?: string[];
-    stack?: string;
-  }
-}
+
 
 async function validate(folder: string): Promise<{ metadata: DeploymentApplication, resources: DeploymentResources, filenames: string[] }> {
   const s = spinner.get();
@@ -150,7 +141,10 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
 
   const metadata = await getMetadata(folder);
   try {
-    await metadataSchema.validate(metadata);
+    const m = await metadataSchema.validate(metadata);
+    if(m.infrastructure.stacks && m.infrastructure.functions) {
+      throw new Error("Can only specify one of infrastructure.stacks or infrastructure.functions");
+    }
   } catch (error) {
     s.fail(chalk.bold(chalk.redBright("Failed to validate the index.yml file")));
     const message = `error: ${error}`;

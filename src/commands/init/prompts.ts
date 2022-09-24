@@ -3,11 +3,28 @@ import { prompt } from "enquirer";
 import api from "../../services/api/api";
 import spinner from "../../services/spinner";
 
-export async function promptFunctionsSelect(fns: string[]): Promise<string[]> {
+export async function promptFunctionsSelect(provider: string): Promise<string[] | undefined> {
+  const { confirm } = await prompt<{ confirm: boolean }>({
+    type: "confirm",
+    name: "confirm",
+    initial: true,
+    message: `Manually select cloud functions for this application? (Press [Space] to select multiple)`,
+  });
+
+  if (!confirm) {
+    console.log("This application will encompass all resources in your cloud environment");
+    return;
+  }
+
+  const s = spinner.get();
+  s.start(`Fetching your ${provider} cloud functions`);
+  const fns = (await api.functionsList(provider)).map(f => f.name).sort();
+  s.succeed();
+
   const { functions } = await prompt<{ functions: string[] }>({
     type: "multiselect",
     name: "functions",
-    message: `${chalk.bold("Select the serverless functions in this application")} (Press [Space] to select multiple functions)`,
+    message: `${chalk.bold("Select the serverless functions in this application")} (Press [Space] to select multiple)`,
     choices: fns.map(fn => { return { name: fn, value: fn } }),
   });
 
@@ -23,7 +40,7 @@ export async function promptTemplateSelect(): Promise<string | undefined> {
     message: `Do you want to bootstrap with a template?`,
   });
 
-  if(!confirm) return;
+  if (!confirm) return;
 
   const s = spinner.get();
   s.start("Fetching your templates");
@@ -40,31 +57,28 @@ export async function promptTemplateSelect(): Promise<string | undefined> {
   return template;
 }
 
-export async function promptStackSelect(provider: string): Promise<string | undefined> {
+export async function promptStacksSelect(provider: string): Promise<string[] | undefined> {
 
   const { confirm } = await prompt<{ confirm: boolean }>({
     type: "confirm",
     name: "confirm",
     initial: true,
-    message: `Automatically discover cloud resources for this application?`,
+    message: `Automatically discover cloud resources for this application? (Press [Space] to select multiple)`,
   });
 
-  if(!confirm) {
-    console.log("This application will encompass all resources in your cloud environment");
-    return;
-  }
+  if (!confirm) return;
 
   const s = spinner.get();
   s.start(`Fetching your ${provider} stacks`);
-  const stacks = (await api.stacksList(provider)).map(s => s.name).sort();
+  const allStacks = (await api.stacksList(provider)).map(s => s.name).sort();
   s.succeed();
 
-  const { stack } = await prompt<{ stack: string }>({
-    type: "select",
-    name: "stack",
-    message: `${chalk.bold("Please select a CloudFormation stack")}`,
-    choices: stacks.map(stack => { return { name: stack, value: stack } }),
+  const { stacks } = await prompt<{ stacks: string[] }>({
+    type: "multiselect",
+    name: "stacks",
+    message: `${chalk.bold("Please select CloudFormation stacks for this application")}`,
+    choices: allStacks.map(stack => { return { name: stack, value: stack } }),
   });
 
-  return stack;
+  return stacks;
 }

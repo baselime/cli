@@ -5,7 +5,7 @@ import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../utils";
 import { promptTemplateVariables } from "../applications/handlers/prompts";
 import { DeploymentApplication } from "../apply/handlers/checks";
-import { promptFunctionsSelect, promptStackSelect } from "./prompts";
+import { promptFunctionsSelect, promptStacksSelect } from "./prompts";
 const packageJson = require("../../../package.json");
 
 
@@ -18,22 +18,28 @@ export async function init(
 ) {
   const s = spinner.get();
 
-  const stack = await promptStackSelect(provider);
+  const stacks = await promptStacksSelect(provider);
+  
+  let fns: string[] | undefined = [];
+  if(!stacks || !stacks.length) {
+    fns = await promptFunctionsSelect(provider);
+  }
+  
   s.start("Generating your config folder");
 
-  const fns = stack ? await api.functionsList(provider, stack) : [];
   const metadata: DeploymentApplication = {
     version: packageJson.version,
     application,
     description: description || undefined,
     provider,
     infrastructure: {
-      stack,
-      functions: fns.length ? fns.map(fn => fn.name).sort() : undefined,
+      stacks,
+      functions: fns?.length ? fns : undefined,
     }
   };
 
   if (Object.values(metadata.infrastructure || {}).every(v => v === undefined || v.length === 0)) {
+    // @ts-expect-error it should work
     metadata.infrastructure = undefined;
   }
 

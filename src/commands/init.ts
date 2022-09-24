@@ -1,11 +1,10 @@
 import { Arguments, CommandBuilder } from "yargs";
 
-import { existsSync } from "fs";
+import { existsSync, rmSync } from "fs";
 import { authenticate, baseOptions, BaseOptions, printError } from "../shared";
 import spinner from "../services/spinner";
 import * as prompts from "./applications/handlers/prompts";
 import { basename, resolve } from "path";
-import api from "../services/api/api";
 import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
 import { init } from "./init/handlers";
@@ -62,12 +61,11 @@ export async function handler(argv: Arguments<Options>) {
     if (!res) {
       process.exit(0);
     }
-  } else {
-    mkdirSync(folder);
+    rmSync(folder, { recursive: true, force: true });
   }
 
+  mkdirSync(folder);
   await authenticate(profile);
-
 
   application ??= basename(resolve());
   description ??= "";
