@@ -5,7 +5,7 @@ import spinner from "../../../services/spinner/index";
 import { getMetadata, getResources } from "../../../services/parser/parser";
 
 
-const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES"];
+const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES", "IN", "NOT_IN"];
 const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["email", "slack", "webhook"];
@@ -13,7 +13,7 @@ const chartTypes = ["stats", "timeseries", "bar"];
 const groupByTypes = ["string", "number", "boolean"];
 
 const queryFilterRegex = new RegExp("^([\\w.@]+)\\s(" + operations.join("|") + ")\\s'?(.*?)'?$");
-const alertThresholdRegex = new RegExp("^(" + operations.filter(o => o != "INCLUDES").join("|") + ")\\s([0-9]*)$");
+const alertThresholdRegex = new RegExp("^(" + operations.filter(o => !["INCLUDES", "IN", "NOT_IN"].includes(o)).join("|") + ")\\s([0-9]*)$");
 const idRegex = /^[a-zA-Z0-9-_]+$/;
 
 const alertSchema = object({
