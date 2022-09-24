@@ -9,7 +9,9 @@ async function destroy(config: string) {
   const { metadata } = await checks.validate(config);
   const resources = { queries: [], channels: [], alerts: [], charts: [], dashboards: [] };
   s.start("Checking resources to destroy...");
-  await verifyPlan(metadata, resources, true);
+  // Remove the provider to signal to the API that we're deleting the application
+  metadata.provider = "";
+  await verifyPlan(metadata, resources, false);
   const res = await prompts.promptApply();
 
   if (!res) {
