@@ -104,6 +104,7 @@ const metadataSchema = object({
   provider: string().required().oneOf(["aws"]),
   infrastructure: object({
     functions: array().of(string()).notRequired().nullable(),
+    stack: string().notRequired(),
   }).noUnknown(true).notRequired().strict(),
 }).noUnknown(true).strict();
 
@@ -114,11 +115,11 @@ export type DeploymentChart = InferType<typeof chartSchema>;
 export type DeploymentDashboard = InferType<typeof dashboardSchema>;
 
 export interface DeploymentResources {
-  queries: DeploymentQuery[];
-  alerts: DeploymentAlert[];
-  channels: DeploymentChannel[];
-  charts: DeploymentChart[];
-  dashboards: DeploymentDashboard[];
+  queries?: DeploymentQuery[];
+  alerts?: DeploymentAlert[];
+  channels?: DeploymentChannel[];
+  charts?: DeploymentChart[];
+  dashboards?: DeploymentDashboard[];
 }
 
 export interface DeploymentApplication {
@@ -128,6 +129,7 @@ export interface DeploymentApplication {
   description?: string;
   infrastructure?: {
     functions?: string[];
+    stack?: string;
   }
 }
 

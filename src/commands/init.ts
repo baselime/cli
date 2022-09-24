@@ -10,11 +10,13 @@ import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
 import { init } from "./init/handlers";
 import chalk from "chalk";
+import { promptTemplateSelect } from "./init/prompts";
 
 export interface Options extends BaseOptions {
   application?: string;
   description?: string;
   template?: string;
+  provider: string;
 }
 
 export const command = "init";
@@ -27,6 +29,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       application: { type: "string", desc: "Name of the application", alias: "app" },
       description: { type: "string", desc: "Description of the application" },
       template: { type: "string", desc: "Template to intitialise the application with" },
+      provider: { type: "string", desc: "Cloud provider", default: "aws", choices: ["aws"] },
     })
     .example([
       [`
@@ -50,7 +53,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
-  let { application, description, profile, template } = argv;
+  let { application, description, profile, template, provider } = argv;
 
   const folder = ".baselime";
 
@@ -65,18 +68,16 @@ export async function handler(argv: Arguments<Options>) {
 
   await authenticate(profile);
 
+
   application ??= basename(resolve());
   description ??= "";
-  template ??= "";
+  template ??= await promptTemplateSelect();
 
-  if (isUrl(template)) {
+  if (template && isUrl(template)) {
     s.fail("Support for public URL as templates is coming soon.");
     return;
   }
 
-  s.start("Generating your config folder");
-  console.log(chalk.whiteBright(chalk.bold("\nPrepare to select the serverless functions in this application.")))
-  const user = await api.iamGet();
-  await init(folder, application, description, template, user.email,);
+  await init(folder, application, description, provider, template);
   s.succeed(`${folder} Generated`);
 }

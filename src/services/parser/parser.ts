@@ -70,7 +70,7 @@ export function stringify(data: Record<string, any>): string {
 export function stringifyResources(resources: DeploymentResources) {
   const data: Record<string, any> = {};
   const { queries, alerts, channels, dashboards, charts } = resources;
-  queries.forEach((elt) => {
+  queries?.forEach((elt) => {
     data[elt.id!] = {
       type: "query",
       properties: {
@@ -80,7 +80,7 @@ export function stringifyResources(resources: DeploymentResources) {
     }
   });
 
-  alerts.forEach((elt) => {
+  alerts?.forEach((elt) => {
     data[elt.id!] = {
       type: "alert",
       properties: {
@@ -92,7 +92,7 @@ export function stringifyResources(resources: DeploymentResources) {
     };
   });
 
-  channels.forEach((elt) => {
+  channels?.forEach((elt) => {
     data[elt.id!] = {
       type: "channel",
       properties: {
@@ -102,7 +102,7 @@ export function stringifyResources(resources: DeploymentResources) {
     }
   });
 
-  charts.forEach((elt) => {
+  charts?.forEach((elt) => {
     data[elt.id!] = {
       type: "chart",
       properties: {
@@ -113,7 +113,7 @@ export function stringifyResources(resources: DeploymentResources) {
     };
   });
 
-  dashboards.forEach((elt) => {
+  dashboards?.forEach((elt) => {
     data[elt.id!] = {
       type: "dashboard",
       properties: {
