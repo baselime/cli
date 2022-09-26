@@ -2,12 +2,13 @@ import { Arguments, CommandBuilder } from "yargs";
 import spinner from "../../services/spinner";
 import { authenticate, BaseOptions, printError } from "../../shared";
 import handlers from "./handlers/handlers";
+import { promptApplicationSelect, promptFrom, promptQuerySelect, promptTo } from "./prompts/run";
 
 export interface Options extends BaseOptions {
-  application: string;
-  id: string;
-  from: string;
-  to: string;
+  application?: string;
+  id?: string;
+  from?: string;
+  to?: string;
 }
 
 export const command = "run";
@@ -16,10 +17,10 @@ export const desc = "Run a query";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
-      application: { type: "string", desc: "Name of the application", alias: "app", required: true },
-      id: { type: "string", desc: "Query id", required: true, },
-      from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
-      to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
+      application: { type: "string", desc: "Name of the application", alias: "app" },
+      id: { type: "string", desc: "Query id" },
+      from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins" },
+      to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now" },
     })
     .example([
       [`
@@ -33,9 +34,20 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, format, application, from, to, id } = argv;
+  let { profile, format, application, from, to, id } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
+
+  application ??= (await promptApplicationSelect())?.name || "";
+  id ??= (await promptQuerySelect(application))?.id || "";
+
+  if(!application || !id) {
+    throw new Error("application and query id are required");
+  }
+
+  from ??= await promptFrom();
+  to ??= await promptTo();
+  
   await handlers.createRun(format, from, to, application, id);
 }
 
