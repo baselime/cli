@@ -6,6 +6,7 @@ export interface Deployment {
   workspaceId: string;
   environmentId: string;
   userId: string;
+  error?: string;
   status: DeploymentStatus
   created?: string;
   updated?: string;

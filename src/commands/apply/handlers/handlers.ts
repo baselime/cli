@@ -46,7 +46,12 @@ async function apply(config: string, skip: boolean = false) {
     s.succeed(`Successfully applied an observability plan: ${chalk.bold(chalk.greenBright(id),)}`);
     return;
   }
-  s.fail(`Failed to apply an observability plan: ${chalk.bold(chalk.redBright(id),)}`);
+  if (deployment?.status === DeploymentStatus.IN_PROGRESS) {
+    s.info(`Connection timed out.`);
+    return;
+  }
+  s.fail(`Failed to apply an observability plan: ${chalk.bold(chalk.redBright(id))}
+  ${chalk.red(deployment?.error || '')}`);
 }
 
 async function validate(folder: string) {
