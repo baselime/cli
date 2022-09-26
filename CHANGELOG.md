@@ -1,5 +1,15 @@
 # Changelog
 
+### 0.0.18 (26st September 2022)
+
+- Add support for stacks in the application definition
+- Add support for `IN` and `NOT_IN` operations for query filters
+- Add dataset to `events stream` command output
+- Feedback on the status of a `apply` command
+- Interactive `init` command
+- Interactive `queries run` command
+- Bug fixes
+
 ### 0.0.17 (21st September 2022)
 
 - Add support for the application flag in the `events stream` command
