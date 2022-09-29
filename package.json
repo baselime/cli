@@ -43,6 +43,7 @@
     "dotenv": "^16.0.0",
     "enquirer": "^2.3.6",
     "figlet": "^1.5.2",
+    "flat": "^5.0.2",
     "fs-extra": "^10.1.0",
     "ora": "^5.4.1",
     "parse-duration": "^1.0.2",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@types/figlet": "^1.5.4",
+    "@types/flat": "^5.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/node": "^17.0.21",
     "@types/qs": "^6.9.7",

@@ -32,7 +32,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       [`
       # Connect an AWS environment:
-      $0 environments setup --provider aws --account <account_numner> --region <region> --alias <alias>
+      $0 environments connect --provider aws --account <account_numner> --region <region> --alias <alias>
       `],
     ])
     .fail((message, err, yargs) => {
@@ -48,9 +48,9 @@ export async function handler(argv: Arguments<Options>) {
  
   email ??= (await promptForEmail());
 
-  s.start(`Sending email verification request`);
-  await api.generateOneTimePassword(email);
-  s.succeed();
+  // s.start(`Sending email verification request`);
+  // await api.generateOneTimePassword(email);
+  // s.succeed();
 
   const otp = await promptForOneTimePassword(email);
 

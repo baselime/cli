@@ -9,7 +9,7 @@ export async function promptForEmail(): Promise<string> {
   const { accountEmail } = await prompt<{ accountEmail: string }>({
     type: "input",
     name: "accountEmail",
-    message: "What email address did you sign up with?",
+    message: "What email address did you sign up to Baselime with?",
     required: true,
     validate: async (value) => {
       try {

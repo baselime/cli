@@ -12,7 +12,7 @@ export function welcome() {
 }
 
 export function userConfigFound(profile: string) {
-  console.log(`You're already authenticated as ${chalk.cyan(profile)}.\n\nIf you would like to configure a new profile, run the following:\n${chalk.bold(`$ baselime auth --profile ${chalk.cyan("<new_profile_name>")}`)}\n`);
+  console.log(`You're already authenticated as ${chalk.cyan(profile)}.\n\nIf you would like to configure a new profile, run the following:\n${chalk.bold(`$ baselime auth --profile ${chalk.cyan("<new_baselime_profile_name>")}`)}\n`);
 }
 
 export function credentialsConfigured(path: string) {
