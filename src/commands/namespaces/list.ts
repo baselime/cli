@@ -4,7 +4,7 @@ import { authenticate, BaseOptions, printError } from "../../shared";
 import handlers from "./handlers/handlers";
 
 export interface Options extends BaseOptions {
-  datasets: string[];
+  application?: string;
   from: string;
   to: string;
 }
@@ -15,17 +15,17 @@ export const desc = "List all the ingested namespaces";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
-      datasets: { type: "array", desc: "The datasets", default: [] },
+      application: { type: "string", desc: "The application" },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
     })
     .example([
       [`
-      # List all the namespaces ingested in the 'logs; dataset for the past hour:
+      # List all the namespaces ingested across all datasets for the past hour:
       $0 namespaces list
 
-      # List all the namespaces ingested in the <dataset> datasets in the past 3 hours:
-      $0 namespaces list --datasets <dataset> --from 3hours --to now
+      # List all the namespaces ingested for an application in the past 3 hours:
+      $0 namespaces list --application <application> --from 3hours --to now
       `],
     ])
     .fail((message, err, yargs) => {
@@ -34,8 +34,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, format, from, to, datasets } = argv;
+  const { profile, format, from, to, application } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
-  await handlers.list(format!, datasets, from, to);
+  await handlers.list(format!, from, to, application);
 }
