@@ -11,10 +11,10 @@ function list(alerts: Alert[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Application", "Id", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Application", "Id", "Name", "Enabled", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alerts.forEach((alert) => {
-    table.push([alert.application, alert.id, alert.name, alert.created]);
+    table.push([alert.application, alert.id, alert.name, alert.enabled, alert.created]);
   });
   console.log(`${table.toString()}`);
   console.log(`✨ ${chalk.bold(chalk.cyan(`${alerts.length} alerts`))}`);
