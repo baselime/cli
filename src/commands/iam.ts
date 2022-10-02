@@ -1,10 +1,10 @@
 import { Arguments, CommandBuilder } from "yargs";
-import api from "../../services/api/api";
-import spinner from "../../services/spinner";
-import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
-import {status } from "./handlers/outputs";
+import api from "../services/api/api";
+import spinner from "../services/spinner";
+import { authenticate, baseOptions, BaseOptions, printError } from "../shared";
+import { iam } from "./auth/handlers/outputs";
 
-export const command = "status";
+export const command = "iam";
 export const desc = "View authentication status";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
@@ -15,10 +15,10 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     .example([
       [`
       # Check authentication status for default profile:
-      $0 auth status
+      $0 iam
 
       # Check authentication status of a specified profiel:
-      $0 auth status --profile prod
+      $0 iam --profile prod
       `]
     ])
     .fail((message, err, yargs) => {
@@ -36,5 +36,5 @@ export async function handler(argv: Arguments<BaseOptions>) {
   const { key, workspace, environment } = await api.getApiKeyPermissions();
   s.succeed();
 
-  status(profile, key, workspace, environment, config.apiKey, format);
+  iam(profile, key, workspace, environment, config.apiKey, format);
 }

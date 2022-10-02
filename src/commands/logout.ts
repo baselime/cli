@@ -1,7 +1,7 @@
 import { Arguments, CommandBuilder } from "yargs";
-import { deleteUserAuth } from "../../services/auth";
-import spinner from "../../services/spinner";
-import { BaseOptions, printError } from "../../shared";
+import { deleteUserAuth } from "../services/auth";
+import spinner from "../services/spinner";
+import { BaseOptions, printError } from "../shared";
 
 
 
@@ -20,10 +20,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       [`
       # Intercatively select the environment to log out of:
-      $0 auth logout
+      $0 logout
 
       # Provide parameters on the command-line:
-      $0 auth logout --profile prod
+      $0  logout --profile prod
       `]
     ])
     .fail((message, err, yargs) => {

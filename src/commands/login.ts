@@ -1,11 +1,11 @@
 import { BaseOptions } from "vm";
 import { Arguments, CommandBuilder } from "yargs";
-import api from "../../services/api/api";
-import { readUserAuth, writeUserAuth } from "../../services/auth";
-import spinner from "../../services/spinner";
-import { printError } from "../../shared";
-import { credentialsConfigured, userConfigFound, welcome } from "./handlers/outputs";
-import { promptForEmail, promptForEnvironment, promptForOneTimePassword, promptReplaceExistingProfile } from "./handlers/prompts";
+import api from "../services/api/api";
+import { readUserAuth, writeUserAuth } from "../services/auth";
+import spinner from "../services/spinner";
+import { printError } from "../shared";
+import { credentialsConfigured, userConfigFound, welcome } from "./auth/handlers/outputs";
+import { promptForEmail, promptForEnvironment, promptForOneTimePassword, promptReplaceExistingProfile } from "./auth/handlers/prompts";
 
 
 export interface Options extends BaseOptions {
@@ -25,10 +25,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       [`
       # Intercatively authenticate against Baselime:
-      $0 auth login
+      $0 auth
 
       # Provide parameters on the command-line:
-      $0 auth login --email hi@bob.lol --profile prod
+      $0 auth --email hi@bob.lol --profile prod
       `]
     ])
     .fail((message, err, yargs) => {

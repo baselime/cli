@@ -20,7 +20,7 @@ export function credentialsConfigured(path: string) {
   process.exit(0);
 }
 
-export function status(profile: string, key: APIKey, workspace: Workspace, environment: Environment, apiKey: string, format: OutputFormat) {
+export function iam(profile: string, key: APIKey, workspace: Workspace, environment: Environment, apiKey: string, format: OutputFormat) {
   const path = getAuthProfilePath(profile);
   if (format === "json") {
     console.log(JSON.stringify({ key, workspace, environment, path }, null, 4));
