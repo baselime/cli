@@ -34,6 +34,7 @@
     "lint:check": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
+    "aws-cron-parser": "^1.1.12",
     "axios": "^0.26.1",
     "base64url": "^3.0.1",
     "chalk": "^4.1.2",

@@ -8,7 +8,7 @@ export async function promptFunctionsSelect(provider: string): Promise<string[] 
     type: "confirm",
     name: "confirm",
     initial: true,
-    message: `Manually select cloud functions for this application? (Press [Space] to select multiple)`,
+    message: `Manually select cloud functions for this application? (Select multiple with [Space] and confirm with [Enter])`,
   });
 
   if (!confirm) {
@@ -24,7 +24,7 @@ export async function promptFunctionsSelect(provider: string): Promise<string[] 
   const { functions } = await prompt<{ functions: string[] }>({
     type: "multiselect",
     name: "functions",
-    message: `${chalk.bold("Select the serverless functions in this application")} (Press [Space] to select multiple)`,
+    message: `${chalk.bold("Select the serverless functions in this application")} (Select multiple with [Space] and confirm with [Enter])`,
     choices: fns.map(fn => { return { name: fn, value: fn } }),
   });
 
@@ -63,7 +63,7 @@ export async function promptStacksSelect(provider: string): Promise<string[] | u
     type: "confirm",
     name: "confirm",
     initial: true,
-    message: `Automatically discover cloud resources for this application? (Press [Space] to select multiple)`,
+    message: `Automatically discover cloud resources for this application? (Select multiple with [Space] and confirm with [Enter])`,
   });
 
   if (!confirm) return;

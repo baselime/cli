@@ -29,8 +29,8 @@ export function userConfigNotFound(profile: string) {
 }
 
 export function printError(message: string, err: Error, yargs: any) {
-  if (message) {
-    console.log(chalk.redBright(chalk.bold(message)));
+  if (message || err.message) {
+    console.error(chalk.redBright(chalk.bold(message || err.message)));
   }
   console.log(chalk.grey(`
 Version: ${getVersion()}

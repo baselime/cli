@@ -3,7 +3,7 @@ import { object, string, number, array, boolean, InferType, lazy } from 'yup';
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
 import { getMetadata, getResources } from "../../../services/parser/parser";
-
+import awsCronParser from "aws-cron-parser";
 
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES", "IN", "NOT_IN"];
 const filterCombinations = ["AND", "OR"];
@@ -20,7 +20,7 @@ const alertSchema = object({
   type: string().equals(["alert"]),
   id: string().required().matches(idRegex),
   properties: object({
-    name: string().required(),
+    name: string().notRequired(),
     description: string().notRequired(),
     parameters: object({
       query: string().required(),
@@ -58,7 +58,7 @@ const querySchema = object({
   type: string().equals(["query"]),
   id: string().required().matches(idRegex),
   properties: object({
-    name: string().required(),
+    name: string().notRequired(),
     description: string().notRequired(),
     parameters: object({
       dataset: string().required().typeError('Dataset must be set to an existing dataset, i.e logs.'),
@@ -79,7 +79,7 @@ const dashboardSchema = object({
   type: string().equals(["dashboard"]),
   id: string().required().matches(idRegex),
   properties: object({
-    name: string().required(),
+    name: string().notRequired(),
     description: string().notRequired(),
     charts: array().min(1).of(string().required()).required(),
   }).noUnknown(true).required().strict(),
@@ -89,7 +89,7 @@ const chartSchema = object({
   type: string().equals(["chart"]),
   id: string().required().matches(idRegex),
   properties: object({
-    name: string().required(),
+    name: string().notRequired(),
     type: string().oneOf(chartTypes).required(),
     parameters: object({
       query: string().required(),
@@ -131,7 +131,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
   const s = spinner.get();
   s.start("Checking the configuration files...");
   const filenames = await getFileList(folder, [".yaml", ".yml"]);
-
 
   if (!filenames.includes(`${folder}/index.yml`)) {
     const m = "Please include a index.yml file in the config folder. This file is necessary to define the application and its metadata.";
@@ -279,6 +278,14 @@ function validateAlerts(alerts: any[], queries: any[], channels: any[]) {
       }
       if (missingChannels.length) {
         throw new Error(`the following channels were not found in this application: ${missingChannels.join(", ")}`);
+      }
+      const { frequency } = alert.properties.parameters;
+      if (typeof frequency === "string") {
+        try {
+          awsCronParser.parse(frequency);
+        } catch (error) {
+          throw new Error(`Invalid Cron expression. Please follow the specs here: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions`);
+        }
       }
     } catch (error) {
       const message = `alert: ${item.id}: ${error}`;
