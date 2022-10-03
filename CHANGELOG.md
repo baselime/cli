@@ -1,6 +1,13 @@
 # Changelog
 
-### 0.0.18 (26st September 2022)
+### 0.0.19 (3rd October 2022)
+
+- Add support for cron expression for alerts
+- Improved outputs
+- Remove the need for `auth` when `login`, `logout` and `iam`
+- Bug fixes
+
+### 0.0.18 (26th September 2022)
 
 - Add support for stacks in the application definition
 - Add support for `IN` and `NOT_IN` operations for query filters
