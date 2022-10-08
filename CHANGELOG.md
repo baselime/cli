@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.0.20 (8th October 2022)
+
+- Add support for `comment` commands
+- Add support for `status` command
+- Improved outputs
+- Bug fixes
+
 ### 0.0.19 (3rd October 2022)
 
 - Add support for cron expression for alerts
