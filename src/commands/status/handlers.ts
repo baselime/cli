@@ -15,7 +15,11 @@ async function status(format: OutputFormat, data: { application: string, outFile
   const checks = result.map(result => result.check);
   s.succeed();
   outputs.check(checks, format);
-  writeFileSync(data.outFile, JSON.stringify({ version: getVersion(), alertChecks: checks }));
+  writeFileSync(data.outFile, JSON.stringify({ 
+    version: getVersion(),
+    application: data.application,
+    alertChecks: checks
+  }));
 }
 
 export default {

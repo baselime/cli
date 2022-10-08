@@ -2,8 +2,6 @@ import { Arguments, CommandBuilder } from "yargs";
 
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import spinner from "../services/spinner/index";
-import { readFileSync } from "fs";
-import yaml from "yaml";
 import handlers from "./apply/handlers/handlers";
 
 export interface Options extends BaseOptions {
