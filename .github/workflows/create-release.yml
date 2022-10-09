@@ -159,6 +159,9 @@ jobs:
     needs: [create-release]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
