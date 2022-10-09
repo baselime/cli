@@ -28,7 +28,7 @@ export async function promptForOneTimePassword(email: string): Promise<string> {
   const otpSchema = yup.string().length(8).required();
 
   const { otp } = await prompt<{ otp: string }>({
-    type: "input",
+    type: "password",
     name: "otp",
     message: `Please enter the verification code sent to ${email}`,
     required: true,
