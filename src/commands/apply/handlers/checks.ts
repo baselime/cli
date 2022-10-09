@@ -4,6 +4,7 @@ import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
 import { getMetadata, getResources } from "../../../services/parser/parser";
 import awsCronParser from "aws-cron-parser";
+import ms from "ms";
 
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES", "IN", "NOT_IN"];
 const filterCombinations = ["AND", "OR"];
@@ -25,11 +26,8 @@ const alertSchema = object({
     parameters: object({
       query: string().required(),
       threshold: string().matches(alertThresholdRegex).required(),
-      frequency: lazy((value) =>
-        typeof value === 'string'
-          ? string().strict().required()
-          : number().strict().required().min(1)),
-      duration: number().strict().required(),
+      frequency: string().strict().required(),
+      window: string().strict().required(),
     }).required().noUnknown(true).strict(),
     enabled: boolean().notRequired(),
     channels: array().min(1).of(string().required()).required(),
@@ -279,14 +277,26 @@ function validateAlerts(alerts: any[], queries: any[], channels: any[]) {
       if (missingChannels.length) {
         throw new Error(`the following channels were not found in this application: ${missingChannels.join(", ")}`);
       }
-      const { frequency } = alert.properties.parameters;
-      if (typeof frequency === "string") {
+
+      const { frequency, window } = alert.properties.parameters;
+      const convertedFrequency = ms(frequency as string);
+      const convertedWindow = ms(window as string);
+      if (!convertedFrequency) {
         try {
           awsCronParser.parse(frequency);
         } catch (error) {
-          throw new Error(`Invalid Cron expression. Please follow the specs here: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions`);
+          throw new Error(`Invalid frequency expression. Please follow the AWS Cron specs.`);
         }
       }
+
+      if(convertedFrequency < 60000) {
+        throw new Error(`Invalid frequency. Minimum is 1min.`);
+      }
+
+      if (!convertedWindow || convertedWindow < 60000) { // undefined or less than 1 minute
+        throw new Error(`Invalid window.`);
+      }
+
     } catch (error) {
       const message = `alert: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.redBright("Alert validation error")));

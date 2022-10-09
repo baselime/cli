@@ -3,8 +3,8 @@ import { client } from "../clients";
 export interface AlertParameters {
   queryId: string;
   threshold: AlertThreshold;
-  frequency: number | string;
-  duration: number;
+  frequency: string;
+  window: string;
 }
 
 export interface AlertThreshold {
