@@ -1,9 +1,8 @@
-import { BaseOptions } from "vm";
 import { Arguments, CommandBuilder } from "yargs";
 import api from "../services/api/api";
 import { readUserAuth, writeUserAuth } from "../services/auth";
 import spinner from "../services/spinner";
-import { printError } from "../shared";
+import { baseOptions, BaseOptions, printError } from "../shared";
 import { credentialsConfigured, userConfigFound, welcome } from "./auth/handlers/outputs";
 import { promptForEmail, promptForEnvironment, promptForOneTimePassword, promptReplaceExistingProfile } from "./auth/handlers/prompts";
 
@@ -19,6 +18,7 @@ export const desc = "Obtain and save credentials for an environment";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       email: { type: "string", desc: "Email of the user", alias: "e" },
       profile: { type: "string", desc: "Alias of the profile", default: "default" },
     })

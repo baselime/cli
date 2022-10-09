@@ -1,6 +1,5 @@
 import { CommandBuilder } from "yargs";
-import { baseOptions } from "../shared";
-import { BaseOptions } from "vm";
+import { BaseOptions, baseOptions } from "../shared";
 
 export const command = "environments";
 export const desc = "Manage environments";

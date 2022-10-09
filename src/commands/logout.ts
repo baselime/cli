@@ -1,7 +1,7 @@
 import { Arguments, CommandBuilder } from "yargs";
 import { deleteUserAuth } from "../services/auth";
 import spinner from "../services/spinner";
-import { BaseOptions, printError } from "../shared";
+import { baseOptions, BaseOptions, printError } from "../shared";
 
 
 
@@ -15,6 +15,7 @@ export const desc = "Remove locally-stored credentials for an environment";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       profile: { type: "string", desc: "Alias of the profile", default: "default" },
     })
     .example([

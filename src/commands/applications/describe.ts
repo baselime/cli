@@ -1,6 +1,6 @@
 import { Arguments, CommandBuilder, demandOption } from "yargs";
 
-import { authenticate, BaseOptions, printError } from "../../shared";
+import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
 import spinner from "../../services/spinner";
 import handlers from "./handlers/handlers";
 
@@ -14,6 +14,7 @@ export const desc = "Return the description of an application";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       name: {
         type: "string",
         desc: "Name of the application",

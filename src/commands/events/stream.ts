@@ -1,6 +1,6 @@
 import { Arguments, CommandBuilder } from "yargs";
 
-import { authenticate, BaseOptions, printError } from "../../shared";
+import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
 import spinner from "../../services/spinner/index";
 import handlers from "./handlers/handlers";
 import { NamespaceCombination } from "../../services/api/paths/queries";
@@ -26,6 +26,7 @@ export const desc = `Stream telemetry data to your terminal`;
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       datasets: {
         type: "array",
         desc: "The datasets to stream",

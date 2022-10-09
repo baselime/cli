@@ -1,7 +1,7 @@
 import { Arguments, CommandBuilder } from "yargs";
 import api from "../../services/api/api";
 import spinner from "../../services/spinner";
-import { BaseOptions, printError } from "../../shared";
+import { baseOptions, BaseOptions, printError } from "../../shared";
 import { promptForEmail, promptForOneTimePassword } from "../auth/handlers/prompts";
 import handlers from "./handlers/handlers";
 
@@ -19,6 +19,7 @@ export const desc = "Connect a cloud environment to Baselime";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       provider: { type: "string", desc: "The cloud provider", choices: ["aws"] },
       account: { type: "string", desc: "The account number", },
       region: { type: "string", desc: "The region", },

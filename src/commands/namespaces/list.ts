@@ -1,6 +1,6 @@
 import { Arguments, CommandBuilder } from "yargs";
 import spinner from "../../services/spinner";
-import { authenticate, BaseOptions, printError } from "../../shared";
+import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
 import handlers from "./handlers/handlers";
 
 export interface Options extends BaseOptions {
@@ -15,6 +15,7 @@ export const desc = "List all the ingested namespaces";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       application: { type: "string", desc: "The application" },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },

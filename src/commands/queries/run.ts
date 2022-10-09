@@ -1,6 +1,6 @@
 import { Arguments, CommandBuilder } from "yargs";
 import spinner from "../../services/spinner";
-import { authenticate, BaseOptions, printError } from "../../shared";
+import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
 import handlers from "./handlers/handlers";
 import { promptApplicationSelect, promptFrom, promptQuerySelect, promptTo } from "./prompts/run";
 
@@ -17,6 +17,7 @@ export const desc = "Run a query";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       application: { type: "string", desc: "Name of the application", alias: "app" },
       id: { type: "string", desc: "Query id" },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins" },

@@ -1,6 +1,6 @@
 import { Arguments, CommandBuilder } from "yargs";
 import spinner from "../../services/spinner";
-import { authenticate, BaseOptions, printError } from "../../shared";
+import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
 import handlers from "./handlers/handlers";
 
 export interface Options extends BaseOptions {
@@ -13,6 +13,7 @@ export const desc = "List all the channels";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       application: { type: "string", desc: "Name of the application", alias: "app" },
     })
     .example([

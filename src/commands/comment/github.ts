@@ -3,7 +3,7 @@ import { Arguments, CommandBuilder } from "yargs";
 import api from "../../services/api/api";
 import { AlertCheck } from "../../services/api/paths/alerts";
 import spinner from "../../services/spinner";
-import { authenticate, BaseOptions, printError } from "../../shared";
+import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
 
 export interface Options extends BaseOptions {
   repo: string;
@@ -19,6 +19,7 @@ export const desc = "Post a Baselime comment to GitHub";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
+      ...baseOptions,
       repo: { type: "string", desc: "Name of github repository", required: true },
       "pull-request": { type: "number", desc: "Pull-request number", required: false },
       "comnmit": { type: "string", desc: "Commit Id", required: false },
