@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.0.21 (9th October 2022)
+
+- Add Dockerfile
+- Imporoved prompts
+- Improved outputs
+- Bug fixes
+
 ### 0.0.20 (8th October 2022)
 
 - Add support for `comment` commands
