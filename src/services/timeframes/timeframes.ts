@@ -1,10 +1,10 @@
-import parse from 'parse-duration'
+import ms from 'ms'
 import dayjs from "dayjs";
 
 export function getTimeframe(from: string, to: string): { from: number; to: number } {
   const now = dayjs();
-  const f = now.subtract(parse(from), "milliseconds");
-  const t = to === "now" ? now : now.subtract(parse(to), "milliseconds");
+  const f = now.subtract(ms(from), "milliseconds");
+  const t = to === "now" ? now : now.subtract(ms(to), "milliseconds");
 
   return {
     from: f.valueOf(),
