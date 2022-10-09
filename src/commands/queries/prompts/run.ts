@@ -11,6 +11,10 @@ export async function promptApplicationSelect(): Promise<Application | undefined
   const applications = (await api.applicationsList());
   s.succeed();
 
+  if (applications.length === 0) {
+    throw new Error("No application found. Please create at least one Baselime application.");
+  }
+
   const { name } = await prompt<{ name: string }>({
     type: "select",
     name: "name",
@@ -26,6 +30,10 @@ export async function promptQuerySelect(application?: string): Promise<Query | u
   s.start("Fetching your queries");
   const queries = (await api.queriesList(application));
   s.succeed();
+
+  if (queries.length === 0) {
+    throw new Error("No query found. Please create at least one Baselime query.");
+  }
 
   const { id } = await prompt<{ id: string }>({
     type: "select",

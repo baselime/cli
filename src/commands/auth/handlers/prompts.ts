@@ -73,6 +73,10 @@ export async function promptForEnvironment(
     })
     .flat();
 
+  if (environments.length === 0) {
+    throw new Error("No environment found. Please create at least one Baselime environment.");
+  }
+
   const { environmentId } = await prompt<{ environmentId: string }>({
     type: "select",
     name: "environmentId",
