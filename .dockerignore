@@ -1,0 +1,9 @@
+.*
+!.git
+!.env
+Dockerfile
+build/
+bin/
+node_modules/
+*.png
+*.md
