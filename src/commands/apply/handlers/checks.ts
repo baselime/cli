@@ -91,7 +91,7 @@ const chartSchema = object({
     type: string().oneOf(chartTypes).required(),
     parameters: object({
       query: string().required(),
-      duration: number().strict().required(),
+      window: string().strict().required(),
       xaxis: string().notRequired(),
       yaxis: string().notRequired(),
     }).required().noUnknown(true).strict(),
@@ -289,7 +289,7 @@ function validateAlerts(alerts: any[], queries: any[], channels: any[]) {
         }
       }
 
-      if(convertedFrequency < 60000) {
+      if (convertedFrequency < 60000) {
         throw new Error(`Invalid frequency. Minimum is 1min.`);
       }
 
@@ -316,6 +316,11 @@ function validateCharts(charts: any[], queries: any[]) {
       const query = queries.find(query => query.id === chart.properties.parameters.query);
       if (!query) {
         throw new Error(`the following query was not found in this application: ${chart.properties.parameters.query}`);
+      }
+
+      const converted = ms(chart.properties.parameters.window as string);
+      if (!converted || converted < 60000 * 15) { // minimum 15 mins
+        throw new Error("Invalid window. Minimum is 15min.");
       }
     } catch (error) {
       const message = `chart: ${item.id}: ${error}`;

@@ -15,7 +15,7 @@ export interface Chart {
 
 interface ChartParameters {
   queryId: string;
-  duration: number;
+  string: number;
   xaxis?: string;
   yaxis?: string;
 }
