@@ -1,11 +1,11 @@
-import { outputJson, readJson, remove} from "fs-extra";
+import { outputJson, readJson, remove } from "fs-extra";
 import { homedir } from "os";
 import { join } from "path";
 
 export interface UserConfig {
   apiKey: string;
-  workspace: string;
-  environment: string;
+  workspace?: string;
+  environment?: string;
 }
 
 export async function writeUserAuth(
@@ -26,6 +26,8 @@ export async function deleteUserAuth(
 }
 
 export async function readUserAuth(profile: string): Promise<UserConfig> {
+  const { BASELIME_API_KEY: apiKey } = process.env;
+  if (apiKey) return { apiKey };
   const configPath = getAuthProfilePath(profile);
   const userConfig = await readJson(configPath);
   return userConfig;
