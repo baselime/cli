@@ -4,12 +4,10 @@ import { existsSync, rmSync } from "fs";
 import { authenticate, baseOptions, BaseOptions, printError } from "../shared";
 import spinner from "../services/spinner";
 import * as prompts from "./applications/handlers/prompts";
-import { basename, resolve } from "path";
 import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
 import { init } from "./init/handlers";
-import chalk from "chalk";
-import { promptTemplateSelect } from "./init/prompts";
+import { promptForApplication, promptTemplateSelect } from "./init/prompts";
 
 export interface Options extends BaseOptions {
   application?: string;
@@ -67,7 +65,7 @@ export async function handler(argv: Arguments<Options>) {
   mkdirSync(folder);
   await authenticate(profile);
 
-  application ??= basename(resolve());
+  application ??= await promptForApplication();
   description ??= "";
   template ??= await promptTemplateSelect();
 

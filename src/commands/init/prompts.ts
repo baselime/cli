@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import { prompt } from "enquirer";
+import { basename, resolve } from "path";
 import api from "../../services/api/api";
 import spinner from "../../services/spinner";
 
@@ -21,12 +22,29 @@ export async function promptFunctionsSelect(provider: string): Promise<string[] 
   const fns = (await api.functionsList(provider)).map(f => f.name).sort();
   s.succeed();
 
-  const { functions } = await prompt<{ functions: string[] }>({
-    type: "multiselect",
-    name: "functions",
-    message: `${chalk.bold("Select the serverless functions in this application")} (Select multiple with [Space] and confirm with [Enter])`,
-    choices: fns.map(fn => { return { name: fn, value: fn } }),
-  });
+  if (fns.length === 0) {
+    throw new Error("No functions found. Please make sure you have at least one cloud function deployed in this environment.");
+  }
+
+  let functions: string[] = [];
+  while (functions.length === 0) {
+    const res = await prompt<{ functions: string[] }>({
+      type: "multiselect",
+      name: "functions",
+      message: `${chalk.bold("Select the serverless functions in this application")} (Select multiple with [Space] and confirm with [Enter])`,
+      choices: fns.map(fn => { return { name: fn, value: fn } }),
+    });
+    functions = res.functions;
+    
+    if (functions.length === 0) {
+      await prompt<{ confirm: boolean }>({
+        type: "confirm",
+        name: "confirm",
+        initial: true,
+        message: `Please make sure to select with [Space] before confirm with [Enter])`,
+      });
+    }
+  }
 
   return functions;
 }
@@ -73,12 +91,43 @@ export async function promptStacksSelect(provider: string): Promise<string[] | u
   const allStacks = (await api.stacksList(provider)).map(s => s.name).sort();
   s.succeed();
 
-  const { stacks } = await prompt<{ stacks: string[] }>({
-    type: "multiselect",
-    name: "stacks",
-    message: `${chalk.bold("Please select CloudFormation stacks for this application")}`,
-    choices: allStacks.map(stack => { return { name: stack, value: stack } }),
-  });
+  if (allStacks.length === 0) {
+    throw new Error("No stacks found. Please make sure you have at least one CloudFormation Stack in this environment.");
+  }
+
+  let stacks: string[] = [];
+  while(stacks.length === 0) {
+    const res = await prompt<{ stacks: string[] }>({
+      type: "multiselect",
+      name: "stacks",
+      message: `${chalk.bold("Please select CloudFormation stacks for this application (Select multiple with [Space] and confirm with [Enter])")}`,
+      choices: allStacks.map(stack => { return { name: stack, value: stack } }),
+    });
+    stacks = res.stacks;
+  
+    if (stacks.length === 0) {
+      await prompt<{ confirm: boolean }>({
+        type: "confirm",
+        name: "confirm",
+        initial: true,
+        message: `Please make sure to select with [Space] before confirm with [Enter])`,
+      });
+    }
+  }
+ 
 
   return stacks;
+}
+
+export async function promptForApplication(): Promise<string> {
+
+  const { application } = await prompt<{ application: string }>({
+    type: "input",
+    name: "application",
+    message: "What's the name of this application?",
+    required: true,
+    initial: basename(resolve()),
+  });
+
+  return application.replace(/[^\w\s]/gi, '-');
 }
