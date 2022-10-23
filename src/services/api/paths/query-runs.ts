@@ -2,7 +2,9 @@ import { client } from "../clients";
 
 export interface QueryRun {
   id: number;
-  queryId: string,
+  query: {
+    id: string;
+  };
   workspaceId: string;
   environmentId: string;
   application: string;
