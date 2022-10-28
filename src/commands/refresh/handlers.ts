@@ -1,4 +1,5 @@
 import { writeFileSync } from "fs";
+import { outputFileSync } from "fs-extra";
 import { readFile } from "fs/promises";
 import { statusType } from "../../services/api/paths/diffs";
 import { parse, stringify, stringifyResources } from "../../services/parser/parser";
@@ -91,7 +92,10 @@ async function refresh(config: string, skip: boolean = false) {
     // @ts-ignore
     const dd = stringifyResources({ queries: newQueries, alerts: newAlerts, channels: newChannels, charts: newCharts, dashboards: newDashboards });
     if (!dd) return;
-    writeFileSync(`${config}/imported_${(new Date()).valueOf()}.yml`, dd);
+    const now = (new Date()).toISOString();
+    const path =`${config}/imported/${now}.yml`;
+    outputFileSync(path, dd);
+    console.log(`Imported resources stored in ${path}. Please do not delete this file.`);
   })();
 
   const applicationPromise = (async () => {
