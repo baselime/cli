@@ -9,7 +9,7 @@ import ms from "ms";
 const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES", "IN", "NOT_IN"];
 const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
-const channelTypes = ["email", "slack", "webhook"];
+const channelTypes = ["slack", "webhook"];
 const groupByTypes = ["string", "number", "boolean"];
 
 const queryFilterRegex = new RegExp("^([\\w.@]+)\\s(" + operations.join("|") + ")\\s'?(.*?)'?$");
@@ -45,10 +45,6 @@ const channelSchema = object({
 
 const webhookSchema = object({
   webhook: string().url().required().typeError('Webhook must be valid URL')
-});
-
-const emailSchema = object({
-  email: string().email().required()
 });
 
 const querySchema = object({
@@ -186,11 +182,6 @@ function validateChannels(channels: any) {
 
       if (channel.properties.type === 'webhook') {
         const promises = channel.properties.targets.map((webhook: string) => webhookSchema.validate({ webhook }))
-        await Promise.all(promises)
-      }
-
-      if (channel.properties.type === 'email') {
-        const promises = channel.properties.targets.map((email: string) => emailSchema.validate({ email }))
         await Promise.all(promises)
       }
 

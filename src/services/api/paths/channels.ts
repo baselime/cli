@@ -14,7 +14,8 @@ export interface Channel {
 }
 
 export enum ChannelTypes {
-  EMAIL = "email",
+  SLACK = "slack",
+  WEBHOOK = "webhook",
 }
 
 
