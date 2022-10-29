@@ -2,24 +2,64 @@ import { client } from "../clients";
 
 export interface QueryParameters {
   dataset: string;
-  groupBys?: string[];
   namespaces?: string[];
   namespaceCombination?: NamespaceCombination;
   filters?: Array<QueryFilter>;
   filterCombination: "AND" | "OR";
-  calculations: Array<{
-    key: string;
-    operator: string;
-  }>;
+  calculations: QueryCalculation[];
+  groupBy?: QueryGroupBy;
 }
 
 export interface QueryFilter {
   key: string;
-  operation: string;
+  operation: QueryOperation;
   value: string | number | boolean;
   type: string;
 }
 
+export interface QueryGroupBy { 
+  type: "string" | "number" | "boolean";
+  value: string;
+  orderBy?: string;
+  limit?: number; 
+  order?: "ASC" | "DESC";
+}
+
+export interface QueryCalculation {
+  key: string;
+  operator: QueryOperator;
+}
+
+export enum QueryOperator {
+  COUNT = "COUNT",
+  MAX = "MAX",
+  MIN = "MIN",
+  SUM = "SUM",
+  AVG = "AVG",
+  MEDIAN = "MEDIAN",
+  P001 = "P001",
+  P01 = "P01",
+  P05 = "P05",
+  P10 = "P10",
+  P25 = "P25",
+  P75 = "P75",
+  P90 = "P90",
+  P95 = "P95",
+  P99 = "P99",
+  P999 = "P999",
+}
+
+export enum QueryOperation {
+  EQUAL = "=",
+  DIFFERENT = "!=",
+  GREATER_THAN = ">",
+  GREATER_THAN_EQUAL = ">=",
+  LOWER_THAN = "<",
+  LOWER_THAN_EQUAL = "<=",
+  INCLUDES = "INCLUDES",
+  IN = "IN",
+  NOT_IN = "NOT_IN",
+}
 export interface Query {
   parameters: QueryParameters;
   id: string;

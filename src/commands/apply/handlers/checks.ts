@@ -68,6 +68,9 @@ const querySchema = object({
       groupBy: object({
         type: string().oneOf(groupByTypes).min(1).required(),
         value: string().min(1).required(),
+        orderBy: string().min(1).notRequired(),
+        limit: number().min(1).notRequired(),
+        order: string().oneOf(["ACS", "DESC"]).notRequired(),
       }).nullable().notRequired().default(undefined).noUnknown(true).strict(),
     }).noUnknown(true).required().strict(),
   }).noUnknown(true).required().strict(),
