@@ -49,9 +49,9 @@ export async function handler(argv: Arguments<Options>) {
  
   email ??= (await promptForEmail());
 
-  // s.start(`Sending email verification request`);
-  // await api.generateOneTimePassword(email);
-  // s.succeed();
+  s.start(`Sending email verification request`);
+  await api.generateOneTimePassword(email);
+  s.succeed();
 
   const otp = await promptForOneTimePassword(email);
 
