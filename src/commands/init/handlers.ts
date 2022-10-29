@@ -5,7 +5,7 @@ import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../utils";
 import { promptTemplateVariables } from "../applications/handlers/prompts";
 import { DeploymentApplication } from "../apply/handlers/checks";
-import { promptFunctionsSelect, promptStacksSelect } from "./prompts";
+import { promptStacksSelect } from "./prompts";
 const packageJson = require("../../../package.json");
 
 
@@ -20,10 +20,6 @@ export async function init(
 
   const stacks = await promptStacksSelect(provider);
   
-  let fns: string[] | undefined = [];
-  if(!stacks || !stacks.length) {
-    fns = await promptFunctionsSelect(provider);
-  }
   
   s.start("Generating your config folder");
 
@@ -34,7 +30,6 @@ export async function init(
     provider,
     infrastructure: {
       stacks,
-      functions: fns?.length ? fns : undefined,
     }
   };
 

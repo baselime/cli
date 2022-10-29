@@ -107,7 +107,6 @@ const metadataSchema = object({
   description: string().notRequired(),
   provider: string().required().oneOf(["aws"]),
   infrastructure: object({
-    functions: array().of(string()).notRequired().nullable(),
     stacks: array().of(string()).notRequired().nullable(),
   }).noUnknown(true).notRequired().strict(),
 }).noUnknown(true).strict();
@@ -142,9 +141,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
   const metadata = await getMetadata(folder);
   try {
     const m = await metadataSchema.validate(metadata);
-    if (m.infrastructure?.stacks && m.infrastructure?.functions) {
-      throw new Error("Can only specify one of infrastructure.stacks or infrastructure.functions");
-    }
   } catch (error) {
     s.fail(chalk.bold(chalk.redBright("Failed to validate the index.yml file")));
     const message = `error: ${error}`;

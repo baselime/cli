@@ -10,7 +10,7 @@ export interface DiffCreateRequest {
     provider: string;
     version: string;
     infrastructure?: {
-      functions?: string[];
+      stacks?: string[];
     }
   };
   reverse: boolean;

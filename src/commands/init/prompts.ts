@@ -4,51 +4,6 @@ import { basename, resolve } from "path";
 import api from "../../services/api/api";
 import spinner from "../../services/spinner";
 
-export async function promptFunctionsSelect(provider: string): Promise<string[] | undefined> {
-  const { confirm } = await prompt<{ confirm: boolean }>({
-    type: "confirm",
-    name: "confirm",
-    initial: true,
-    message: `Manually select cloud functions for this application? (Select multiple with [Space] and confirm with [Enter])`,
-  });
-
-  if (!confirm) {
-    console.log("This application will encompass all resources in your cloud environment");
-    return;
-  }
-
-  const s = spinner.get();
-  s.start(`Fetching your ${provider} cloud functions`);
-  const fns = (await api.functionsList(provider)).map(f => f.name).sort();
-  s.succeed();
-
-  if (fns.length === 0) {
-    throw new Error("No functions found. Please make sure you have at least one cloud function deployed in this environment.");
-  }
-
-  let functions: string[] = [];
-  while (functions.length === 0) {
-    const res = await prompt<{ functions: string[] }>({
-      type: "multiselect",
-      name: "functions",
-      message: `${chalk.bold("Select the serverless functions in this application")} (Select multiple with [Space] and confirm with [Enter])`,
-      choices: fns.map(fn => { return { name: fn, value: fn } }),
-    });
-    functions = res.functions;
-    
-    if (functions.length === 0) {
-      await prompt<{ confirm: boolean }>({
-        type: "confirm",
-        name: "confirm",
-        initial: true,
-        message: `Please make sure to select with [Space] before confirm with [Enter])`,
-      });
-    }
-  }
-
-  return functions;
-}
-
 export async function promptTemplateSelect(): Promise<string | undefined> {
 
   const { confirm } = await prompt<{ confirm: boolean }>({

@@ -44,8 +44,8 @@ export async function getMetadata(folder: string): Promise<DeploymentApplication
   try {
     const file = (await readFile(`${folder}/index.yml`)).toString()
     const metadata = yaml.parse(file);
-    if (metadata.infrastructure && !metadata.infrastructure.functions) {
-      metadata.infrastructure.functions = undefined;
+    if (metadata.infrastructure && !metadata.infrastructure.stacks?.length) {
+      metadata.infrastructure.stacks = undefined;
     }
     return metadata;
   } catch (error) {
