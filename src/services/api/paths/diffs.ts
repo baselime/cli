@@ -19,7 +19,6 @@ export interface DiffCreateRequest {
 enum ResourceTypes {
   queries = 'queries',
   alerts = 'alerts',
-  charts = 'charts',
   channels = 'channels',
 }
 

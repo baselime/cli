@@ -10,7 +10,6 @@ import cli from "./paths/cli";
 import iam from "./paths/iam";
 import environments from "./paths/environments";
 import channels from "./paths/channels";
-import charts from "./paths/charts";
 import templates from "./paths/templates";
 import diffs from "./paths/diffs";
 import infrastructure from "./paths/infrastructure";
@@ -29,7 +28,6 @@ export default {
   ...iam,
   ...environments,
   ...channels,
-  ...charts,
   ...templates,
   ...diffs,
   ...infrastructure,

@@ -10,7 +10,6 @@ const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES", "IN", "NOT_IN"]
 const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["email", "slack", "webhook"];
-const chartTypes = ["stats", "timeseries", "bar"];
 const groupByTypes = ["string", "number", "boolean"];
 
 const queryFilterRegex = new RegExp("^([\\w.@]+)\\s(" + operations.join("|") + ")\\s'?(.*?)'?$");
@@ -76,21 +75,6 @@ const querySchema = object({
   }).noUnknown(true).required().strict(),
 }).noUnknown(true).strict();
 
-const chartSchema = object({
-  type: string().equals(["chart"]),
-  id: string().required().matches(idRegex),
-  properties: object({
-    name: string().notRequired(),
-    type: string().oneOf(chartTypes).required(),
-    parameters: object({
-      query: string().required(),
-      window: string().strict().required(),
-      xaxis: string().notRequired(),
-      yaxis: string().notRequired(),
-    }).required().noUnknown(true).strict(),
-  }).required().noUnknown(true).strict(),
-}).noUnknown(true).strict();
-
 const metadataSchema = object({
   version: string().required(),
   application: string().required().matches(idRegex),
@@ -104,13 +88,11 @@ const metadataSchema = object({
 export type DeploymentQuery = InferType<typeof querySchema>;
 export type DeploymentAlert = InferType<typeof alertSchema>;
 export type DeploymentChannel = InferType<typeof channelSchema>;
-export type DeploymentChart = InferType<typeof chartSchema>;
 export type DeploymentApplication = InferType<typeof metadataSchema>;
 export interface DeploymentResources {
   queries?: DeploymentQuery[];
   alerts?: DeploymentAlert[];
   channels?: DeploymentChannel[];
-  charts?: DeploymentChart[];
 }
 
 
@@ -149,7 +131,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
     queries: [] as any[],
     alerts: [] as any[],
     channels: [] as any[],
-    charts: [] as any[],
   }
 
   Object.keys(data).forEach(id => {
@@ -170,9 +151,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
       case "channel":
         resources.channels.push({ ...resource, id, type: undefined });
         break;
-      case "chart":
-        resources.charts.push({ ...resource, id, type: undefined });
-        break;
       default:
         const m = `${id}: unknown resource type, ${type}`;
         s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
@@ -180,13 +158,12 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
     }
   });
 
-  const { queries, alerts, channels, charts } = resources;
+  const { queries, alerts, channels } = resources;
 
   await Promise.all([
     ...validateAlerts(alerts, queries, channels),
     ...validateQueries(queries),
     ...validateChannels(channels),
-    ...validateCharts(charts, queries),
   ]);
 
   s.succeed("Valid configuration folder");
@@ -282,31 +259,6 @@ function validateAlerts(alerts: any[], queries: any[], channels: any[]) {
     } catch (error) {
       const message = `alert: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.redBright("Alert validation error")));
-      console.log(message);
-      throw new Error(message);
-    }
-  });
-
-  return promises;
-}
-
-function validateCharts(charts: any[], queries: any[]) {
-  const s = spinner.get();
-  const promises = charts.map(async item => {
-    try {
-      const chart = await chartSchema.validate(item);
-      const query = queries.find(query => query.id === chart.properties.parameters.query);
-      if (!query) {
-        throw new Error(`the following query was not found in this application: ${chart.properties.parameters.query}`);
-      }
-
-      const converted = ms(chart.properties.parameters.window as string);
-      if (!converted || converted < 60000 * 15) { // minimum 15 mins
-        throw new Error("Invalid window. Minimum is 15min.");
-      }
-    } catch (error) {
-      const message = `chart: ${item.id}: ${error}`;
-      s.fail(chalk.bold(chalk.redBright("Chart validation error")));
       console.log(message);
       throw new Error(message);
     }

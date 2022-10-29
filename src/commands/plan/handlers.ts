@@ -33,7 +33,7 @@ export async function verifyPlan(metadata: DeploymentApplication, resources: Dep
 
 export async function displayDiff(application: string, diff: DiffResponse) {
   const s = spinner.get();
-  const { resources: { queries, alerts, channels, charts }, application: appDiff } = diff;
+  const { resources: { queries, alerts, channels }, application: appDiff } = diff;
 
   const applicationTable = new Table({ chars: blankChars });
   applicationTable.push(getYamlString({ status: appDiff.status, value: appDiff.application }));
@@ -72,24 +72,13 @@ export async function displayDiff(application: string, diff: DiffResponse) {
     value[resource.id!] = { type: "channel", properties: resource.properties };
     table.push(getYamlString({ status, value }));
   });
-  charts.forEach(c => {
-    const { status, resource } = c;
-    if (status === statusType.VALUE_UNCHANGED) return;
-
-    const value: Record<string, any> = {};
-    value[resource.id!] = {
-      type: "chart",
-      properties: { ...resource.properties, parameters: { ...resource.properties.parameters, query: new Ref(resource.properties.parameters.query) } }
-    };
-    table.push(getYamlString({ status, value }));
-  });
 
 
   console.log("\n\n" + chalk.bold(chalk.cyanBright(`Application: ${application}`)))
   console.log("\n\n" + applicationTable.toString() + "\n\n");
   console.log("\n\n" + table.toString() + "\n\n");
 
-  const allResources = [...queries, ...alerts, ...channels, ...charts];
+  const allResources = [...queries, ...alerts, ...channels];
   const applicationStatus = (() => {
     switch (appDiff.status) {
       case statusType.VALUE_CREATED:
