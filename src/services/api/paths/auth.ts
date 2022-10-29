@@ -32,7 +32,6 @@ export interface Environment {
 export interface KeyPermissions {
   events: boolean;
   queries: boolean;
-  dashboards: boolean;
   alerts: boolean;
   defects: boolean;
   applications: boolean;

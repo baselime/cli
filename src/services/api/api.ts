@@ -11,7 +11,6 @@ import iam from "./paths/iam";
 import environments from "./paths/environments";
 import channels from "./paths/channels";
 import charts from "./paths/charts";
-import dashboards from "./paths/dashboards";
 import templates from "./paths/templates";
 import diffs from "./paths/diffs";
 import infrastructure from "./paths/infrastructure";
@@ -31,7 +30,6 @@ export default {
   ...environments,
   ...channels,
   ...charts,
-  ...dashboards,
   ...templates,
   ...diffs,
   ...infrastructure,

@@ -1,4 +1,4 @@
-import { QueryFilter } from "./services/api/paths/queries";
+import { QueryFilter, QueryOperation } from "./services/api/paths/queries";
 
 export function isUrl(s: string): boolean {
   try {
@@ -31,7 +31,7 @@ export function parseFilter(input: string): QueryFilter {
   }
 
   const key = parts[1];
-  const operation = parts[2];
+  const operation = parts[2] as QueryOperation;
   const value = parts[3];
 
   if (String(Number(value)) === value) {

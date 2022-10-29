@@ -5,7 +5,7 @@ import { statusType } from "../../services/api/paths/diffs";
 import { parse, stringify, stringifyResources } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { getVersion } from "../../shared";
-import checks, { DeploymentAlert, DeploymentChannel, DeploymentChart, DeploymentDashboard, DeploymentQuery, DeploymentResources } from "../apply/handlers/checks";
+import checks, { DeploymentAlert, DeploymentChannel, DeploymentChart, DeploymentQuery, DeploymentResources } from "../apply/handlers/checks";
 import { verifyPlan } from "../plan/handlers";
 import { promptRefresh } from "./prompts";
 
@@ -22,11 +22,10 @@ async function refresh(config: string, skip: boolean = false) {
     process.exit(0);
   }
 
-  const { resources: { queries, alerts, dashboards, channels, charts }, application: appDiff } = diff;
+  const { resources: { queries, alerts, channels, charts }, application: appDiff } = diff;
   const allResources = [
     ...queries,
     ...alerts,
-    ...dashboards,
     ...channels,
     ...charts,
   ];
@@ -41,7 +40,6 @@ async function refresh(config: string, skip: boolean = false) {
     const data = parse(s) || {};
     const updatedQueries: DeploymentQuery[] = [];
     const updatedAlerts: DeploymentAlert[] = [];
-    const updatedDashboards: DeploymentDashboard[] = [];
     const updatedChannels: DeploymentChannel[] = [];
     const updatedCharts: DeploymentChart[] = [];
     Object.keys(data).forEach(key => {
@@ -71,15 +69,12 @@ async function refresh(config: string, skip: boolean = false) {
         case "chart":
           updatedCharts.push(data[key] as DeploymentChart);
           break;
-        case "dashboard":
-          updatedDashboards.push(data[key] as DeploymentDashboard);
-          break;
         default:
           break;
       }
     });
 
-    const dd = stringifyResources({ queries: updatedQueries, alerts: updatedAlerts, channels: updatedChannels, charts: updatedCharts, dashboards: updatedDashboards });
+    const dd = stringifyResources({ queries: updatedQueries, alerts: updatedAlerts, channels: updatedChannels, charts: updatedCharts });
     writeFileSync(`${filename}`, dd);
   });
 
@@ -88,9 +83,8 @@ async function refresh(config: string, skip: boolean = false) {
     const newAlerts = alerts.filter(a => a.status === statusType.VALUE_CREATED).map(q => q.resource);
     const newChannels = channels.filter(c => c.status === statusType.VALUE_CREATED).map(q => q.resource);
     const newCharts = charts.filter(c => c.status === statusType.VALUE_CREATED).map(q => q.resource);
-    const newDashboards = dashboards.filter(d => d.status === statusType.VALUE_CREATED).map(q => q.resource);
     // @ts-ignore
-    const dd = stringifyResources({ queries: newQueries, alerts: newAlerts, channels: newChannels, charts: newCharts, dashboards: newDashboards });
+    const dd = stringifyResources({ queries: newQueries, alerts: newAlerts, channels: newChannels, charts: newCharts });
     if (!dd) return;
     const now = (new Date()).toISOString();
     const path =`${config}/imported/${now}.yml`;

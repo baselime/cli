@@ -69,7 +69,7 @@ export function stringify(data: Record<string, any>): string {
 
 export function stringifyResources(resources: DeploymentResources) {
   const data: Record<string, any> = {};
-  const { queries, alerts, channels, dashboards, charts } = resources;
+  const { queries, alerts, channels, charts } = resources;
   queries?.forEach((elt) => {
     data[elt.id!] = {
       type: "query",
@@ -110,17 +110,6 @@ export function stringifyResources(resources: DeploymentResources) {
         parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) }
       },
       id: undefined,
-    };
-  });
-
-  dashboards?.forEach((elt) => {
-    data[elt.id!] = {
-      type: "dashboard",
-      properties: {
-        ...elt.properties,
-        charts: elt.properties.charts.map(c => new Ref(c)),
-        id: undefined,
-      }
     };
   });
 

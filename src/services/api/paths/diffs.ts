@@ -21,7 +21,6 @@ enum ResourceTypes {
   alerts = 'alerts',
   charts = 'charts',
   channels = 'channels',
-  dashboards = 'dashboards',
 }
 
 export enum statusType {

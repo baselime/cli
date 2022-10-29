@@ -76,16 +76,6 @@ const querySchema = object({
   }).noUnknown(true).required().strict(),
 }).noUnknown(true).strict();
 
-const dashboardSchema = object({
-  type: string().equals(["dashboard"]),
-  id: string().required().matches(idRegex),
-  properties: object({
-    name: string().notRequired(),
-    description: string().notRequired(),
-    charts: array().min(1).of(string().required()).required(),
-  }).noUnknown(true).required().strict(),
-}).noUnknown(true).strict();
-
 const chartSchema = object({
   type: string().equals(["chart"]),
   id: string().required().matches(idRegex),
@@ -115,14 +105,12 @@ export type DeploymentQuery = InferType<typeof querySchema>;
 export type DeploymentAlert = InferType<typeof alertSchema>;
 export type DeploymentChannel = InferType<typeof channelSchema>;
 export type DeploymentChart = InferType<typeof chartSchema>;
-export type DeploymentDashboard = InferType<typeof dashboardSchema>;
 export type DeploymentApplication = InferType<typeof metadataSchema>;
 export interface DeploymentResources {
   queries?: DeploymentQuery[];
   alerts?: DeploymentAlert[];
   channels?: DeploymentChannel[];
   charts?: DeploymentChart[];
-  dashboards?: DeploymentDashboard[];
 }
 
 
@@ -162,7 +150,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
     alerts: [] as any[],
     channels: [] as any[],
     charts: [] as any[],
-    dashboards: [] as any[],
   }
 
   Object.keys(data).forEach(id => {
@@ -186,9 +173,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
       case "chart":
         resources.charts.push({ ...resource, id, type: undefined });
         break;
-      case "dashboard":
-        resources.dashboards.push({ ...resource, id, type: undefined });
-        break;
       default:
         const m = `${id}: unknown resource type, ${type}`;
         s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
@@ -196,14 +180,13 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
     }
   });
 
-  const { queries, alerts, channels, charts, dashboards } = resources;
+  const { queries, alerts, channels, charts } = resources;
 
   await Promise.all([
     ...validateAlerts(alerts, queries, channels),
     ...validateQueries(queries),
     ...validateChannels(channels),
     ...validateCharts(charts, queries),
-    ...validateDashboards(dashboards, charts),
   ]);
 
   s.succeed("Valid configuration folder");
@@ -332,26 +315,6 @@ function validateCharts(charts: any[], queries: any[]) {
   return promises;
 }
 
-function validateDashboards(dashboards: any[], charts: any[]) {
-  const s = spinner.get();
-
-  const promises = dashboards.map(async item => {
-    try {
-      const dashboard = await dashboardSchema.validate(item);
-      const missingCharts = dashboard.properties.charts.filter(id => !charts.some(c => c.id === id))
-      if (missingCharts.length) {
-        throw new Error(`the following charts were not found in this application: ${missingCharts.join(", ")}`);
-      }
-    } catch (error) {
-      const message = `dashboard: ${item.id}: ${error}`;
-      s.fail(chalk.bold(chalk.redBright("Dashboard validation error")));
-      console.log(message);
-      throw new Error(message);
-    }
-  });
-
-  return promises;
-}
 
 export default {
   validate,
