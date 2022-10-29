@@ -70,6 +70,7 @@ function notify() {
   );
   console.log("https://docs.baselime.io/cli/anonymous-telemetry");
   console.log();
+  record("downloaded", {});
 }
 
 function record(command: string, properties: any): Promise<any> {
