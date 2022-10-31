@@ -1,5 +1,15 @@
 # Changelog
 
+### 0.0.22 (31st October 2022)
+
+- Add support for `orderBy`, `limit` and `order` in queries
+- Add support for geting API key from environment variable
+- `imported` folder for resources imported with `baselime refresh`
+- Deprecate dashboards
+- Deprecate charts
+- Deprecate email alerts
+- Deprecate individual functions in `index.yml` file
+
 ### 0.0.21 (9th October 2022)
 
 - Add Dockerfile
