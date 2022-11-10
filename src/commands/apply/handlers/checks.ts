@@ -60,6 +60,11 @@ const querySchema = object({
       filters: array().of(string().matches(queryFilterRegex)).notRequired(),
       filterCombination: string().oneOf(filterCombinations).notRequired().typeError('filterCombination must be set to AND or OR.'),
       namespaceCombination: string().oneOf(namespaceCombinations).notRequired().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
+      needle: object({
+        value: string().required(),
+        isRegex: boolean().notRequired(),
+        matchCase: boolean().notRequired()
+      }).nullable().notRequired().noUnknown(true).strict(),
       groupBy: object({
         type: string().oneOf(groupByTypes).min(1).required(),
         value: string().min(1).required(),

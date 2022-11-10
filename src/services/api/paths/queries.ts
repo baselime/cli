@@ -8,6 +8,7 @@ export interface QueryParameters {
   filterCombination: "AND" | "OR";
   calculations: QueryCalculation[];
   groupBy?: QueryGroupBy;
+  needle?: SearchNeedle;
 }
 
 export interface QueryFilter {
