@@ -82,8 +82,8 @@ export enum NamespaceCombination {
 
 export interface SearchNeedle {
   item: string;
-  isRegex: boolean;
-  matchCase: boolean;
+  isRegex?: boolean;
+  matchCase?: boolean;
 }
 
 
