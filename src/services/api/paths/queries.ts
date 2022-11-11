@@ -1,7 +1,7 @@
 import { client } from "../clients";
 
 export interface QueryParameters {
-  dataset: string;
+  datasets: string[];
   namespaces?: string[];
   namespaceCombination?: NamespaceCombination;
   filters?: Array<QueryFilter>;

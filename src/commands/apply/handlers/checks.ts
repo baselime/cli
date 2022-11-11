@@ -54,7 +54,11 @@ const querySchema = object({
     name: string().notRequired(),
     description: string().notRequired(),
     parameters: object({
-      dataset: string().required().typeError('Dataset must be set to an existing dataset, i.e logs.'),
+      datasets: array()
+        .min(1)
+        .of(string())
+        .required()
+        .typeError("Must include at least 1 dataset"),
       namespaces: array().of(string()).notRequired(),
       calculations: array().min(1).of(string().matches(/(^[a-zA-Z0-9]*)\(([^\)]+)\)|(COUNT)/)).required().typeError('Must include at least 1 valid calculation.'),
       filters: array().of(string().matches(queryFilterRegex)).notRequired(),
