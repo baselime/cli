@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.0.23 (11th November 2022)
+
+- Add support for search needles in queries
+- Add support for multiple datasets in queries
+
 ### 0.0.22 (31st October 2022)
 
 - Add support for `orderBy`, `limit` and `order` in queries
