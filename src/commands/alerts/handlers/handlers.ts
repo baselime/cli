@@ -15,7 +15,7 @@ async function check(format: OutputFormat, data: {application: string; id?: stri
   const s = spinner.get();
   s.start("Checking...");
   const ids = data.id ? [data.id] : (await api.alertsList(data.application)).map(alert => alert.id)
-  const promises = ids.map(async id => {return await api.alertsRunCheck(data.application, id, data.trigger)});
+  const promises = ids.map(async id => {return await api.alertChecksCreate(data.application, id, data.trigger)});
 
   const result = await Promise.all(promises);
 

@@ -2,7 +2,8 @@ import Table from "cli-table3";
 
 import { OutputFormat, tableChars } from "../../../shared";
 import chalk from "chalk";
-import { Alert, AlertCheck } from "../../../services/api/paths/alerts";
+import { Alert } from "../../../services/api/paths/alerts";
+import { AlertCheck } from "../../../services/api/paths/alert-checks";
 
 function list(alerts: Alert[], format: OutputFormat) {
   if (format === "json") {
@@ -31,7 +32,9 @@ function check(alertChecks: AlertCheck[], format: OutputFormat) {
     head: ["Application", "Alert", "Triggered", "Threshold", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alertChecks.forEach(alertCheck => {
-    table.push([alertCheck.application, alertCheck.alertId, alertCheck.triggered, `${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}`, `${alertCheck.aggregates[alertCheck.calculationKey]}`]);
+    const res = alertCheck.aggregates[alertCheck.calculationKey];
+    const isGrouped = typeof res !== "number";
+    table.push([alertCheck.application, alertCheck.alertId, alertCheck.triggered, `${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}`, `${isGrouped ? JSON.stringify(res, undefined, 2) : res}`]);
   })
   console.log(`${table.toString()}`);
 }

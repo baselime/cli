@@ -8,7 +8,7 @@ async function status(format: OutputFormat, data: { application: string, outFile
   const s = spinner.get();
   s.start("Checking...");
   const ids = (await api.alertsList(data.application)).map(alert => alert.id)
-  const promises = ids.map(async id => { return await api.alertsRunCheck(data.application, id, false) });
+  const promises = ids.map(async id => { return await api.alertChecksCreate(data.application, id, false) });
 
   const result = await Promise.all(promises);
 

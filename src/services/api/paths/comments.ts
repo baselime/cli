@@ -1,5 +1,5 @@
 import { client } from "../clients";
-import { AlertCheck } from "./alerts";
+import { AlertCheck } from "./alert-checks";
 
 export interface GitHubCommentData {
   repo: { owner: string, name: string };

@@ -1,7 +1,7 @@
 import { readFile } from "fs-extra";
 import { Arguments, CommandBuilder } from "yargs";
 import api from "../../services/api/api";
-import { AlertCheck } from "../../services/api/paths/alerts";
+import { AlertCheck } from "../../services/api/paths/alert-checks";
 import spinner from "../../services/spinner";
 import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
 
