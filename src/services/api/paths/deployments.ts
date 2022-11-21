@@ -19,7 +19,7 @@ export enum DeploymentStatus {
 }
 
 
-async function uplaod(preSignedUrl: string, data: string | Buffer) {
+async function upload(preSignedUrl: string, data: string | Buffer) {
   await publicClient.put(preSignedUrl, data, {
     headers: {
       "content-Type": "application/json",
@@ -53,7 +53,7 @@ async function deploymentsList(application: string, limit?: number): Promise<Dep
 
 export default {
   uploadUrlGet,
-  uplaod,
+  upload,
   deploymentGet,
   deploymentsList,
 };

@@ -27,7 +27,7 @@ async function apply(config: string, skip: boolean = false) {
   s.start("Submitting the plan to the baselime backend...");
   const { url, id } = await api.uploadUrlGet(metadata.application, getVersion());
   const data = readFileSync(`${config}/.out/.baselime.json`, "utf-8").toString();
-  await api.uplaod(url, data);
+  await api.upload(url, data);
   s.start("Checking apply status...");
 
 
