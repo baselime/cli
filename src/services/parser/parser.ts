@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import yaml, { Document } from "yaml";
 import chalk from "chalk";
 import spinner from "../spinner/index";
-import { DeploymentApplication, DeploymentResources } from "../../commands/apply/handlers/checks";
+import { DeploymentApplication, DeploymentResources } from "../../commands/push/handlers/checks";
 
 export async function getResources(filenames: string[]) {
   const s = spinner.get();

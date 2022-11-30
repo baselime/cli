@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { prompt } from "enquirer";
 
-export async function promptApply(): Promise<boolean> {
+export async function promptPush(): Promise<boolean> {
   const { confirm } = await prompt<{ confirm: boolean }>({
     type: "confirm",
     name: "confirm",

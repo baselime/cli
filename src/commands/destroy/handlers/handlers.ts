@@ -2,7 +2,7 @@ import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { verifyPlan } from "../../plan/handlers";
 import * as prompts from "./prompts";
-import checks from "../../apply/handlers/checks";
+import checks from "../../push/handlers/checks";
 
 async function destroy(config: string) {
   const s = spinner.get();
@@ -12,7 +12,7 @@ async function destroy(config: string) {
   // Remove the provider to signal to the API that we're deleting the application
   metadata.provider = "";
   await verifyPlan(metadata, resources, false);
-  const res = await prompts.promptApply();
+  const res = await prompts.promptPush();
 
   if (!res) {
     process.exit(0);
