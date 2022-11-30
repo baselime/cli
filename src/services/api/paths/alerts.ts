@@ -12,6 +12,12 @@ export interface AlertThreshold {
   value: number;
 }
 
+export enum ChannelTypes {
+  SLACK = "slack",
+  WEBHOOK = "webhook",
+}
+
+
 export interface Alert {
   parameters: AlertParameters;
   id: string;
@@ -22,7 +28,7 @@ export interface Alert {
   userId: string;
   enabled: boolean;
   application: string;
-  channels: string[];
+  channels: { type: ChannelTypes; targets: string[] }[];
   created?: string;
   updated?: string;
 }

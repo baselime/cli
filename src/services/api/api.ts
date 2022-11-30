@@ -10,7 +10,6 @@ import events from "./paths/events";
 import cli from "./paths/cli";
 import iam from "./paths/iam";
 import environments from "./paths/environments";
-import channels from "./paths/channels";
 import templates from "./paths/templates";
 import diffs from "./paths/diffs";
 import infrastructure from "./paths/infrastructure";
@@ -28,7 +27,6 @@ export default {
   ...cli,
   ...iam,
   ...environments,
-  ...channels,
   ...templates,
   ...diffs,
   ...infrastructure,
