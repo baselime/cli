@@ -10,7 +10,7 @@ import { verifyPlan } from "../plan/handlers";
 import { promptRefresh } from "./prompts";
 
 
-async function refresh(config: string, skip: boolean = false) {
+async function pull(config: string, skip: boolean = false) {
   const s = spinner.get();
   const { metadata, resources, filenames } = await checks.validate(config);
   s.start("Checking resources to import...");
@@ -93,5 +93,5 @@ async function refresh(config: string, skip: boolean = false) {
 
 
 export default {
-  refresh,
+  pull,
 };
