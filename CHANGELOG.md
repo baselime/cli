@@ -1,5 +1,13 @@
 # Changelog
 
+### 0.0.24 (30th November 2022)
+
+- Deprecate channels
+- Add support for inline channels in alerts
+- Rename `apply` to `push`
+- Rename `refresh` to `pull`
+- Add `baselime query` command
+
 ### 0.0.23 (11th November 2022)
 
 - Add support for search needles in queries
