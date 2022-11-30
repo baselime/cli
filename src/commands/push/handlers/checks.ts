@@ -27,21 +27,25 @@ const alertSchema = object({
       threshold: string().matches(alertThresholdRegex).required(),
       frequency: string().strict().required(),
       window: string().strict().required(),
-    }).required().noUnknown(true).strict(),
+    })
+      .required()
+      .noUnknown(true)
+      .strict(),
     enabled: boolean().notRequired(),
-    channels: array().min(1).of(string().required()).required(),
-  }).required().noUnknown(true).strict(),
-}).noUnknown(true).strict();
-
-const channelSchema = object({
-  type: string().equals(["channel"]),
-  id: string().required().matches(idRegex),
-  properties: object({
-    name: string().notRequired(),
-    type: string().oneOf(channelTypes).required(),
-    targets: array().of(string().required())
-  }).required().noUnknown(true).strict(),
-}).noUnknown(true).strict();
+    channels: array().min(1).of(object({
+      type: string().oneOf(channelTypes).required(),
+      targets: array().of(string().required()),
+    })
+      .required()
+      .noUnknown(true)
+      .strict()).required(),
+  })
+    .required()
+    .noUnknown(true)
+    .strict(),
+})
+  .noUnknown(true)
+  .strict();
 
 const webhookSchema = object({
   webhook: string().url().required().typeError('Webhook must be valid URL')
@@ -92,12 +96,10 @@ const metadataSchema = object({
 
 export type DeploymentQuery = InferType<typeof querySchema>;
 export type DeploymentAlert = InferType<typeof alertSchema>;
-export type DeploymentChannel = InferType<typeof channelSchema>;
 export type DeploymentApplication = InferType<typeof metadataSchema>;
 export interface DeploymentResources {
   queries?: DeploymentQuery[];
   alerts?: DeploymentAlert[];
-  channels?: DeploymentChannel[];
 }
 
 
@@ -135,7 +137,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
   const resources = {
     queries: [] as any[],
     alerts: [] as any[],
-    channels: [] as any[],
   }
 
   Object.keys(data).forEach(id => {
@@ -153,9 +154,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
       case "alert":
         resources.alerts.push({ ...resource, id, type: undefined });
         break;
-      case "channel":
-        resources.channels.push({ ...resource, id, type: undefined });
-        break;
       default:
         const m = `${id}: unknown resource type, ${type}`;
         s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
@@ -163,12 +161,11 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
     }
   });
 
-  const { queries, alerts, channels } = resources;
+  const { queries, alerts } = resources;
 
   await Promise.all([
-    ...validateAlerts(alerts, queries, channels),
+    ...validateAlerts(alerts, queries),
     ...validateQueries(queries),
-    ...validateChannels(channels),
   ]);
 
   s.succeed("Valid configuration folder");
@@ -177,32 +174,6 @@ async function validate(folder: string): Promise<{ metadata: DeploymentApplicati
 
 function isObject(val: any): boolean {
   return typeof val === 'object' && !Array.isArray(val) && val !== null;
-}
-
-function validateChannels(channels: any) {
-  const s = spinner.get();
-  const channelsKeys = Object.keys(channels);
-
-  const promises = channelsKeys.map(async id => {
-    try {
-      const channel = channels[id];
-      await channelSchema.validate(channel);
-
-
-      if (channel.properties.type === 'webhook') {
-        const promises = channel.properties.targets.map((webhook: string) => webhookSchema.validate({ webhook }))
-        await Promise.all(promises)
-      }
-
-    } catch (error) {
-      const message = `channel: ${id}: ${error}`;
-      s.fail(chalk.bold(chalk.redBright("Channel validation error")));
-      console.log(message);
-      throw new Error(message);
-    }
-  });
-
-  return promises;
 }
 
 function validateQueries(queries: any[]) {
@@ -222,19 +193,15 @@ function validateQueries(queries: any[]) {
   return promises;
 }
 
-function validateAlerts(alerts: any[], queries: any[], channels: any[]) {
+function validateAlerts(alerts: any[], queries: any[]) {
   const s = spinner.get();
 
   const promises = alerts.map(async item => {
     try {
       const alert = await alertSchema.validate(item);
       const query = queries.find(query => query.id === alert.properties.parameters.query);
-      const missingChannels = alert.properties.channels.filter(id => !channels.some(c => c.id === id))
       if (!query) {
         throw new Error(`the following query was not found in this application: ${alert.properties.parameters.query}`);
-      }
-      if (missingChannels.length) {
-        throw new Error(`the following channels were not found in this application: ${missingChannels.join(", ")}`);
       }
 
       const { frequency, window } = alert.properties.parameters;

@@ -1,4 +1,4 @@
-import { DeploymentResources } from "../../../commands/apply/handlers/checks";
+import { DeploymentResources } from "../../../commands/push/handlers/checks";
 import { client, publicClient } from "../clients";
 import yaml, { Document } from "yaml";
 

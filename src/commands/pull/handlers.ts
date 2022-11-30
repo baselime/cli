@@ -5,12 +5,12 @@ import { statusType } from "../../services/api/paths/diffs";
 import { parse, stringify, stringifyResources } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { getVersion } from "../../shared";
-import checks, { DeploymentAlert, DeploymentChannel, DeploymentQuery } from "../apply/handlers/checks";
+import checks, { DeploymentAlert, DeploymentQuery } from "../push/handlers/checks";
 import { verifyPlan } from "../plan/handlers";
 import { promptRefresh } from "./prompts";
 
 
-async function refresh(config: string, skip: boolean = false) {
+async function pull(config: string, skip: boolean = false) {
   const s = spinner.get();
   const { metadata, resources, filenames } = await checks.validate(config);
   s.start("Checking resources to import...");
@@ -22,11 +22,10 @@ async function refresh(config: string, skip: boolean = false) {
     process.exit(0);
   }
 
-  const { resources: { queries, alerts, channels }, application: appDiff } = diff;
+  const { resources: { queries, alerts }, application: appDiff } = diff;
   const allResources = [
     ...queries,
     ...alerts,
-    ...channels,
   ];
   const toDelete = allResources.filter(r => r.status === statusType.VALUE_DELETED);
   const toUpdate = allResources.filter(r => r.status === statusType.VALUE_UPDATED);
@@ -39,7 +38,6 @@ async function refresh(config: string, skip: boolean = false) {
     const data = parse(s) || {};
     const updatedQueries: DeploymentQuery[] = [];
     const updatedAlerts: DeploymentAlert[] = [];
-    const updatedChannels: DeploymentChannel[] = [];
     Object.keys(data).forEach(key => {
       data[key].id = key;
       if (toDeleteIds.includes(key)) {
@@ -61,24 +59,20 @@ async function refresh(config: string, skip: boolean = false) {
         case "alert":
           updatedAlerts.push(data[key] as DeploymentAlert);
           break;
-        case "channel":
-          updatedChannels.push(data[key] as DeploymentChannel);
-          break;
         default:
           break;
       }
     });
 
-    const dd = stringifyResources({ queries: updatedQueries, alerts: updatedAlerts, channels: updatedChannels, });
+    const dd = stringifyResources({ queries: updatedQueries, alerts: updatedAlerts });
     writeFileSync(`${filename}`, dd);
   });
 
   const createPromise = (async () => {
     const newQueries = queries.filter(q => q.status === statusType.VALUE_CREATED).map(q => q.resource);
     const newAlerts = alerts.filter(a => a.status === statusType.VALUE_CREATED).map(q => q.resource);
-    const newChannels = channels.filter(c => c.status === statusType.VALUE_CREATED).map(q => q.resource);
     // @ts-ignore
-    const dd = stringifyResources({ queries: newQueries, alerts: newAlerts, channels: newChannels });
+    const dd = stringifyResources({ queries: newQueries, alerts: newAlerts });
     if (!dd) return;
     const now = (new Date()).toISOString();
     const path =`${config}/imported/${now}.yml`;
@@ -99,5 +93,5 @@ async function refresh(config: string, skip: boolean = false) {
 
 
 export default {
-  refresh,
+  pull,
 };

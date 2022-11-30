@@ -1,8 +1,9 @@
 import { Arguments, CommandBuilder } from "yargs";
-import spinner from "../../services/spinner";
-import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
-import handlers from "./handlers/handlers";
-import { promptApplicationSelect, promptFrom, promptQuerySelect, promptTo } from "./prompts/run";
+import spinner from "../services/spinner";
+
+import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
+import handlers from "./query/handlers/handlers";
+import { promptApplicationSelect, promptFrom, promptQuerySelect, promptTo } from "./query/prompts/query";
 
 export interface Options extends BaseOptions {
   application?: string;
@@ -10,8 +11,7 @@ export interface Options extends BaseOptions {
   from?: string;
   to?: string;
 }
-
-export const command = "run";
+export const command = "query";
 export const desc = "Run a query";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
@@ -25,9 +25,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     })
     .example([
       [`
-      # Run a query passing its application and id:
-      $0 queries run --application <application_name> --id <query_id> --from 2days --to 1day
-      `],
+        # Run a query in interactive mode
+        $0 query
+
+        # Run a query passing its application and id:
+        $0 query --application <application_name> --id <query_id> --from 2days --to 1day
+    `],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);

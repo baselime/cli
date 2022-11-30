@@ -1,4 +1,4 @@
-import { DeploymentResources } from "../../../commands/apply/handlers/checks";
+import { DeploymentResources } from "../../../commands/push/handlers/checks";
 import { client } from "../clients";
 
 
@@ -19,7 +19,6 @@ export interface DiffCreateRequest {
 enum ResourceTypes {
   queries = 'queries',
   alerts = 'alerts',
-  channels = 'channels',
 }
 
 export enum statusType {

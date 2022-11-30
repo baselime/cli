@@ -4,7 +4,7 @@ import { Ref, stringify, stringifyResources } from "../../services/parser/parser
 import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../utils";
 import { promptTemplateVariables } from "../applications/handlers/prompts";
-import { DeploymentApplication } from "../apply/handlers/checks";
+import { DeploymentApplication } from "../push/handlers/checks";
 import { promptStacksSelect } from "./prompts";
 const packageJson = require("../../../package.json");
 

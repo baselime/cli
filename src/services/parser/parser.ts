@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import yaml, { Document } from "yaml";
 import chalk from "chalk";
 import spinner from "../spinner/index";
-import { DeploymentApplication, DeploymentResources } from "../../commands/apply/handlers/checks";
+import { DeploymentApplication, DeploymentResources } from "../../commands/push/handlers/checks";
 
 export async function getResources(filenames: string[]) {
   const s = spinner.get();
@@ -69,7 +69,7 @@ export function stringify(data: Record<string, any>): string {
 
 export function stringifyResources(resources: DeploymentResources) {
   const data: Record<string, any> = {};
-  const { queries, alerts, channels } = resources;
+  const { queries, alerts } = resources;
   queries?.forEach((elt) => {
     data[elt.id!] = {
       type: "query",
@@ -85,21 +85,10 @@ export function stringifyResources(resources: DeploymentResources) {
       type: "alert",
       properties: {
         ...elt.properties,
-        channels: elt.properties.channels.map(c => new Ref(c)),
         parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) },
         id: undefined,
       }
     };
-  });
-
-  channels?.forEach((elt) => {
-    data[elt.id!] = {
-      type: "channel",
-      properties: {
-        ...elt.properties,
-        id: undefined,
-      }
-    }
   });
 
   if (!Object.keys(data).length) return ""!

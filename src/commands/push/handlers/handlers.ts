@@ -11,13 +11,13 @@ import { promisify } from "util";
 
 const wait = promisify(setTimeout);
 
-async function apply(config: string, skip: boolean = false) {
+async function push(config: string, skip: boolean = false) {
   const s = spinner.get();
   const { metadata, resources } = await validate(config);
   s.start("Completing baselime plan...");
   await verifyPlan(metadata, resources, false);
 
-  const res = skip ? true : await prompts.promptApply();
+  const res = skip ? true : await prompts.promptPush();
 
   if (!res) {
     process.exit(0);
@@ -28,7 +28,7 @@ async function apply(config: string, skip: boolean = false) {
   const { url, id } = await api.uploadUrlGet(metadata.application, getVersion());
   const data = readFileSync(`${config}/.out/.baselime.json`, "utf-8").toString();
   await api.upload(url, data);
-  s.start("Checking apply status...");
+  s.start("Checking push status...");
 
 
   let isComplete = false;
@@ -50,7 +50,7 @@ async function apply(config: string, skip: boolean = false) {
     s.info(`Connection timed out.`);
     return;
   }
-  s.fail(`Failed to apply an observability plan: ${chalk.bold(chalk.redBright(id))}
+  s.fail(`Failed to push an observability plan: ${chalk.bold(chalk.redBright(id))}
   ${chalk.red(deployment?.error || '')}`);
 }
 
@@ -59,6 +59,6 @@ async function validate(folder: string) {
 }
 
 export default {
-  apply,
+  push,
   validate,
 };

@@ -2,7 +2,7 @@ import { Arguments, CommandBuilder } from "yargs";
 
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import spinner from "../services/spinner/index";
-import handlers from "./apply/handlers/handlers";
+import handlers from "./push/handlers/handlers";
 
 export interface Options extends BaseOptions {
   config?: string;
