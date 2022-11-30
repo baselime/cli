@@ -30,8 +30,8 @@ export enum statusType {
 }
 
 export type DiffResponse = {
-  application: { status: statusType; application: Record<string, any> };
-  resources: { [key in ResourceTypes]: { status: statusType; resource: Record<string, any> }[] };
+  application: { status: statusType; application: Record<string, any>, deepDiff?: object };
+  resources: { [key in ResourceTypes]: { status: statusType; resource: Record<string, any>, deepDiff?: any }[] };
 }
 
 
