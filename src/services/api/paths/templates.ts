@@ -22,6 +22,14 @@ export interface Variable {
   default?: any;
 }
 
+export interface TemplateCreateParams {
+  name: string;
+  description?: string;
+  public: boolean;
+  variables?: Variable[];
+  resources: DeploymentResources;
+}
+
 async function templatesList(): Promise<Template[]> {
   const res = (await client.get("/templates")).data;
   return res.templates;
@@ -32,7 +40,13 @@ async function templateGet(workspaceId: string, template: string, isPublic: bool
   return res.template;
 }
 
+async function templateCreate(template: TemplateCreateParams): Promise<Template> {
+  const res = (await client.post(`/templates`, template, { timeout: 30000 })).data;
+  return res.template;
+}
+
 export default {
   templatesList,
   templateGet,
+  templateCreate
 };

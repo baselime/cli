@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import checks from "./checks";
+import checks, { DeploymentApplication, DeploymentResources } from "./checks";
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { readFileSync } from "fs";
@@ -54,7 +54,7 @@ async function push(config: string, skip: boolean = false) {
   ${chalk.red(deployment?.error || '')}`);
 }
 
-async function validate(folder: string) {
+async function validate(folder: string): Promise<{metadata: DeploymentApplication, resources: DeploymentResources}> {
   return await checks.validate(folder);
 }
 
