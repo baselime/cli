@@ -21,7 +21,7 @@ export function parseTemplateName(s: string): { workspaceId: string; template: s
 
 export function parseFilter(input: string): QueryFilter {
   const operations = ["=", "!=", ">", "<", ">=", "<=", "INCLUDES", "IN", "NOT_IN"];
-  const regex = new RegExp("^([\\w.@]+)\\s(" + operations.join("|") + ")\\s'?(.*?)'?$");
+  const regex = new RegExp("^([\\w.@-]+)\\s(" + operations.join("|") + ")\\s'?(.*?)'?$");
   const parts = input.match(regex);
 
   if (!parts || !parts[1] || !parts[2] || !parts[3]) {
