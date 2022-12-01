@@ -28,12 +28,14 @@ export enum statusType {
   VALUE_UNCHANGED = 'unchanged',
 }
 
-export type DiffResponse = {
-  application: { status: statusType; application: Record<string, any>, deepDiff?: object };
-  resources: { [key in ResourceTypes]: { status: statusType; resource: Record<string, any>, deepDiff?: any }[] };
+interface AppDeepDiff {
+  metadata: object
 }
 
-
+export type DiffResponse = {
+  application: { status: statusType; application: Record<string, any>, deepDiff?: AppDeepDiff };
+  resources: { [key in ResourceTypes]: { status: statusType; resource: Record<string, any>, deepDiff: Record<string, any> }[] };
+}
 
 async function diffsCreate(params: DiffCreateRequest): Promise<DiffResponse> {
   const res = (await client.post(`/diffs`, params, { timeout: 120000 })).data;

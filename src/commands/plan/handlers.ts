@@ -3,9 +3,10 @@ import api from "../../services/api/api";
 import { Ref, stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import checks, { DeploymentApplication, DeploymentResources } from "../push/handlers/checks";
-import Table, { CrossTableRow, HorizontalTableRow, VerticalTableRow } from "cli-table3";
+import Table  from "cli-table3";
 import { DiffResponse, statusType } from "../../services/api/paths/diffs";
 import { blankChars } from "../../shared";
+import { printDiff } from "./diff";
 
 async function plan(config: string) {
   const s = spinner.get();
@@ -36,21 +37,33 @@ export async function displayDiff(application: string, diff: DiffResponse) {
   const {resources: {queries, alerts}, application: appDiff} = diff;
 
   const applicationTable = new Table({ chars: blankChars });
-  applicationTable.push(getYamlString({ status: appDiff.status, value: appDiff.application }));
+  applicationTable.push(getYamlString({
+    status: appDiff.status,
+    value: appDiff.application,
+    deepDiff: appDiff.deepDiff ? appDiff.deepDiff.metadata : undefined,
+  }));
 
   const table = new Table({ chars: blankChars });
 
-  queries.forEach(q => {
-    const { status, resource } = q;
+  queries.forEach(query => {
+    const { status, resource } = query;
     if (status === statusType.VALUE_UNCHANGED) return;
 
     const value: Record<string, any> = {};
     value[resource.id!] = { type: "query", properties: resource.properties }
-    table.push(getYamlString({ status, value }));
+    table.push(getYamlString({
+      status,
+      value,
+      deepDiff: {
+        [resource.id!]: {
+          properties: query.deepDiff
+        }
+      }
+    }));
   });
 
-  alerts.forEach(a => {
-    const { status, resource } = a;
+  alerts.forEach(alert => {
+    const { status, resource } = alert;
     if (status === statusType.VALUE_UNCHANGED) return;
 
     const value: Record<string, any> = {};
@@ -62,7 +75,15 @@ export async function displayDiff(application: string, diff: DiffResponse) {
         parameters: { ...resource.properties.parameters, query: new Ref(resource.properties.parameters.query) }
       }
     };
-    table.push(getYamlString({ status, value }));
+    table.push(getYamlString({
+      status,
+      value,
+      deepDiff: {
+        [resource.id!]: {
+          properties: alert.deepDiff
+        }
+      },
+    }));
   });
 
   console.log("\n\n" + chalk.bold(chalk.cyanBright(`Application: ${application}`)))
@@ -94,14 +115,15 @@ export async function displayDiff(application: string, diff: DiffResponse) {
   ));
 }
 
-function getYamlString(obj: { status: statusType; value: Record<string, any> }) {
-  const { status, value } = obj;
+function getYamlString(obj: { status: statusType; value: Record<string, any>, deepDiff?: object }) {
+  const { status, value, deepDiff } = obj;
 
   if (status === statusType.VALUE_CREATED) {
     return [chalk.greenBright.bold("++"), chalk.greenBright(stringify(value))];
   }
   if (status === statusType.VALUE_UPDATED) {
-    return [chalk.yellowBright.bold("~~"), chalk.yellowBright(stringify(value))];
+    const val = printDiff(deepDiff);
+    return [chalk.yellowBright.bold("~~"), val];
   }
   if (status === statusType.VALUE_DELETED) {
     return [chalk.redBright.bold("--"), chalk.redBright(stringify(value))];
