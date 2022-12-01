@@ -2,7 +2,7 @@ import { writeFileSync } from "fs";
 import api from "../../services/api/api";
 import { Ref, stringify, stringifyResources } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import { parseTemplateName } from "../../utils";
+import { parseTemplateName } from "../../regex";
 import { promptTemplateVariables } from "../applications/handlers/prompts";
 import { DeploymentApplication } from "../push/handlers/checks";
 import { promptStacksSelect } from "./prompts";

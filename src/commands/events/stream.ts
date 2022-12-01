@@ -4,7 +4,7 @@ import { authenticate, baseOptions, BaseOptions, printError } from "../../shared
 import spinner from "../../services/spinner/index";
 import handlers from "./handlers/handlers";
 import { NamespaceCombination } from "../../services/api/paths/queries";
-import { parseFilter } from "../../utils";
+import { parseFilter } from "../../regex";
 
 export interface Options extends BaseOptions {
   datasets: string[];

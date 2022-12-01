@@ -5,15 +5,13 @@ import spinner from "../../../services/spinner/index";
 import { getMetadata, getResources } from "../../../services/parser/parser";
 import awsCronParser from "aws-cron-parser";
 import ms from "ms";
+import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
 
-const operations = ["=", "!=", ">", ">=", "<", "<=", "INCLUDES", "IN", "NOT_IN"];
 const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["slack", "webhook"];
 const groupByTypes = ["string", "number", "boolean"];
 
-const queryFilterRegex = new RegExp("^([\\w.@-]+)\\s(" + operations.join("|") + ")\\s'?(.*?)'?$");
-const alertThresholdRegex = new RegExp("^(" + operations.filter(o => !["INCLUDES", "IN", "NOT_IN"].includes(o)).join("|") + ")\\s([0-9]*)$");
 const idRegex = /^[a-zA-Z0-9-_]+$/;
 
 const alertSchema = object({
@@ -64,7 +62,7 @@ const querySchema = object({
         .required()
         .typeError("Must include at least 1 dataset"),
       namespaces: array().of(string()).notRequired(),
-      calculations: array().min(1).of(string().matches(/(^[a-zA-Z0-9]*)\(([^\)]+)\)|(COUNT)/)).required().typeError('Must include at least 1 valid calculation.'),
+      calculations: array().of(string().matches(calculationsRegex)).required(),
       filters: array().of(string().matches(queryFilterRegex)).notRequired(),
       filterCombination: string().oneOf(filterCombinations).notRequired().typeError('filterCombination must be set to AND or OR.'),
       namespaceCombination: string().oneOf(namespaceCombinations).notRequired().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
@@ -181,7 +179,17 @@ function validateQueries(queries: any[]) {
 
   const promises = queries.map(async item => {
     try {
-      await querySchema.validate(item);
+      const res = await querySchema.validate(item);
+      const filters = res.properties.parameters.filters as string[];
+      const calculations = res.properties.parameters.calculations as string[];
+
+      filters?.forEach(filter => {
+        parseFilter(filter);
+      });
+
+      calculations?.forEach(calculation => {
+        extractCalculation(calculation);
+      });
     } catch (error) {
       const message = `query: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.redBright("Query validation error")));
@@ -199,6 +207,8 @@ function validateAlerts(alerts: any[], queries: any[]) {
   const promises = alerts.map(async item => {
     try {
       const alert = await alertSchema.validate(item);
+      const threshold = alert.properties.parameters.threshold;
+      parseThreshold(threshold);
       const query = queries.find(query => query.id === alert.properties.parameters.query);
       if (!query) {
         throw new Error(`the following query was not found in this application: ${alert.properties.parameters.query}`);
@@ -215,7 +225,7 @@ function validateAlerts(alerts: any[], queries: any[]) {
         }
       }
 
-      if (convertedFrequency < 60000) {
+      if (!convertedFrequency || convertedFrequency < 60000) {
         throw new Error(`Invalid frequency. Minimum is 1min.`);
       }
 
