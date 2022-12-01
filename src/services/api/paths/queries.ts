@@ -6,7 +6,7 @@ export interface QueryParameters {
   namespaceCombination?: NamespaceCombination;
   filters?: Array<QueryFilter>;
   filterCombination: "AND" | "OR";
-  calculations: QueryCalculation[];
+  calculations?: QueryCalculation[];
   groupBy?: QueryGroupBy;
   needle?: SearchNeedle;
 }

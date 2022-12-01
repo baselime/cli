@@ -62,7 +62,9 @@ const querySchema = object({
         .required()
         .typeError("Must include at least 1 dataset"),
       namespaces: array().of(string()).notRequired(),
-      calculations: array().of(string().matches(calculationsRegex)).required(),
+      calculations: array()
+      .of(string().matches(calculationsRegex).notRequired())
+      .notRequired().nullable(),
       filters: array().of(string().matches(queryFilterRegex)).notRequired(),
       filterCombination: string().oneOf(filterCombinations).notRequired().typeError('filterCombination must be set to AND or OR.'),
       namespaceCombination: string().oneOf(namespaceCombinations).notRequired().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
