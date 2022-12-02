@@ -7,7 +7,7 @@ export const queryFilterRegex = new RegExp("^([\\w.@-]+)\\s(" + operations.join(
 export const alertThresholdRegex = new RegExp(
   "^(" + operations.filter((o) => !["INCLUDES", "IN", "NOT_IN", "EXISTS", "DOES_NOT_EXIST"].some((f) => o === f)).join("|") + ")\\s([0-9]*)$"
 );
-export const calculationsRegex = new RegExp(`(${operatiors.join("|")})\(([^\)]+)\)|(COUNT)$`);
+export const calculationsRegex = new RegExp(`(${operatiors.join("|")})\\(([^)]*)\\)|(COUNT)$`);
    
 
 export function extractCalculation(input: string): QueryCalculation {
