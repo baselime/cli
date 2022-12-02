@@ -5,36 +5,33 @@ import handlers from "./handlers/handlers";
 
 
 export interface Options extends BaseOptions {
-  path?: string;
-  url?: string;
-  yes?: boolean;
+  name: string
+  workspaceId: string;
 }
 
-export const command = "create";
-export const desc = "Create template";
+export const command = "get";
+export const desc = "Retrieves the template";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
       .options({
         ...baseOptions,
-        url: {
+        workspaceId: {
           type: "string",
-          desc: "The URL containing templates",
+          desc: "Workspace ID",
+          alias: "w",
+          required: true,
         },
-        path: {
+        name: {
           type: "string",
-          desc: "The folder containing templates",
-        },
-        yes: {
-          type: "boolean",
-          desc: "Skip the manual validation of changes",
-          alias: "y",
-          default: false,
+          desc: "Name of the template",
+          alias: "n",
+          required: true,
         },
       })
       .example([
         [`
-      $0 templates create --from .templates --profile prod`,
+      $0 templates create --profile prod`,
         ],
       ])
       .fail((message, err, yargs) => {
@@ -43,8 +40,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { path, url, profile } = argv;
+  const { profile, name, workspaceId } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
-  await handlers.create(path, url);
+  await handlers.get(workspaceId, name);
 }
