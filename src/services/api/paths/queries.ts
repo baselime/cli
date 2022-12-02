@@ -6,7 +6,7 @@ export interface QueryParameters {
   namespaceCombination?: NamespaceCombination;
   filters?: Array<QueryFilter>;
   filterCombination: "AND" | "OR";
-  calculations: QueryCalculation[];
+  calculations?: QueryCalculation[];
   groupBy?: QueryGroupBy;
   needle?: SearchNeedle;
 }
@@ -14,7 +14,7 @@ export interface QueryParameters {
 export interface QueryFilter {
   key: string;
   operation: QueryOperation;
-  value: string | number | boolean;
+  value?: string | number | boolean;
   type: string;
 }
 
@@ -27,7 +27,7 @@ export interface QueryGroupBy {
 }
 
 export interface QueryCalculation {
-  key: string;
+  key?: string;
   operator: QueryOperator;
 }
 
@@ -58,9 +58,12 @@ export enum QueryOperation {
   LOWER_THAN = "<",
   LOWER_THAN_EQUAL = "<=",
   INCLUDES = "INCLUDES",
+  EXISTS = "EXISTS",
+  DOES_NOT_EXIST = "DOES_NOT_EXIST",
   IN = "IN",
   NOT_IN = "NOT_IN",
 }
+
 export interface Query {
   parameters: QueryParameters;
   id: string;
