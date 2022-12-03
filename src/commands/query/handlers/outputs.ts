@@ -49,7 +49,7 @@ function getQueryRun(queryRun: QueryRun, aggregates: Record<string, number | Rec
 
   console.log(runTable.toString());
   console.log(aggregatesTable.toString());
-  console.log(`Follow this url: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.application}/queries/${queryRun.query.id}/${queryRun.id}`)
+  console.log(`Follow this url: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`)
 }
 
 export default {

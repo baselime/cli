@@ -9,7 +9,7 @@ async function destroy(config: string) {
   const { metadata } = await checks.validate(config);
   const resources = { queries: [], alerts: [] };
   s.start("Checking resources to destroy...");
-  // Remove the provider to signal to the API that we're deleting the application
+  // Remove the provider to signal to the API that we're deleting the service
   metadata.provider = "";
   await verifyPlan(metadata, resources, false);
   const res = await prompts.promptPush();
@@ -18,9 +18,9 @@ async function destroy(config: string) {
     process.exit(0);
   }
 
-  s.start("Destroying your application...");
-  await api.applicationDelete(metadata.application);
-  s.succeed("Application deleted");
+  s.start("Destroying your service...");
+  await api.serviceDelete(metadata.service);
+  s.succeed("Service deleted");
 }
 
 

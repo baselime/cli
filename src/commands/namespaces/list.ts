@@ -4,7 +4,7 @@ import { authenticate, baseOptions, BaseOptions, printError } from "../../shared
 import handlers from "./handlers/handlers";
 
 export interface Options extends BaseOptions {
-  application?: string;
+  service?: string;
   from: string;
   to: string;
 }
@@ -16,7 +16,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
       ...baseOptions,
-      application: { type: "string", desc: "The application" },
+      service: { type: "string", desc: "The service" },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
     })
@@ -25,8 +25,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       # List all the namespaces ingested across all datasets for the past hour:
       $0 namespaces list
 
-      # List all the namespaces ingested for an application in the past 3 hours:
-      $0 namespaces list --application <application> --from 3hours --to now
+      # List all the namespaces ingested for an service in the past 3 hours:
+      $0 namespaces list --service <service_name> --from 3hours --to now
       `],
     ])
     .fail((message, err, yargs) => {
@@ -35,8 +35,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, format, from, to, application } = argv;
+  const { profile, format, from, to, service: service } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
-  await handlers.list(format!, from, to, application);
+  await handlers.list(format!, from, to, service);
 }

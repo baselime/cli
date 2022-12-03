@@ -4,11 +4,11 @@ import spinner from "../../services/spinner";
 import { getVersion, OutputFormat } from "../../shared";
 import outputs from "../alerts/handlers/outputs";
 
-async function status(format: OutputFormat, data: { application: string, outFile: string }) {
+async function status(format: OutputFormat, data: { service: string, outFile: string }) {
   const s = spinner.get();
   s.start("Checking...");
-  const ids = (await api.alertsList(data.application)).map(alert => alert.id)
-  const promises = ids.map(async id => { return await api.alertChecksCreate(data.application, id, false) });
+  const ids = (await api.alertsList(data.service)).map(alert => alert.id)
+  const promises = ids.map(async id => { return await api.alertChecksCreate(data.service, id, false) });
 
   const result = await Promise.all(promises);
 
@@ -17,7 +17,7 @@ async function status(format: OutputFormat, data: { application: string, outFile
   outputs.check(checks, format);
   writeFileSync(data.outFile, JSON.stringify({ 
     version: getVersion(),
-    application: data.application,
+    service: data.service,
     alertChecks: checks
   }));
 }

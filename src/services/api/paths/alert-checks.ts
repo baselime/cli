@@ -4,7 +4,7 @@ import { Alert, AlertThreshold, Timeframe } from "./alerts";
 export interface AlertCheck {
   workspaceId: string;
   environmentId: string;
-  application: string;
+  service: string;
   alertId: string;
   id: number;
   timeframe: Timeframe;
@@ -19,8 +19,8 @@ export interface AlertCheck {
 }
 
 
-async function alertChecksCreate(application: string, id: string, trigger?: boolean): Promise<{ alert: Alert, check: AlertCheck }> {
-  const { alert, check } = (await client.post(`/alert-checks`, { application, alertId: id, trigger })).data;
+async function alertChecksCreate(service: string, id: string, trigger?: boolean): Promise<{ alert: Alert, check: AlertCheck }> {
+  const { alert, check } = (await client.post(`/alert-checks`, { service, alertId: id, trigger })).data;
   return { alert, check };
 }
 

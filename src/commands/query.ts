@@ -3,10 +3,10 @@ import spinner from "../services/spinner";
 
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import handlers from "./query/handlers/handlers";
-import { promptApplicationSelect, promptFrom, promptQuerySelect, promptTo } from "./query/prompts/query";
+import { promptServiceSelect as promptServiceSelect, promptFrom, promptQuerySelect, promptTo } from "./query/prompts/query";
 
 export interface Options extends BaseOptions {
-  application?: string;
+  service?: string;
   id?: string;
   from?: string;
   to?: string;
@@ -18,7 +18,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
       ...baseOptions,
-      application: { type: "string", desc: "Name of the application", alias: "app" },
+      service: { type: "string", desc: "Name of the service" },
       id: { type: "string", desc: "Query id" },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now" },
@@ -28,8 +28,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         # Run a query in interactive mode
         $0 query
 
-        # Run a query passing its application and id:
-        $0 query --application <application_name> --id <query_id> --from 2days --to 1day
+        # Run a query passing its service and id:
+        $0 query --service <service_name> --id <query_id> --from 2days --to 1day
     `],
     ])
     .fail((message, err, yargs) => {
@@ -38,20 +38,20 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  let { profile, format, application, from, to, id } = argv;
+  let { profile, format, service: service, from, to, id } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
-  application ??= (await promptApplicationSelect())?.name || "";
-  id ??= (await promptQuerySelect(application))?.id || "";
+  service ??= (await promptServiceSelect())?.name || "";
+  id ??= (await promptQuerySelect(service))?.id || "";
 
-  if(!application || !id) {
-    throw new Error("application and query id are required");
+  if(!service || !id) {
+    throw new Error("service and query id are required");
   }
 
   from ??= await promptFrom();
   to ??= await promptTo();
   
-  await handlers.createRun(format, from, to, application, id);
+  await handlers.createRun(format, from, to, service, id);
 }
 

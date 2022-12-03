@@ -2,35 +2,35 @@ import Table from "cli-table3";
 
 import { OutputFormat, tableChars } from "../../../shared";
 import chalk from "chalk";
-import { Application } from "../../../services/api/paths/applications";
+import { Service } from "../../../services/api/paths/services";
 import { Deployment } from "../../../services/api/paths/deployments";
 
-function list(applications: Application[], format: OutputFormat) {
+function list(services: Service[], format: OutputFormat) {
   if (format === "json") {
-    console.log(JSON.stringify({ applications }, null, 4));
+    console.log(JSON.stringify({ services }, null, 4));
     return;
   }
   const table = new Table({
     chars: tableChars,
     head: ["Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  applications.forEach((application) => {
-    table.push([application.name, application.created]);
+  services.forEach((service) => {
+    table.push([service.name, service.created]);
   });
   console.log(`${table.toString()}`);
-  console.log(`✨ ${chalk.bold(chalk.cyan(`${applications.length} applications`))}`);
+  console.log(`✨ ${chalk.bold(chalk.cyan(`${services.length} services`))}`);
 }
 
-function describe(application: Application, deployments: Deployment[], format: OutputFormat) {
+function describe(service: Service, deployments: Deployment[], format: OutputFormat) {
   if (format === "json") {
-    console.log(JSON.stringify({ application, deployments }, null, 4));
+    console.log(JSON.stringify({ service, deployments }, null, 4));
     return;
   }  
   const table = new Table({
     chars: tableChars,
     head: ["Name", "Status", "Deployment Id", "Created", "Updated"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  table.push([application.name, deployments[0].status, deployments[0].id, application.created, deployments[0].updated]);
+  table.push([service.name, deployments[0].status, deployments[0].id, service.created, deployments[0].updated]);
   console.log(table.toString());
 }
 

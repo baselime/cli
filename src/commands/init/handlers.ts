@@ -3,15 +3,15 @@ import api from "../../services/api/api";
 import { Ref, stringify, stringifyResources } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../regex";
-import { promptTemplateVariables } from "../applications/handlers/prompts";
-import { DeploymentApplication } from "../push/handlers/checks";
+import { promptTemplateVariables } from "../services/handlers/prompts";
+import { DeploymentService } from "../push/handlers/checks";
 import { promptStacksSelect } from "./prompts";
 const packageJson = require("../../../package.json");
 
 
 export async function init(
   folder: string,
-  application: string,
+  service: string,
   description: string,
   provider: string,
   templateUrl?: string,
@@ -23,9 +23,9 @@ export async function init(
   
   s.start("Generating your config folder");
 
-  const metadata: DeploymentApplication = {
+  const metadata: DeploymentService = {
     version: packageJson.version,
-    application,
+    service,
     description: description || undefined,
     provider,
     infrastructure: {
@@ -60,7 +60,7 @@ export async function init(
       })
     }
 
-    writeFileSync(`${folder}/${application}.yml`, data);
+    writeFileSync(`${folder}/${service}.yml`, data);
     s.succeed();
     return;
   }

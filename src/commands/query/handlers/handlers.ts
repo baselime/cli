@@ -9,7 +9,7 @@ const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
 
-async function createRun(format: OutputFormat, from: string, to: string, application: string, id: string) {
+async function createRun(format: OutputFormat, from: string, to: string, service: string, id: string) {
   const s = spinner.get();
   const timeframe = getTimeframe(from, to);
   const f = dayjs.utc(timeframe.from);
@@ -18,7 +18,7 @@ async function createRun(format: OutputFormat, from: string, to: string, applica
   s.start(`Running the query from ${chalk.bold(f.format(timeFormat))} to ${chalk.bold(t.format(timeFormat))} [UTC]`);
 
   const { queryRun, calculations: { aggregates, series } } = await api.queryRunCreate({
-    application,
+    service: service,
     queryId: id,
     timeframe,
   });

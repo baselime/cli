@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import checks, { DeploymentApplication, DeploymentResources } from "./checks";
+import checks, { DeploymentService, DeploymentResources } from "./checks";
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { readFileSync } from "fs";
@@ -25,7 +25,7 @@ async function push(config: string, skip: boolean = false) {
 
   writeOutFile(config, metadata, resources);
   s.start("Submitting the plan to the baselime backend...");
-  const { url, id } = await api.uploadUrlGet(metadata.application, getVersion());
+  const { url, id } = await api.uploadUrlGet(metadata.service, getVersion());
   const data = readFileSync(`${config}/.out/.baselime.json`, "utf-8").toString();
   await api.upload(url, data);
   s.start("Checking push status...");
@@ -37,7 +37,7 @@ async function push(config: string, skip: boolean = false) {
   const maxCheck = 20;
   while (!isComplete && count < maxCheck) {
     await wait(800);
-    deployment = await api.deploymentGet(metadata.application, id);
+    deployment = await api.deploymentGet(metadata.service, id);
     isComplete = deployment.status != DeploymentStatus.IN_PROGRESS;
     console.log(`\nStatus: ${chalk.bold(deployment.status)}`);
     count += 1;
@@ -54,7 +54,7 @@ async function push(config: string, skip: boolean = false) {
   ${chalk.red(deployment?.error || '')}`);
 }
 
-async function validate(folder: string): Promise<{metadata: DeploymentApplication, resources: DeploymentResources}> {
+async function validate(folder: string): Promise<{metadata: DeploymentService, resources: DeploymentResources}> {
   return await checks.validate(folder);
 }
 

@@ -2,7 +2,7 @@ import Conf from "conf";
 import chalk from "chalk";
 import { BinaryLike, createHash, randomBytes } from "crypto";
 import { postPayload } from "./post-payload";
-import { getRawApplicationId } from "./application-id";
+import { getRawServiceId } from "./service-id";
 import { getEnvironmentData } from "./environment";
 
 const TELEMETRY_KEY_ENABLED = "telemetry.enabled";
@@ -11,12 +11,12 @@ const TELEMETRY_KEY_ID = `telemetry.anonymousId`;
 
 interface EventContext {
   anonymousId: string;
-  applicationId: string;
+  serviceId: string;
   sessionId: string;
 };
 
 const conf = initializeConf();
-const applicationId = hash(getRawApplicationId());
+const serviceId = hash(getRawServiceId());
 const anonymousId = getAnonymousId();
 
 notify();
@@ -81,7 +81,7 @@ function record(command: string, properties: any): Promise<any> {
   const sessionId = randomBytes(32).toString("hex");
   const context: EventContext = {
     anonymousId,
-    applicationId,
+    serviceId: serviceId,
     sessionId,
   };
 

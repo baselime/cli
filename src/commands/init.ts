@@ -3,14 +3,14 @@ import { Arguments, CommandBuilder } from "yargs";
 import { existsSync, rmSync } from "fs";
 import { authenticate, baseOptions, BaseOptions, printError } from "../shared";
 import spinner from "../services/spinner";
-import * as prompts from "./applications/handlers/prompts";
+import * as prompts from "./services/handlers/prompts";
 import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
 import { init } from "./init/handlers";
-import { promptForApplication, promptTemplateSelect } from "./init/prompts";
+import { promptForService, promptTemplateSelect } from "./init/prompts";
 
 export interface Options extends BaseOptions {
-  application?: string;
+  service?: string;
   description?: string;
   template?: string;
   provider: string;
@@ -23,24 +23,24 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
       ...baseOptions,
-      application: { type: "string", desc: "Name of the application", alias: "app" },
-      description: { type: "string", desc: "Description of the application" },
-      template: { type: "string", desc: "Template to intitialise the application with" },
+      service: { type: "string", desc: "Name of the service" },
+      description: { type: "string", desc: "Description of the service" },
+      template: { type: "string", desc: "Template to intitialise the service with" },
       provider: { type: "string", desc: "Cloud provider", default: "aws", choices: ["aws"] },
     })
     .example([
       [`
-      # Initialise an application:
+      # Initialise a service:
       $0 init
 
       # Provide parameters on the command-line:
-      $0 init --application <application_name> --description <description>
+      $0 init --service <service_name> --description <description>
 
       # Provide a template on the command-line:
       # The template can be either a local template within Baselime or a public URL to a template
 
-      $0 init --application <application_name> --template @<workspace>/<template>
-      $0 init --application <application_name> --template <template-url>
+      $0 init --service <service_name> --template @<workspace>/<template>
+      $0 init --service <service_name> --template <template-url>
       `]
     ])
     .fail((message, err, yargs) => {
@@ -50,7 +50,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
-  let { application, description, profile, template, provider } = argv;
+  let { service, description, profile, template, provider } = argv;
 
   const folder = ".baselime";
 
@@ -65,7 +65,7 @@ export async function handler(argv: Arguments<Options>) {
   mkdirSync(folder);
   await authenticate(profile);
 
-  application ??= await promptForApplication();
+  service ??= await promptForService();
   description ??= "";
   template ??= await promptTemplateSelect();
 
@@ -74,6 +74,6 @@ export async function handler(argv: Arguments<Options>) {
     return;
   }
 
-  await init(folder, application, description, provider, template);
+  await init(folder, service, description, provider, template);
   s.succeed(`${folder} Generated`);
 }

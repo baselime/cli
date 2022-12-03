@@ -1,6 +1,6 @@
 import { execSync } from "child_process";
 
-function getApplicationIdByGit() {
+function getServiceIdByGit() {
   try {
     const originBuffer = execSync(
       `git config --local --get remote.origin.url`,
@@ -43,8 +43,8 @@ export function normalizeGitUrl(url: string): string {
   return url;
 }
 
-export function getRawApplicationId(): string {
-  const gitUrl = getApplicationIdByGit();
+export function getRawServiceId(): string {
+  const gitUrl = getServiceIdByGit();
   if (gitUrl) {
     return normalizeGitUrl(gitUrl);
   }

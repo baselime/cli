@@ -27,7 +27,7 @@ export interface Alert {
   environmentId: string;
   userId: string;
   enabled: boolean;
-  application: string;
+  service: string;
   channels: { type: ChannelTypes; targets: string[] }[];
   created?: string;
   updated?: string;
@@ -38,8 +38,8 @@ export interface Timeframe {
   to: number;
 }
 
-async function alertsList(application?: string): Promise<Alert[]> {
-  const res = (await client.get("/alerts", { params: { application } })).data;
+async function alertsList(service?: string): Promise<Alert[]> {
+  const res = (await client.get("/alerts", { params: { service } })).data;
   return res.alerts;
 }
 

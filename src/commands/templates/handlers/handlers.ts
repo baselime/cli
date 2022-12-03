@@ -34,7 +34,7 @@ async function createTemplateFromFile(from: string) {
 
   const template = await api.templateCreate({
     resources,
-    name: metadata.application,
+    name: metadata.service,
     description: metadata.description,
     public: true,
   });

@@ -1,8 +1,8 @@
 import { CommandBuilder } from "yargs";
 import { BaseOptions, baseOptions } from "../shared";
 
-export const command = "applications";
-export const desc = "Manage applications";
+export const command = "services";
+export const desc = "Manage services";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
   return yargs
@@ -11,11 +11,11 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     })
     .example([
       [`
-      $0 applications list
-      $0 applications describe --name <application_name>
+      $0 services list
+      $0 services describe --name <service_name>
     `]
     ])
-    .commandDir("applications")
+    .commandDir("services")
     .demandCommand()
     .strict()
 };

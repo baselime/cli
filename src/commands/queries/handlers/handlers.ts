@@ -7,10 +7,10 @@ import chalk from "chalk";
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
-async function list(format: OutputFormat, application?: string) {
+async function list(format: OutputFormat, service?: string) {
   const s = spinner.get();
   s.start("Fetching your queries");
-  const queries = await api.queriesList(application);
+  const queries = await api.queriesList(service);
   s.succeed();
   outputs.list(queries, format);
 }

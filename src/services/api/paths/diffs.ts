@@ -4,7 +4,7 @@ import { client } from "../clients";
 
 export interface DiffCreateRequest {
   resources: DeploymentResources;
-  application: string;
+  service: string;
   metadata: {
     description?: string;
     provider: string;
@@ -29,7 +29,7 @@ export enum statusType {
 }
 
 export type DiffResponse = {
-  application: { status: statusType; application: Record<string, any> };
+  service: { status: statusType; service: Record<string, any> };
   resources: { [key in ResourceTypes]: { status: statusType; resource: Record<string, any> }[] };
 }
 

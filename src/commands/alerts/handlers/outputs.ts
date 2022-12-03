@@ -12,10 +12,10 @@ function list(alerts: Alert[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Application", "Id", "Name", "Enabled", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Service", "Id", "Name", "Enabled", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alerts.forEach((alert) => {
-    table.push([alert.application, alert.id, alert.name, alert.enabled, alert.created]);
+    table.push([alert.service, alert.id, alert.name, alert.enabled, alert.created]);
   });
   console.log(`${table.toString()}`);
   console.log(`✨ ${chalk.bold(chalk.cyan(`${alerts.length} alerts`))}`);
@@ -29,12 +29,12 @@ function check(alertChecks: AlertCheck[], format: OutputFormat) {
 
   const table = new Table({
     chars: tableChars,
-    head: ["Application", "Alert", "Triggered", "Threshold", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Service", "Alert", "Triggered", "Threshold", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alertChecks.forEach(alertCheck => {
     const res = alertCheck.aggregates[alertCheck.calculationKey];
     const isGrouped = typeof res !== "number";
-    table.push([alertCheck.application, alertCheck.alertId, alertCheck.triggered, `${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}`, `${isGrouped ? JSON.stringify(res, undefined, 2) : res}`]);
+    table.push([alertCheck.service, alertCheck.alertId, alertCheck.triggered, `${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}`, `${isGrouped ? JSON.stringify(res, undefined, 2) : res}`]);
   })
   console.log(`${table.toString()}`);
 }

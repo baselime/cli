@@ -2,33 +2,33 @@ import chalk from "chalk";
 import { prompt } from "enquirer";
 import api from "../../../services/api/api";
 import { Alert } from "../../../services/api/paths/alerts";
-import { Application } from "../../../services/api/paths/applications";
+import { Service } from "../../../services/api/paths/services";
 import spinner from "../../../services/spinner";
 
-export async function promptApplicationSelect(): Promise<Application | undefined> {
+export async function promptServiceSelect(): Promise<Service | undefined> {
   const s = spinner.get();
-  s.start("Fetching your applications");
-  const applications = (await api.applicationsList());
+  s.start("Fetching your service");
+  const services = (await api.servicesList());
   s.succeed();
 
-  if (applications.length === 0) {
-    throw new Error("No application found. Please create at least one Baselime application.");
+  if (services.length === 0) {
+    throw new Error("No service found. Please create at least one Baselime service.");
   }
 
   const { name } = await prompt<{ name: string }>({
     type: "select",
     name: "name",
-    message: `${chalk.bold("Please select an application")}`,
-    choices: applications.map(application => { return { name: application.name, value: application.name } }),
+    message: `${chalk.bold("Please select an service")}`,
+    choices: services.map(service => { return { name: service.name, value: service.name } }),
   });
 
-  return applications.find(app => app.name === name);
+  return services.find(service => service.name === name);
 }
 
-export async function promptAlertSelect(application?: string): Promise<Alert | undefined> {
+export async function promptAlertSelect(service?: string): Promise<Alert | undefined> {
   const s = spinner.get();
   s.start("Fetching your alert");
-  const alerts = (await api.alertsList(application));
+  const alerts = (await api.alertsList(service));
   s.succeed();
 
   if (alerts.length === 0) {

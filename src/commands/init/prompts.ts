@@ -36,7 +36,7 @@ export async function promptStacksSelect(provider: string): Promise<string[] | u
     type: "confirm",
     name: "confirm",
     initial: true,
-    message: `Automatically discover cloud resources for this application? (Select multiple with [Space] and confirm with [Enter])`,
+    message: `Automatically discover cloud resources for this service? (Select multiple with [Space] and confirm with [Enter])`,
   });
 
   if (!confirm) return;
@@ -55,7 +55,7 @@ export async function promptStacksSelect(provider: string): Promise<string[] | u
     const res = await prompt<{ stacks: string[] }>({
       type: "multiselect",
       name: "stacks",
-      message: `${chalk.bold("Please select CloudFormation stacks for this application (Select multiple with [Space] and confirm with [Enter])")}`,
+      message: `${chalk.bold("Please select CloudFormation stacks for this service (Select multiple with [Space] and confirm with [Enter])")}`,
       choices: allStacks.map(stack => { return { name: stack, value: stack } }),
     });
     stacks = res.stacks;
@@ -74,15 +74,15 @@ export async function promptStacksSelect(provider: string): Promise<string[] | u
   return stacks;
 }
 
-export async function promptForApplication(): Promise<string> {
+export async function promptForService(): Promise<string> {
 
-  const { application } = await prompt<{ application: string }>({
+  const { service } = await prompt<{ service: string }>({
     type: "input",
-    name: "application",
-    message: "What's the name of this application?",
+    name: "service",
+    message: "What's the name of this service?",
     required: true,
     initial: basename(resolve()),
   });
 
-  return application.replace(/[^\w\s]/gi, '-');
+  return service.replace(/[^\w\s]/gi, '-');
 }

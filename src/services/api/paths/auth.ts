@@ -34,7 +34,7 @@ export interface KeyPermissions {
   queries: boolean;
   alerts: boolean;
   defects: boolean;
-  applications: boolean;
+  services: boolean;
   environments: boolean;
 }
 

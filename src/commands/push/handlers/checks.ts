@@ -86,7 +86,7 @@ const querySchema = object({
 
 const metadataSchema = object({
   version: string().required(),
-  application: string().required().matches(idRegex),
+  service: string().required().matches(idRegex),
   description: string().notRequired(),
   provider: string().required().oneOf(["aws"]),
   infrastructure: object({
@@ -96,7 +96,7 @@ const metadataSchema = object({
 
 export type DeploymentQuery = InferType<typeof querySchema>;
 export type DeploymentAlert = InferType<typeof alertSchema>;
-export type DeploymentApplication = InferType<typeof metadataSchema>;
+export type DeploymentService = InferType<typeof metadataSchema>;
 export interface DeploymentResources {
   queries?: DeploymentQuery[];
   alerts?: DeploymentAlert[];
@@ -104,13 +104,13 @@ export interface DeploymentResources {
 
 
 
-async function validate(folder: string): Promise<{ metadata: DeploymentApplication, resources: DeploymentResources, filenames: string[] }> {
+async function validate(folder: string): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[] }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
   const filenames = await getFileList(folder, [".yaml", ".yml"]);
 
   if (!filenames.includes(`${folder}/index.yml`)) {
-    const m = "Please include a index.yml file in the config folder. This file is necessary to define the application and its metadata.";
+    const m = "Please include a index.yml file in the config folder. This file is necessary to define the service and its metadata.";
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
@@ -213,7 +213,7 @@ function validateAlerts(alerts: any[], queries: any[]) {
       parseThreshold(threshold);
       const query = queries.find(query => query.id === alert.properties.parameters.query);
       if (!query) {
-        throw new Error(`the following query was not found in this application: ${alert.properties.parameters.query}`);
+        throw new Error(`The following query was not found in this service: ${alert.properties.parameters.query}`);
       }
 
       const { frequency, window } = alert.properties.parameters;

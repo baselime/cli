@@ -8,11 +8,11 @@ import handlers from "./status/handlers";
 export interface Options extends BaseOptions {
   config?: string;
   "out-file": string;
-  application?: string;
+  service?: string;
 }
 
 export const command = "status";
-export const desc = "Runs all the alerts in the current application, displays the results and outputs them to a file";
+export const desc = "Runs all the alerts in the current service, displays the results and outputs them to a file";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -30,10 +30,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         alias: "o",
         default: "baselime-status.json",
       },
-      "application": {
+      "service": {
         type: "string",
-        desc: "The application to check the status",
-        alias: "app",
+        desc: "The service to check the status",
       },
     })
     .example([
@@ -50,12 +49,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
   const { config, profile, "out-file": outFile, format } = argv;
-  let { application } = argv;
+  let { service: service } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
-  application = application || (await getMetadata(config!)).application;
+  service = service || (await getMetadata(config!)).service;
 
-  await handlers.status(format!, { application, outFile })
+  await handlers.status(format!, { service, outFile })
 }
 

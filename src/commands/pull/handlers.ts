@@ -22,7 +22,7 @@ async function pull(config: string, skip: boolean = false) {
     process.exit(0);
   }
 
-  const { resources: { queries, alerts }, application: appDiff } = diff;
+  const { resources: { queries, alerts }, service: appDiff } = diff;
   const allResources = [
     ...queries,
     ...alerts,
@@ -80,14 +80,14 @@ async function pull(config: string, skip: boolean = false) {
     console.log(`Imported resources stored in ${path}. Please do not delete this file.`);
   })();
 
-  const applicationPromise = (async () => {
-    const { status, application } = appDiff;
+  const servicePromise = (async () => {
+    const { status, service } = appDiff;
     if (status === statusType.VALUE_UNCHANGED || status === statusType.VALUE_DELETED) return;
-    const dd = stringify({ version: getVersion(), ...application });
+    const dd = stringify({ version: getVersion(), ...service });
     writeFileSync(`${config}/index.yml`, dd);
   })();
 
-  await Promise.all([...deleteAndUpdatePromises, createPromise, applicationPromise]);
+  await Promise.all([...deleteAndUpdatePromises, createPromise, servicePromise]);
 }
 
 

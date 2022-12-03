@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import yaml, { Document } from "yaml";
 import chalk from "chalk";
 import spinner from "../spinner/index";
-import { DeploymentApplication, DeploymentResources } from "../../commands/push/handlers/checks";
+import { DeploymentService, DeploymentResources } from "../../commands/push/handlers/checks";
 
 export async function getResources(filenames: string[]) {
   const s = spinner.get();
@@ -40,7 +40,7 @@ export async function getResources(filenames: string[]) {
 
 }
 
-export async function getMetadata(folder: string): Promise<DeploymentApplication> {
+export async function getMetadata(folder: string): Promise<DeploymentService> {
   try {
     const file = (await readFile(`${folder}/index.yml`)).toString()
     const metadata = yaml.parse(file);

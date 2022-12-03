@@ -9,7 +9,7 @@ export interface Options extends BaseOptions {
 }
 
 export const command = "describe";
-export const desc = "Return the description of an application";
+export const desc = "Return the description of a service";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -17,13 +17,13 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       name: {
         type: "string",
-        desc: "Name of the application",
+        desc: "Name of the service",
       },
     })
     .demandOption("name")
     .example([
       [`
-      $0 applications describe --name <application_name>`
+      $0 services describe --name <service_name>`
       ],
     ])
     .demandOption(["name"])

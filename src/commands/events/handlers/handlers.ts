@@ -20,7 +20,7 @@ async function stream(data: {
   namespaces: string[],
   combination: NamespaceCombination,
   follow: boolean,
-  application?: string,
+  service?: string,
   matchCase: boolean,
   regex?: string,
 }) {
@@ -36,7 +36,7 @@ async function stream(data: {
     follow,
     matchCase,
     regex,
-    application,
+    service,
   } = data;
   const s = spinner.get();
 
@@ -49,7 +49,7 @@ async function stream(data: {
   if (!follow) {
     s.start("Streaming your events");
     const { from: f, to: t } = getTimeframe(from, to);
-    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, application, namespaceCombination: combination, offset: 0, limit: 100 });
+    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, service: service, namespaceCombination: combination, offset: 0, limit: 100 });
     s.succeed();
     outputs.stream(events.events, format);
     return;
@@ -57,7 +57,7 @@ async function stream(data: {
 
   let { from: f, to: t } = getTimeframe("1minute", "now");
   while (true) {
-    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, application, namespaceCombination: combination, offset: 0, limit: 100 });
+    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, service: service, namespaceCombination: combination, offset: 0, limit: 100 });
     const now = dayjs();
 
     f = events.events[0] ? dayjs.utc(events.events[0]._timestamp).valueOf() : f;

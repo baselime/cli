@@ -4,7 +4,7 @@ import { authenticate, baseOptions, BaseOptions, printError } from "../../shared
 import handlers from "./handlers/handlers";
 
 export interface Options extends BaseOptions {
-  application?: string;
+  service?: string;
 }
 
 export const command = "list";
@@ -14,15 +14,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
       ...baseOptions,
-      application: { type: "string", desc: "Name of the application", alias: "app" },
+      service: { type: "string", desc: "Name of the service" },
     })
     .example([
       [`
       # List all the alerts:
       $0 alerts list
 
-      # List all the alerts for an application:
-      $0 alerts list --application <application_name>
+      # List all the alerts for an service:
+      $0 alerts list --service <service_name>
       `],
     ])
     .fail((message, err, yargs) => {
@@ -31,8 +31,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, format, application, } = argv;
+  const { profile, format, service: service, } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
-  await handlers.list(format!, application);
+  await handlers.list(format!, service);
 }

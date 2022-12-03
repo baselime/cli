@@ -17,7 +17,7 @@ export interface Options extends BaseOptions {
   needle?: string;
   regex?: string;
   "match-case": boolean;
-  application?: string;
+  service?: string;
 }
 
 export const command = "stream";
@@ -32,7 +32,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         desc: "The datasets to stream",
         default: [],
       },
-      application: { type: "string", desc: "The application to stream. When specified, additional filters and namespaces are combined with the filters of the application", alias: "app" },
+      service: { type: "string", desc: "The service to stream. When specified, additional filters and namespaces are combined with the filters of the service" },
       filters: { type: "array", desc: "A set of filters to apply to the stream; multiple filters can be passed", default: [] },
       needle: { type: "string", desc: "A string to search in the stream" },
       regex: { type: "string", desc: "A regular expression to search in the stream. If there's both a needle and a regex, the regex takes priority" },
@@ -65,7 +65,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, datasets, filters, from, to, format, follow, namespaces, combination, needle, "match-case": matchCase, regex, application } = argv;
+  const { profile, datasets, filters, from, to, format, follow, namespaces, combination, needle, "match-case": matchCase, regex, service } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
@@ -82,7 +82,7 @@ export async function handler(argv: Arguments<Options>) {
     regex,
     combination: combination.toUpperCase() as NamespaceCombination,
     follow,
-    application
+    service: service
   });
 }
 

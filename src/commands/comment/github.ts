@@ -46,7 +46,7 @@ export async function handler(argv: Arguments<Options>) {
     throw new Error("Please specifiy either --commit or --pull-request");
   }
 
-  const status = JSON.parse((await readFile(path)).toString()) as { version: string; application: string; alertChecks: AlertCheck[] };
+  const status = JSON.parse((await readFile(path)).toString()) as { version: string; service: string; alertChecks: AlertCheck[] };
 
   const [owner, name] = repo.split("/");
   await api.commentGithub({
@@ -57,5 +57,5 @@ export async function handler(argv: Arguments<Options>) {
     token: githubToken,
   })
 
-  console.log("Comment posted to github")
+  console.log("Comment posted to github");
 }

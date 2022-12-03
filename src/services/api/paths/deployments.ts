@@ -2,7 +2,7 @@ import { client, publicClient } from "../clients";
 
 export interface Deployment {
   id: string;
-  application: string;
+  service: string;
   workspaceId: string;
   environmentId: string;
   userId: string;
@@ -28,25 +28,25 @@ async function upload(preSignedUrl: string, data: string | Buffer) {
 }
 
 async function uploadUrlGet(
-  application: string,
+  service: string,
   version: string,
 ): Promise<{ url: string; id: string }> {
   const res = (
-    await client.put("/deployments/upload-url", { application, version })
+    await client.put("/deployments/upload-url", { service, version })
   ).data;
   return res;
 }
 
-async function deploymentGet(application: string, id: string,): Promise<Deployment> {
+async function deploymentGet(service: string, id: string,): Promise<Deployment> {
   const res = (
-    await client.get(`/deployments/${application}/${id}`)
+    await client.get(`/deployments/${service}/${id}`)
   ).data;
   return res.deployment;
 }
 
-async function deploymentsList(application: string, limit?: number): Promise<Deployment[]> {
+async function deploymentsList(service: string, limit?: number): Promise<Deployment[]> {
   const res = (
-    await client.get(`/deployments/${application}`, { params: { limit } })
+    await client.get(`/deployments/${service}`, { params: { limit } })
   ).data;
   return res.deployments;
 }

@@ -2,7 +2,7 @@ import chalk from "chalk";
 import api from "../../services/api/api";
 import { Ref, stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import checks, { DeploymentApplication, DeploymentResources } from "../push/handlers/checks";
+import checks, { DeploymentService, DeploymentResources } from "../push/handlers/checks";
 import Table from "cli-table3";
 import { DiffResponse, statusType } from "../../services/api/paths/diffs";
 import { blankChars } from "../../shared";
@@ -14,9 +14,9 @@ async function plan(config: string) {
   await verifyPlan(metadata, resources, false);
 }
 
-export async function verifyPlan(metadata: DeploymentApplication, resources: DeploymentResources, reverse: boolean) {
+export async function verifyPlan(metadata: DeploymentService, resources: DeploymentResources, reverse: boolean) {
   const diff = await api.diffsCreate({
-    application: metadata.application,
+    service: metadata.service,
     metadata: {
       description: metadata.description,
       provider: metadata.provider,
@@ -27,16 +27,16 @@ export async function verifyPlan(metadata: DeploymentApplication, resources: Dep
     reverse,
   });
 
-  displayDiff(metadata.application, diff);
+  displayDiff(metadata.service, diff);
   return diff;
 }
 
-export async function displayDiff(application: string, diff: DiffResponse) {
+export async function displayDiff(service: string, diff: DiffResponse) {
   const s = spinner.get();
-  const { resources: { queries, alerts }, application: appDiff } = diff;
+  const { resources: { queries, alerts }, service: appDiff } = diff;
 
-  const applicationTable = new Table({ chars: blankChars });
-  applicationTable.push(getYamlString({ status: appDiff.status, value: appDiff.application }));
+  const serviceTable = new Table({ chars: blankChars });
+  serviceTable.push(getYamlString({ status: appDiff.status, value: appDiff.service }));
 
   const table = new Table({ chars: blankChars });
 
@@ -65,12 +65,12 @@ export async function displayDiff(application: string, diff: DiffResponse) {
     table.push(getYamlString({ status, value }));
   });
 
-  console.log("\n\n" + chalk.bold(chalk.cyanBright(`Application: ${application}`)))
-  console.log("\n\n" + applicationTable.toString() + "\n\n");
+  console.log("\n\n" + chalk.bold(chalk.cyanBright(`Services: ${service}`)))
+  console.log("\n\n" + serviceTable.toString() + "\n\n");
   console.log("\n\n" + table.toString() + "\n\n");
 
   const allResources = [...queries, ...alerts];
-  const applicationStatus = (() => {
+  const serviceStatus = (() => {
     switch (appDiff.status) {
       case statusType.VALUE_CREATED:
         return chalk.greenBright("to be created");
@@ -85,7 +85,7 @@ export async function displayDiff(application: string, diff: DiffResponse) {
     }
   })();
   s.succeed(chalk.bold(
-    `Application: ${chalk.bold(applicationStatus)}
+    `Service: ${chalk.bold(serviceStatus)}
     
   Resources
     ${chalk.greenBright(allResources.filter(r => r.status === statusType.VALUE_CREATED).length + " to add")}
