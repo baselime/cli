@@ -6,7 +6,7 @@ import checks from "../../push/handlers/checks";
 
 async function destroy(config: string) {
   const s = spinner.get();
-  const { metadata } = await checks.validate(config);
+  const { metadata } = await checks.validate(config, true);
   const resources = { queries: [], alerts: [] };
   s.start("Checking resources to destroy...");
   // Remove the provider to signal to the API that we're deleting the service

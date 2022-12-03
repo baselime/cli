@@ -9,7 +9,7 @@ import { blankChars } from "../../shared";
 
 async function plan(config: string) {
   const s = spinner.get();
-  const { metadata, resources } = await checks.validate(config);
+  const { metadata, resources } = await checks.validate(config, true);
   s.start("Completing baselime plan...");
   await verifyPlan(metadata, resources, false);
 }

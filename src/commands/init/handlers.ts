@@ -33,8 +33,7 @@ export async function init(
     }
   };
 
-  if (Object.values(metadata.infrastructure || {}).every(v => v === undefined || v.length === 0)) {
-    // @ts-expect-error it should work
+  if (Object.values(metadata.infrastructure || {}).every(v => v === undefined || v?.length === 0)) {
     metadata.infrastructure = undefined;
   }
 
@@ -45,20 +44,8 @@ export async function init(
   if (templateUrl) {
     const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
     const template = await api.templateGet(workspaceId, templateName, true);
-    const { resources, variables } = template;
+    const { resources } = template;
     let data = stringifyResources(resources);
-    if (variables?.length) {
-      const vars: Record<string, any> = await promptTemplateVariables(variables);
-      variables.forEach(variable => {
-        const { ref } = variable;
-        const value = vars[ref] || variable.default;
-        if (!value) {
-          s.fail(`Please provide a value for all variables: ${variable.ref} is missing and doesn't have a default value`);
-          return;
-        }
-        data = data.split(`<var>${ref}</var>`).join(value);
-      })
-    }
 
     writeFileSync(`${folder}/${service}.yml`, data);
     s.succeed();

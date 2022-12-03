@@ -1,11 +1,13 @@
 import chalk from "chalk";
-import { object, string, number, array, boolean, InferType, lazy } from 'yup';
+import { object, string, number, array, boolean, InferType, lazy, mixed } from 'yup';
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
 import { getMetadata, getResources } from "../../../services/parser/parser";
 import awsCronParser from "aws-cron-parser";
 import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
+import { mapValues } from "lodash";
+
 
 const filterCombinations = ["AND", "OR"];
 const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
@@ -18,8 +20,8 @@ const alertSchema = object({
   type: string().equals(["alert"]),
   id: string().required().matches(idRegex),
   properties: object({
-    name: string().notRequired(),
-    description: string().notRequired(),
+    name: string().optional(),
+    description: string().optional(),
     parameters: object({
       query: string().required(),
       threshold: string().matches(alertThresholdRegex).required(),
@@ -29,7 +31,7 @@ const alertSchema = object({
       .required()
       .noUnknown(true)
       .strict(),
-    enabled: boolean().notRequired(),
+    enabled: boolean().optional(),
     channels: array().min(1).of(object({
       type: string().oneOf(channelTypes).required(),
       targets: array().of(string().required()),
@@ -53,50 +55,71 @@ const querySchema = object({
   type: string().equals(["query"]),
   id: string().required().matches(idRegex),
   properties: object({
-    name: string().notRequired(),
-    description: string().notRequired(),
+    name: string().optional(),
+    description: string().optional(),
     parameters: object({
       datasets: array()
         .min(1)
         .of(string())
         .required()
         .typeError("Must include at least 1 dataset"),
-      namespaces: array().of(string()).notRequired(),
+      namespaces: array().of(string()).optional(),
       calculations: array()
-      .of(string().matches(calculationsRegex).notRequired())
-      .notRequired().nullable(),
-      filters: array().of(string().matches(queryFilterRegex)).notRequired(),
-      filterCombination: string().oneOf(filterCombinations).notRequired().typeError('filterCombination must be set to AND or OR.'),
-      namespaceCombination: string().oneOf(namespaceCombinations).notRequired().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
+        .of(string().matches(calculationsRegex).optional())
+        .optional().nullable(),
+      filters: array().of(string().matches(queryFilterRegex)).optional(),
+      filterCombination: string().oneOf(filterCombinations).optional().typeError('filterCombination must be set to AND or OR.'),
+      namespaceCombination: string().oneOf(namespaceCombinations).optional().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
       needle: object({
         value: string().required(),
-        isRegex: boolean().notRequired(),
-        matchCase: boolean().notRequired()
-      }).nullable().notRequired().noUnknown(true).strict(),
+        isRegex: boolean().optional(),
+        matchCase: boolean().optional()
+      }).nullable().optional().noUnknown(true).strict(),
       groupBy: object({
         type: string().oneOf(groupByTypes).min(1).required(),
         value: string().min(1).required(),
-        orderBy: string().min(1).notRequired(),
-        limit: number().min(1).notRequired(),
-        order: string().oneOf(["ACS", "DESC"]).notRequired(),
-      }).nullable().notRequired().default(undefined).noUnknown(true).strict(),
+        orderBy: string().min(1).optional(),
+        limit: number().min(1).optional(),
+        order: string().oneOf(["ACS", "DESC"]).optional(),
+      }).nullable().optional().default(undefined).noUnknown(true).strict(),
     }).noUnknown(true).required().strict(),
   }).noUnknown(true).required().strict(),
 }).noUnknown(true).strict();
 
+const variableSchema = object({
+  value: lazy(val => {
+    const type = typeof val;
+    if (type === "number") return number();
+    if (type === "boolean") return boolean();
+    return string();
+  }).optional(),
+  default: lazy(val => {
+    const type = typeof val;
+    if (type === "number") return number();
+    if (type === "boolean") return boolean();
+    return string();
+  }).optional(),
+}).strict().noUnknown(true);
+
+
 const metadataSchema = object({
   version: string().required(),
   service: string().required().matches(idRegex),
-  description: string().notRequired(),
+  description: string().optional(),
   provider: string().required().oneOf(["aws"]),
+  variables: lazy(obj => object(
+    mapValues(obj, () => variableSchema)
+  )).optional(),
   infrastructure: object({
-    stacks: array().of(string()).notRequired().nullable(),
-  }).noUnknown(true).notRequired().strict(),
+    stacks: array().of(string().required()).optional(),
+  }).noUnknown(true).optional().strict(),
 }).noUnknown(true).strict();
 
 export type DeploymentQuery = InferType<typeof querySchema>;
 export type DeploymentAlert = InferType<typeof alertSchema>;
 export type DeploymentService = InferType<typeof metadataSchema>;
+export type DeploymentVariable = InferType<typeof variableSchema>;
+
 export interface DeploymentResources {
   queries?: DeploymentQuery[];
   alerts?: DeploymentAlert[];
@@ -104,7 +127,7 @@ export interface DeploymentResources {
 
 
 
-async function validate(folder: string): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[] }> {
+async function validate(folder: string, replaceVariables: boolean): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[] }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
   const filenames = await getFileList(folder, [".yaml", ".yml"]);
@@ -118,6 +141,15 @@ async function validate(folder: string): Promise<{ metadata: DeploymentService, 
   const metadata = await getMetadata(folder);
   try {
     const m = await metadataSchema.validate(metadata);
+    const variables = m.variables;
+    const variableNames = Object.keys(variables || {});
+    if (variables && variableNames?.length) {
+      variableNames.forEach(variable => {
+        if (!variables[variable].default && !variables[variable].value) {
+          throw new Error(`Variable ${variable} must have at least one of value or default`);
+        }
+      });
+    }
   } catch (error) {
     s.fail(chalk.bold(chalk.redBright("Failed to validate the index.yml file")));
     const message = `error: ${error}`;
@@ -127,7 +159,7 @@ async function validate(folder: string): Promise<{ metadata: DeploymentService, 
 
   const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
-  const data = (await getResources(resourceFilenames)) || {};
+  const data = (await getResources(resourceFilenames, replaceVariables, metadata.variables)) || {};
   if (!isObject(data)) {
     const m = `invalid file format - must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));

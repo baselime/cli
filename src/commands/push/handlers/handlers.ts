@@ -13,7 +13,7 @@ const wait = promisify(setTimeout);
 
 async function push(config: string, skip: boolean = false) {
   const s = spinner.get();
-  const { metadata, resources } = await validate(config);
+  const { metadata, resources } = await validate(config, true);
   s.start("Completing baselime plan...");
   await verifyPlan(metadata, resources, false);
 
@@ -54,8 +54,8 @@ async function push(config: string, skip: boolean = false) {
   ${chalk.red(deployment?.error || '')}`);
 }
 
-async function validate(folder: string): Promise<{metadata: DeploymentService, resources: DeploymentResources}> {
-  return await checks.validate(folder);
+async function validate(folder: string, replaceVariables: boolean): Promise<{metadata: DeploymentService, resources: DeploymentResources}> {
+  return await checks.validate(folder, replaceVariables);
 }
 
 export default {

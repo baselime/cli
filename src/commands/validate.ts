@@ -39,6 +39,6 @@ export async function handler(argv: Arguments<Options>) {
 
   await authenticate(profile);
 
-  await handlers.validate(config!);
+  await handlers.validate(config!, true);
 }
 

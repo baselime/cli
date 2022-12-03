@@ -5,14 +5,14 @@ import { statusType } from "../../services/api/paths/diffs";
 import { parse, stringify, stringifyResources } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { getVersion } from "../../shared";
-import checks, { DeploymentAlert, DeploymentQuery } from "../push/handlers/checks";
+import checks, { DeploymentAlert, DeploymentQuery, DeploymentVariable } from "../push/handlers/checks";
 import { verifyPlan } from "../plan/handlers";
 import { promptRefresh } from "./prompts";
 
 
 async function pull(config: string, skip: boolean = false) {
   const s = spinner.get();
-  const { metadata, resources, filenames } = await checks.validate(config);
+  const { metadata, resources, filenames } = await checks.validate(config, true);
   s.start("Checking resources to import...");
   const diff = await verifyPlan(metadata, resources, true);
 
@@ -35,7 +35,7 @@ async function pull(config: string, skip: boolean = false) {
 
   const deleteAndUpdatePromises = filenames.map(async filename => {
     const s = (await readFile(filename)).toString();
-    const data = parse(s) || {};
+    const data = parse(s, true, metadata.variables) || {};
     const updatedQueries: DeploymentQuery[] = [];
     const updatedAlerts: DeploymentAlert[] = [];
     Object.keys(data).forEach(key => {
