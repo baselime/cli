@@ -58,7 +58,7 @@ export async function displayDiff(application: string, diff: DiffResponse) {
       type: "alert",
       properties: {
         ...resource.properties,
-        channels: resource.properties.channels.map((c: string) => new Ref(c)),
+        channels: resource.properties.channels,
         parameters: { ...resource.properties.parameters, query: new Ref(resource.properties.parameters.query) }
       }
     };
