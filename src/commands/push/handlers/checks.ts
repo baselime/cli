@@ -65,9 +65,9 @@ const querySchema = object({
         .typeError("Must include at least 1 dataset"),
       namespaces: array().of(string()).optional(),
       calculations: array()
-        .of(string().matches(calculationsRegex).optional())
+        .of(string().matches(calculationsRegex).required())
         .optional().nullable(),
-      filters: array().of(string().matches(queryFilterRegex)).optional(),
+      filters: array().of(string().matches(queryFilterRegex).required()).optional(),
       filterCombination: string().oneOf(filterCombinations).optional().typeError('filterCombination must be set to AND or OR.'),
       namespaceCombination: string().oneOf(namespaceCombinations).optional().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
       needle: object({
@@ -78,7 +78,7 @@ const querySchema = object({
       groupBy: object({
         type: string().oneOf(groupByTypes).min(1).required(),
         value: string().min(1).required(),
-        orderBy: string().min(1).optional(),
+        orderBy: string().min(1).matches(calculationsRegex).optional(),
         limit: number().min(1).optional(),
         order: string().oneOf(["ACS", "DESC"]).optional(),
       }).nullable().optional().default(undefined).noUnknown(true).strict(),
@@ -219,8 +219,9 @@ function validateQueries(queries: any[]) {
   const promises = queries.map(async item => {
     try {
       const res = await querySchema.validate(item);
-      const filters = res.properties.parameters.filters as string[];
-      const calculations = res.properties.parameters.calculations as string[];
+      const filters = res.properties.parameters.filters;
+      const calculations = res.properties.parameters.calculations;
+      const groupBy = res.properties.parameters.groupBy;
 
       filters?.forEach(filter => {
         parseFilter(filter);
@@ -229,6 +230,10 @@ function validateQueries(queries: any[]) {
       calculations?.forEach(calculation => {
         extractCalculation(calculation);
       });
+
+      if (groupBy?.orderBy && !calculations?.includes(groupBy?.orderBy)) {
+        throw new Error("The orderBy field of the groupBy must be present in the calculations.");
+      }
     } catch (error) {
       const message = `query: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.redBright("Query validation error")));
