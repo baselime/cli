@@ -1,19 +1,28 @@
-import { Query } from "../../../services/api/paths/queries";
 import Table from "cli-table3";
 
 import { OutputFormat, tableChars } from "../../../shared";
 import chalk from "chalk";
 import { QueryRun, Series } from "../../../services/api/paths/query-runs";
 import dayjs from "dayjs";
+import outputs from "../../events/handlers/outputs";
+import { Event } from "../../../services/api/paths/events";
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
 
-function getQueryRun(queryRun: QueryRun, aggregates: Record<string, number | Record<string, number>>, series: Series[], events: Event[], format: OutputFormat) {
+function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, number | Record<string, number>>, series: Series[], events?: Event[], format: OutputFormat }) {
+  const { queryRun, aggregates, series, events, format } = data;
+
   if (format === "json") {
     console.log(JSON.stringify({ queryRun, aggregates, series, events }, null, 4));
     return;
   }
+
+  if (!aggregates) {
+    outputs.stream(events || [], format);
+    return;
+  }
+
   const runTable = new Table({
     chars: tableChars,
     head: ["Id", "QueryId", "From", "To", "Status", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),

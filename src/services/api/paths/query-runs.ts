@@ -1,4 +1,5 @@
 import { client } from "../clients";
+import { Event } from "./events";
 
 export interface QueryRun {
   id: number;
@@ -67,7 +68,7 @@ async function queryRunGet(params: QueryRunGetParams): Promise<{ queryRun: Query
   return res;
 }
 
-async function queryRunCreate(params: QueryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { series: Series[]; aggregates: Record<string, number | Record<string, number>> }; }> {
+async function queryRunCreate(params: QueryRunCreateParams): Promise<{ queryRun: QueryRun; calculations: { series: Series[]; aggregates?: Record<string, number | Record<string, number>> }; events: { events?: Event[]; count?: number; series?: Series[]; fields?: { name: string; type: string }[] } }> {
   const res = (await client.post(`/query-runs/`, params, { timeout: 30000 })).data;
   return res;
 }

@@ -17,13 +17,13 @@ async function createRun(format: OutputFormat, from: string, to: string, service
   const timeFormat = f.isSame(t, "day") ? "HH:mm:ss" : "YYYY-MM-DDTHH:mm:ss";
   s.start(`Running the query from ${chalk.bold(f.format(timeFormat))} to ${chalk.bold(t.format(timeFormat))} [UTC]`);
 
-  const { queryRun, calculations: { aggregates, series } } = await api.queryRunCreate({
+  const { queryRun, calculations: { aggregates, series }, events: { events, count } } = await api.queryRunCreate({
     service: service,
     queryId: id,
     timeframe,
   });
   s.succeed();
-  outputs.getQueryRun(queryRun, aggregates, series, [], format);
+  outputs.getQueryRun({ queryRun, aggregates, series, events, format });
 }
 
 export default {
