@@ -19,7 +19,7 @@ export interface Service {
 
 async function servicesList(): Promise<Service[]> {
   const res = (await client.get("/services")).data;
-  return res.service;
+  return res.services;
 }
 
 async function serviceGet(name: string): Promise<Service> {
