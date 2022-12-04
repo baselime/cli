@@ -3,9 +3,11 @@ import spinner from "../services/spinner";
 
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import handlers from "./plan/handlers";
+import { UserVariableInputs } from "./push/handlers/checks";
 
 export interface Options extends BaseOptions {
   config?: string;
+  variables?: (string | number)[];
 }
 
 export const command = "plan";
@@ -21,6 +23,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         alias: "c",
         default: ".baselime",
       },
+      variables: {
+        type: "array",
+        desc: "The variables to replace when doing the plan",
+      },
     })
     .example([
       [`
@@ -35,8 +41,14 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
-  const { config, profile } = argv;
+  const { config, profile, variables: vars } = argv;
   await authenticate(profile);
-  await handlers.plan(config as string);
+
+  const variables: UserVariableInputs = {};
+  vars?.map(variable => {
+    const [key, val] = variable.toString().split("=");
+    variables[key.trim()] = val.trim();
+  });
+  await handlers.plan(config as string, variables!);
 }
 

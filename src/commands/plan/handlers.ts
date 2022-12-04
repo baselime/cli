@@ -2,14 +2,14 @@ import chalk from "chalk";
 import api from "../../services/api/api";
 import { Ref, stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import checks, { DeploymentService, DeploymentResources } from "../push/handlers/checks";
+import checks, { DeploymentService, DeploymentResources, UserVariableInputs } from "../push/handlers/checks";
 import Table from "cli-table3";
 import { DiffResponse, statusType } from "../../services/api/paths/diffs";
 import { blankChars } from "../../shared";
 
-async function plan(config: string) {
+async function plan(config: string, userVariableInputs: UserVariableInputs) {
   const s = spinner.get();
-  const { metadata, resources } = await checks.validate(config, true);
+  const { metadata, resources } = await checks.validate(config, userVariableInputs);
   s.start("Completing baselime plan...");
   await verifyPlan(metadata, resources, false);
 }

@@ -87,6 +87,7 @@ const querySchema = object({
 }).noUnknown(true).strict();
 
 const variableSchema = object({
+  description: string().optional(),
   value: lazy(val => {
     const type = typeof val;
     if (type === "number") return number();
@@ -99,7 +100,7 @@ const variableSchema = object({
     if (type === "boolean") return boolean();
     return string();
   }).optional(),
-}).strict().noUnknown(true);
+}).strict().noUnknown(true).optional().nullable();
 
 
 const metadataSchema = object({
@@ -120,14 +121,16 @@ export type DeploymentAlert = InferType<typeof alertSchema>;
 export type DeploymentService = InferType<typeof metadataSchema>;
 export type DeploymentVariable = InferType<typeof variableSchema>;
 
+export interface UserVariableInputs {
+  [name: string]: string | number | boolean;
+}
+
 export interface DeploymentResources {
   queries?: DeploymentQuery[];
   alerts?: DeploymentAlert[];
 }
 
-
-
-async function validate(folder: string, replaceVariables: boolean): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[] }> {
+async function validate(folder: string, inputVariables: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[] }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
   const filenames = await getFileList(folder, [".yaml", ".yml"]);
@@ -144,9 +147,11 @@ async function validate(folder: string, replaceVariables: boolean): Promise<{ me
     const variables = m.variables;
     const variableNames = Object.keys(variables || {});
     if (variables && variableNames?.length) {
-      variableNames.forEach(variable => {
-        if (!variables[variable].default && !variables[variable].value) {
-          throw new Error(`Variable ${variable} must have at least one of value or default`);
+      variableNames.forEach(variableName => {
+        variables[variableName] = variables[variableName] || {};
+        variables[variableName]!.value = inputVariables[variableName];
+        if (typeof variables[variableName]?.default === "undefined" && typeof variables[variableName]?.value === "undefined") {
+          throw new Error(`Variable ${variableName} must have at least one of value or default`);
         }
       });
     }
@@ -159,7 +164,7 @@ async function validate(folder: string, replaceVariables: boolean): Promise<{ me
 
   const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
-  const data = (await getResources(resourceFilenames, replaceVariables, metadata.variables)) || {};
+  const data = (await getResources(resourceFilenames, metadata.variables)) || {};
   if (!isObject(data)) {
     const m = `invalid file format - must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
@@ -256,6 +261,14 @@ function validateAlerts(alerts: any[], queries: any[]) {
           awsCronParser.parse(frequency);
         } catch (error) {
           throw new Error(`Invalid frequency expression. Please follow the AWS Cron specs.`);
+        }
+      }
+
+      if (!convertedWindow) {
+        try {
+          awsCronParser.parse(frequency);
+        } catch (error) {
+          throw new Error(`Invalid window expression. Please follow the AWS Cron specs.`);
         }
       }
 

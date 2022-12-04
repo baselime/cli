@@ -6,7 +6,7 @@ import { DeploymentService, DeploymentResources, DeploymentVariable } from "../.
 import mustache from "mustache";
 
 
-export async function getResources(filenames: string[], replaceVariables: boolean, variables?: { [name: string]: DeploymentVariable }) {
+export async function getResources(filenames: string[], variables?: { [name: string]: DeploymentVariable }) {
   const s = spinner.get();
   const result: Record<string, Record<string, any>> = {};
 
@@ -23,7 +23,7 @@ export async function getResources(filenames: string[], replaceVariables: boolea
 
   files.forEach((file, index) => {
     try {
-      const data = parse(file, replaceVariables, variables);
+      const data = parse(file, variables);
       for (const key in data) {
         if (Object.keys(result).includes(key)) {
           throw { code: "DUPLICATE_KEY", message: `Map keys must be unique across all config files: ${key} in ${filenames[index]}` };
@@ -59,19 +59,21 @@ export async function getMetadata(folder: string): Promise<DeploymentService> {
   }
 }
 
-export function parse(s: string, replaceVariables: boolean, variables?: { [name: string]: DeploymentVariable }): Record<string, Record<string, any>> {
+export function parse(s: string, variables?: { [name: string]: DeploymentVariable }): Record<string, Record<string, any>> {
   const variableNames = Object.keys(variables || {});
-  if (!replaceVariables || !variables || variableNames?.length === 0) {
+  if (!variables || variableNames?.length === 0) {
     // @ts-ignore
     return yaml.parse(s, { customTags: [ref] });
   }
-  
+
   const vals: Record<string, any> = {}
   variableNames.forEach(variable => {
-    vals[variable] = variables[variable].value || variables[variable].default;
+    if (variables[variable]) {
+      vals[variable] = variables[variable]!.value || variables[variable]!.default;
+    }
   });
 
-  const val = mustache.render(s,vals);
+  const val = mustache.render(s, vals);
   // @ts-ignore
   return yaml.parse(val, { customTags: [ref] });
 }

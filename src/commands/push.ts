@@ -3,10 +3,12 @@ import { Arguments, CommandBuilder } from "yargs";
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import spinner from "../services/spinner/index";
 import handlers from "./push/handlers/handlers";
+import { UserVariableInputs } from "./push/handlers/checks";
 
 export interface Options extends BaseOptions {
   config?: string;
   yes?: boolean;
+  variables?: (string | number)[];
 }
 
 export const command = "push";
@@ -28,6 +30,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         alias: "y",
         default: false,
       },
+      variables: {
+        type: "array",
+        desc: "The variables to replace when doing the plan",
+      },
     })
     .example([
       [`
@@ -41,11 +47,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { config, profile, yes } = argv;
+  const { config, profile, yes, variables: vars } = argv;
   spinner.init(!!argv.quiet);
 
   await authenticate(profile);
-
-  await handlers.push(config!, yes!);
+  const variables: UserVariableInputs = {};
+  vars?.map(variable => {
+    const [key, val] = variable.toString().split("=");
+    variables[key.trim()] = val.trim();
+  });
+  await handlers.push(config!, variables, yes!);
 }
 

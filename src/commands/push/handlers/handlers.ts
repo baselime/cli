@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import checks, { DeploymentService, DeploymentResources } from "./checks";
+import checks, { DeploymentService, DeploymentResources, UserVariableInputs } from "./checks";
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { readFileSync } from "fs";
@@ -11,9 +11,9 @@ import { promisify } from "util";
 
 const wait = promisify(setTimeout);
 
-async function push(config: string, skip: boolean = false) {
+async function push(config: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
   const s = spinner.get();
-  const { metadata, resources } = await validate(config, true);
+  const { metadata, resources } = await validate(config, userVariableInputs);
   s.start("Completing baselime plan...");
   await verifyPlan(metadata, resources, false);
 
@@ -54,8 +54,8 @@ async function push(config: string, skip: boolean = false) {
   ${chalk.red(deployment?.error || '')}`);
 }
 
-async function validate(folder: string, replaceVariables: boolean): Promise<{metadata: DeploymentService, resources: DeploymentResources}> {
-  return await checks.validate(folder, replaceVariables);
+async function validate(folder: string, userVariableInputs: UserVariableInputs): Promise<{metadata: DeploymentService, resources: DeploymentResources}> {
+  return await checks.validate(folder, userVariableInputs);
 }
 
 export default {
