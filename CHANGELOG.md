@@ -1,5 +1,15 @@
 # Changelog
 
+### 0.0.25 (5th December 2022)
+
+- Add support for negative numbers as alert thresholds
+- Validate filters, calculations, thesholds and order bys inline
+- Add `templates` commands
+- Rename applications to services
+- Add support for observability as code variables
+- Add support for inline variables
+- Add support for running queries without calculations
+
 ### 0.0.24 (30th November 2022)
 
 - Deprecate channels
