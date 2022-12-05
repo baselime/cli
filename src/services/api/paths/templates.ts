@@ -8,26 +8,27 @@ export interface Template {
   name: string;
   description?: string;
   public: boolean;
-  variables: Variable[];
-  resources: DeploymentResources;
+  variables: TemplateVariables;
+  template: string;
   userId: string;
   created?: string;
   updated?: string;
 }
 
-export interface Variable {
-  ref: string;
-  type: "string" | "number" | "boolean"; 
-  description?: string;
-  default?: any;
+export interface TemplateVariables {
+  [name: string | number | symbol]: {
+    description?: string;
+    default?: string | number | boolean;
+    value?: string | number | boolean;
+  } | undefined | null
 }
 
 export interface TemplateCreateParams {
   name: string;
   description?: string;
   public: boolean;
-  variables?: Variable[];
-  resources: DeploymentResources;
+  variables?: TemplateVariables;
+  template: string;
 }
 
 async function templatesList(): Promise<Template[]> {

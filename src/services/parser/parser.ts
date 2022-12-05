@@ -6,9 +6,9 @@ import { DeploymentService, DeploymentResources, DeploymentVariable } from "../.
 import mustache from "mustache";
 
 
-export async function getResources(filenames: string[], variables?: { [name: string]: DeploymentVariable }) {
+export async function getResources(filenames: string[], variables?: { [name: string]: DeploymentVariable }): Promise<{resources: Record<string, Record<string, any>>; template: string}> {
   const s = spinner.get();
-  const result: Record<string, Record<string, any>> = {};
+  const resources: Record<string, Record<string, any>> = {};
 
   const files = await Promise.all(filenames.map(async filename => {
     try {
@@ -25,10 +25,10 @@ export async function getResources(filenames: string[], variables?: { [name: str
     try {
       const data = parse(file, variables);
       for (const key in data) {
-        if (Object.keys(result).includes(key)) {
+        if (Object.keys(resources).includes(key)) {
           throw { code: "DUPLICATE_KEY", message: `Map keys must be unique across all config files: ${key} in ${filenames[index]}` };
         }
-        result[key] = data[key];
+        resources[key] = data[key];
       }
     } catch (error) {
       const message = `Error parsing a file\n${(error as any).code || ''}\n${(error as any).message || ''}`;
@@ -38,7 +38,7 @@ export async function getResources(filenames: string[], variables?: { [name: str
     }
   });
 
-  return result;
+  return {resources, template: files.join("\n")};
 
 }
 
@@ -112,13 +112,6 @@ export function stringifyResources(resources: DeploymentResources) {
 }
 
 export class Ref {
-  public value;
-  constructor(value: string) {
-    this.value = value;
-  }
-}
-
-export class Var {
   public value;
   constructor(value: string) {
     this.value = value;

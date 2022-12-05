@@ -35,29 +35,29 @@ async function pull(config: string, userVariableInputs: UserVariableInputs, skip
 
   const deleteAndUpdatePromises = filenames.map(async filename => {
     const s = (await readFile(filename)).toString();
-    const data = parse(s, metadata.variables) || {};
+    const { resources } = parse(s, metadata.variables) || {};
     const updatedQueries: DeploymentQuery[] = [];
     const updatedAlerts: DeploymentAlert[] = [];
-    Object.keys(data).forEach(key => {
-      data[key].id = key;
+    Object.keys(resources).forEach(key => {
+      resources[key].id = key;
       if (toDeleteIds.includes(key)) {
         console.log("Deleting " + key);
-        delete data[key];
+        delete resources[key];
       }
       if (toUpdateIds.includes(key)) {
         console.log("Updating " + key);
         const { resource } = toUpdate.find(resource => resource.resource.id === key)!;
-        data[key] = { ...resource, type: data[key].type };
+        resources[key] = { ...resource, type: resources[key].type };
       }
 
-      if (!data[key]) return;
+      if (!resources[key]) return;
 
-      switch (data[key]?.type) {
+      switch (resources[key]?.type) {
         case "query":
-          updatedQueries.push(data[key] as DeploymentQuery);
+          updatedQueries.push(resources[key] as DeploymentQuery);
           break;
         case "alert":
-          updatedAlerts.push(data[key] as DeploymentAlert);
+          updatedAlerts.push(resources[key] as DeploymentAlert);
           break;
         default:
           break;
@@ -75,7 +75,7 @@ async function pull(config: string, userVariableInputs: UserVariableInputs, skip
     const dd = stringifyResources({ queries: newQueries, alerts: newAlerts });
     if (!dd) return;
     const now = (new Date()).toISOString();
-    const path =`${config}/imported/${now}.yml`;
+    const path = `${config}/imported/${now}.yml`;
     outputFileSync(path, dd);
     console.log(`Imported resources stored in ${path}. Please do not delete this file.`);
   })();

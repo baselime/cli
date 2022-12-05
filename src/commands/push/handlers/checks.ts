@@ -130,7 +130,7 @@ export interface DeploymentResources {
   alerts?: DeploymentAlert[];
 }
 
-async function validate(folder: string, inputVariables: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[] }> {
+async function validate(folder: string, inputVariables: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[], template: string }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
   const filenames = await getFileList(folder, [".yaml", ".yml"]);
@@ -164,20 +164,21 @@ async function validate(folder: string, inputVariables: UserVariableInputs): Pro
 
   const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
-  const data = (await getResources(resourceFilenames, metadata.variables)) || {};
-  if (!isObject(data)) {
+  const { resources, template } = (await getResources(resourceFilenames, metadata.variables)) || {};
+  if (!isObject(resources)) {
     const m = `invalid file format - must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
 
-  const resources = {
+  const allResources = {
     queries: [] as any[],
     alerts: [] as any[],
   }
 
-  Object.keys(data).forEach(id => {
-    const resource = data[id];
+
+  Object.keys(resources).forEach(id => {
+    const resource = resources[id];
     if (!isObject(resource)) {
       const m = `${id}: invalid object format`;
       s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
@@ -186,10 +187,10 @@ async function validate(folder: string, inputVariables: UserVariableInputs): Pro
     const { type } = resource;
     switch (type) {
       case "query":
-        resources.queries.push({ ...resource, id, type: undefined });
+        allResources.queries.push({ ...resource, id, type: undefined });
         break;
       case "alert":
-        resources.alerts.push({ ...resource, id, type: undefined });
+        allResources.alerts.push({ ...resource, id, type: undefined });
         break;
       default:
         const m = `${id}: unknown resource type, ${type}`;
@@ -198,7 +199,7 @@ async function validate(folder: string, inputVariables: UserVariableInputs): Pro
     }
   });
 
-  const { queries, alerts } = resources;
+  const { queries, alerts } = allResources;
 
   await Promise.all([
     ...validateAlerts(alerts, queries),
@@ -206,7 +207,7 @@ async function validate(folder: string, inputVariables: UserVariableInputs): Pro
   ]);
 
   s.succeed("Valid configuration folder");
-  return { metadata, resources, filenames: resourceFilenames };
+  return { metadata, resources: allResources, filenames: resourceFilenames, template };
 }
 
 function isObject(val: any): boolean {

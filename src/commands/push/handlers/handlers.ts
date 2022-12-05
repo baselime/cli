@@ -54,7 +54,7 @@ async function push(config: string, userVariableInputs: UserVariableInputs, skip
   ${chalk.red(deployment?.error || '')}`);
 }
 
-async function validate(folder: string, userVariableInputs: UserVariableInputs): Promise<{metadata: DeploymentService, resources: DeploymentResources}> {
+async function validate(folder: string, userVariableInputs: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, template: string }> {
   return await checks.validate(folder, userVariableInputs);
 }
 

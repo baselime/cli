@@ -3,7 +3,6 @@ import api from "../../services/api/api";
 import { Ref, stringify, stringifyResources } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../regex";
-import { promptTemplateVariables } from "../services/handlers/prompts";
 import { DeploymentService } from "../push/handlers/checks";
 import { promptStacksSelect } from "./prompts";
 const packageJson = require("../../../package.json");
@@ -19,9 +18,19 @@ export async function init(
   const s = spinner.get();
 
   const stacks = await promptStacksSelect(provider);
-  
-  
+
+
   s.start("Generating your config folder");
+
+
+  let variables = undefined;
+  if (templateUrl) {
+    const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
+    const { template, variables: vars } = await api.templateGet(workspaceId, templateName, true);;
+    variables = vars;
+    writeFileSync(`${folder}/resources.yml`, template);
+  }
+
 
   const metadata: DeploymentService = {
     version: packageJson.version,
@@ -30,7 +39,8 @@ export async function init(
     provider,
     infrastructure: {
       stacks,
-    }
+    },
+    variables,
   };
 
   if (Object.values(metadata.infrastructure || {}).every(v => v === undefined || v?.length === 0)) {
@@ -40,16 +50,5 @@ export async function init(
   const d = stringify(metadata);
   writeFileSync(`${folder}/index.yml`, d);
 
-
-  if (templateUrl) {
-    const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
-    const template = await api.templateGet(workspaceId, templateName, true);
-    const { resources } = template;
-    let data = stringifyResources(resources);
-
-    writeFileSync(`${folder}/${service}.yml`, data);
-    s.succeed();
-    return;
-  }
   s.succeed();
 }
