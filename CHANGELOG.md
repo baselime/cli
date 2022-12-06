@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.0.26 (6th December 2022)
+
+- Enable definition of multiple possible values for variables and select in the command flags
+
 ### 0.0.25 (5th December 2022)
 
 - Add support for negative numbers as alert thresholds
