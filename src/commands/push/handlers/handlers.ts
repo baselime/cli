@@ -11,9 +11,9 @@ import { promisify } from "util";
 
 const wait = promisify(setTimeout);
 
-async function push(config: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
+async function push(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
   const s = spinner.get();
-  const { metadata, resources } = await validate(config, userVariableInputs);
+  const { metadata, resources } = await validate(config, stage, userVariableInputs);
   s.start("Completing baselime plan...");
   await verifyPlan(metadata, resources, false);
 
@@ -54,8 +54,8 @@ async function push(config: string, userVariableInputs: UserVariableInputs, skip
   ${chalk.red(deployment?.error || '')}`);
 }
 
-async function validate(folder: string, userVariableInputs: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, template: string }> {
-  return await checks.validate(folder, userVariableInputs);
+async function validate(folder: string, stage?: string, userVariableInputs?: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, template: string }> {
+  return await checks.validate(folder, stage, userVariableInputs);
 }
 
 export default {

@@ -10,9 +10,9 @@ import { verifyPlan } from "../plan/handlers";
 import { promptRefresh } from "./prompts";
 
 
-async function pull(config: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
+async function pull(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
   const s = spinner.get();
-  const { metadata, resources, filenames } = await checks.validate(config, userVariableInputs);
+  const { metadata, resources, filenames } = await checks.validate(config, stage, userVariableInputs);
   s.start("Checking resources to import...");
   const diff = await verifyPlan(metadata, resources, true);
 

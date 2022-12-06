@@ -2,14 +2,13 @@ import { readFile } from "fs/promises";
 import yaml, { Document } from "yaml";
 import chalk from "chalk";
 import spinner from "../spinner/index";
-import { DeploymentService, DeploymentResources, DeploymentVariable } from "../../commands/push/handlers/checks";
+import { DeploymentService, DeploymentResources, DeploymentVariable, UserVariableInputs } from "../../commands/push/handlers/checks";
 import mustache from "mustache";
 
 
-export async function getResources(filenames: string[], variables?: { [name: string]: DeploymentVariable }): Promise<{resources: Record<string, Record<string, any>>; template: string}> {
+export async function readResources(filenames: string[], variables?: { [name: string]: DeploymentVariable }): Promise<{resources: Record<string, Record<string, any>>; template: string}> {
   const s = spinner.get();
   const resources: Record<string, Record<string, any>> = {};
-
   const files = await Promise.all(filenames.map(async filename => {
     try {
       return (await readFile(filename)).toString();
@@ -42,10 +41,24 @@ export async function getResources(filenames: string[], variables?: { [name: str
 
 }
 
-export async function getMetadata(folder: string): Promise<DeploymentService> {
+export async function readVariables(folder: string): Promise<any> {
   try {
     const file = (await readFile(`${folder}/index.yml`)).toString()
     const metadata = yaml.parse(file);
+    return metadata.variables;
+  } catch (error) {
+    const s = spinner.get();
+    const message = `${(error as any).message || 'Error parsing metadata file for variables'}`;
+    s.fail(chalk.bold(chalk.redBright("Validation error")));
+    console.log(message);
+    throw new Error(message);
+  }
+}
+
+export async function readMetadata(folder: string, variables?: { [name: string]: DeploymentVariable }): Promise<Record<string, Record<string, any>>> {
+  try {
+    const file = (await readFile(`${folder}/index.yml`)).toString()
+    const metadata = parse(file, variables);
     if (metadata.infrastructure && !metadata.infrastructure.stacks?.length) {
       metadata.infrastructure.stacks = undefined;
     }

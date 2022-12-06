@@ -51,11 +51,16 @@ export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
 
   await authenticate(profile);
+  let stage = "";
   const variables: UserVariableInputs = {};
-  vars?.map(variable => {
-    const [key, val] = variable.toString().split("=");
-    variables[key.trim()] = val.trim();
-  });
-  await handlers.pull(config!, variables, yes!);
+  if (vars?.length === 1 && !vars[0].toString().includes("=")) {
+    stage = vars[0].toString();
+  } else {
+    vars?.map(variable => {
+      const [key, val] = variable.toString().split("=");
+      variables[key.trim()] = val.trim();
+    });
+  }
+  await handlers.pull(config!, stage, variables, yes!);
 }
 

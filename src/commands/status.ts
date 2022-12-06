@@ -1,8 +1,8 @@
 import { Arguments, CommandBuilder } from "yargs";
-import { getMetadata } from "../services/parser/parser";
 import spinner from "../services/spinner";
 
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
+import { validateMetadata } from "./push/handlers/checks";
 import handlers from "./status/handlers";
 
 export interface Options extends BaseOptions {
@@ -53,7 +53,7 @@ export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
-  service = service || (await getMetadata(config!)).service;
+  service = service || (await validateMetadata(config!)).service;
 
   await handlers.status(format!, { service, outFile })
 }

@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { object, string, number, array, boolean, InferType, lazy, mixed } from 'yup';
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
-import { getMetadata, getResources } from "../../../services/parser/parser";
+import { readMetadata, readResources, readVariables } from "../../../services/parser/parser";
 import awsCronParser from "aws-cron-parser";
 import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
@@ -86,21 +86,16 @@ const querySchema = object({
   }).noUnknown(true).required().strict(),
 }).noUnknown(true).strict();
 
-const variableSchema = object({
-  description: string().optional(),
-  value: lazy(val => {
-    const type = typeof val;
-    if (type === "number") return number();
-    if (type === "boolean") return boolean();
-    return string();
-  }).optional(),
-  default: lazy(val => {
-    const type = typeof val;
-    if (type === "number") return number();
-    if (type === "boolean") return boolean();
-    return string();
-  }).optional(),
-}).strict().noUnknown(true).optional().nullable();
+const variableSchema = lazy(obj => object(
+  mapValues(obj, () => {
+    return lazy(val => {
+      const type = typeof val;
+      if (type === "number") return number();
+      if (type === "boolean") return boolean();
+      return string();
+    })
+  })
+)).optional();
 
 
 const metadataSchema = object({
@@ -130,7 +125,7 @@ export interface DeploymentResources {
   alerts?: DeploymentAlert[];
 }
 
-async function validate(folder: string, inputVariables: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[], template: string }> {
+async function validate(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[], template: string }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
   const filenames = await getFileList(folder, [".yaml", ".yml"]);
@@ -141,30 +136,11 @@ async function validate(folder: string, inputVariables: UserVariableInputs): Pro
     throw new Error(m);
   }
 
-  const metadata = await getMetadata(folder);
-  try {
-    const m = await metadataSchema.validate(metadata);
-    const variables = m.variables;
-    const variableNames = Object.keys(variables || {});
-    if (variables && variableNames?.length) {
-      variableNames.forEach(variableName => {
-        variables[variableName] = variables[variableName] || {};
-        variables[variableName]!.value = inputVariables[variableName];
-        if (typeof variables[variableName]?.default === "undefined" && typeof variables[variableName]?.value === "undefined") {
-          throw new Error(`Variable ${variableName} must have at least one of value or default`);
-        }
-      });
-    }
-  } catch (error) {
-    s.fail(chalk.bold(chalk.redBright("Failed to validate the index.yml file")));
-    const message = `error: ${error}`;
-    console.log(message);
-    throw new Error(message);
-  }
+  const metadata = await validateMetadata(folder, stage, inputVariables);
 
   const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
-  const { resources, template } = (await getResources(resourceFilenames, metadata.variables)) || {};
+  const { resources, template } = (await readResources(resourceFilenames, metadata.variables)) || {};
   if (!isObject(resources)) {
     const m = `invalid file format - must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
@@ -212,6 +188,68 @@ async function validate(folder: string, inputVariables: UserVariableInputs): Pro
 
 function isObject(val: any): boolean {
   return typeof val === 'object' && !Array.isArray(val) && val !== null;
+}
+
+export async function validateMetadata(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<DeploymentService> {
+  const s = spinner.get();
+  const variables = await validateVariables(folder, stage, inputVariables);
+  const metadata = await readMetadata(folder, variables);
+  try {
+    const m = await metadataSchema.validate(metadata);
+    m.variables = variables;
+    return m;
+  } catch (error) {
+    s.fail(chalk.bold(chalk.redBright("Failed to validate the index.yml file")));
+    const message = `error: ${error}`;
+    console.log(message);
+    throw new Error(message);
+  }
+}
+
+async function validateVariables(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<{ [name: string]: DeploymentVariable } | undefined> {
+  const s = spinner.get();
+
+  if(stage && ["description", "value"].includes(stage)) {
+    const m = `Please use another value for the stage. ${stage} is forbidden.`;
+    s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
+    throw new Error(m);
+  }
+
+  const variables = await readVariables(folder);
+  if (!isObject(variables)) {
+    const m = `invalid file format - must be an object`;
+    s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
+    throw new Error(m);
+  }
+
+  const variableNames = Object.keys(variables || {});
+  if (!variables || !variableNames?.length) return;
+
+  for (let index = 0; index < variableNames.length; index += 1) {
+    const variableName = variableNames[index];
+
+    try {
+      await variableSchema.validate(variables[variableName]);
+    } catch (error) {
+      s.fail(chalk.bold(chalk.redBright("Failed to validate the variables in the index.yml file")));
+      const message = `error: ${variableName} - ${error}`;
+      console.log(message);
+      throw new Error(message);
+    }
+
+    variables[variableName] = variables[variableName] || {};
+    if(inputVariables) {
+      variables[variableName]!.value = inputVariables[variableName];
+    }
+    if(stage) {
+      variables[variableName]!.value = variables[variableName][stage];
+    }
+    if (typeof variables[variableName]?.default === "undefined" && typeof variables[variableName]?.value === "undefined") {
+      throw new Error(`Variable ${variableName} must have at least one of value or default`);
+    }
+  }
+
+  return variables;
 }
 
 function validateQueries(queries: any[]) {

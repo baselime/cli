@@ -44,11 +44,16 @@ export async function handler(argv: Arguments<Options>) {
   const { config, profile, variables: vars } = argv;
   await authenticate(profile);
 
+  let stage = "";
   const variables: UserVariableInputs = {};
-  vars?.map(variable => {
-    const [key, val] = variable.toString().split("=");
-    variables[key.trim()] = val.trim();
-  });
-  await handlers.plan(config as string, variables!);
+  if (vars?.length === 1 && !vars[0].toString().includes("=")) {
+    stage = vars[0].toString();
+  } else {
+    vars?.map(variable => {
+      const [key, val] = variable.toString().split("=");
+      variables[key.trim()] = val.trim();
+    });
+  }
+  await handlers.plan(config as string, stage, variables);
 }
 
