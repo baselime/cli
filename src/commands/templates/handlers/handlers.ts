@@ -5,7 +5,7 @@ import pushHandlers from "../../push/handlers/handlers";
 import { cloneRepo, uploadExtraAssets } from "./fsHelper";
 import { Template } from "../../../services/api/paths/templates";
 
-async function create(path?: string, url?: string) {
+async function publish(path?: string, url?: string) {
   const s = spinner.get();
   if (!path && !url) {
     s.fail("must provide either --path or --url");
@@ -56,7 +56,7 @@ async function get(workspaceId: string, name: string) {
 }
 
 export default {
-  create,
+  publish,
   list,
   get
 };

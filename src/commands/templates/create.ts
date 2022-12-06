@@ -10,8 +10,8 @@ export interface Options extends BaseOptions {
   yes?: boolean;
 }
 
-export const command = "create";
-export const desc = "Create template";
+export const command = "publish";
+export const desc = "Publish template";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -34,7 +34,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       })
       .example([
         [`
-      $0 templates create --from .templates --profile prod`,
+      $0 templates publish --from .templates --profile prod`,
         ],
       ])
       .fail((message, err, yargs) => {
@@ -46,5 +46,5 @@ export async function handler(argv: Arguments<Options>) {
   const { path, url, profile } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
-  await handlers.create(path, url);
+  await handlers.publish(path, url);
 }

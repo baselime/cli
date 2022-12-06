@@ -7,6 +7,8 @@ import awsCronParser from "aws-cron-parser";
 import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
 import { mapValues } from "lodash";
+import { downloadAndSaveTemplates } from "../../../controllers/templates";
+import templates from "../../../services/api/paths/templates";
 
 
 const filterCombinations = ["AND", "OR"];
@@ -109,6 +111,7 @@ const metadataSchema = object({
   infrastructure: object({
     stacks: array().of(string().required()).optional(),
   }).noUnknown(true).optional().strict(),
+  templates: array().of(string().required()).optional(),
 }).noUnknown(true).strict();
 
 export type DeploymentQuery = InferType<typeof querySchema>;
@@ -137,6 +140,12 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
   }
 
   const metadata = await validateMetadata(folder, stage, inputVariables);
+
+  if(metadata.templates) {
+    s.info("Downloading templates");
+    const paths = await downloadAndSaveTemplates(folder, metadata.templates as string[], metadata.service);
+    filenames.concat(...paths);
+  }
 
   const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
