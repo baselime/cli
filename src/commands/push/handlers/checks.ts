@@ -72,9 +72,9 @@ const querySchema = object({
       namespaceCombination: string().oneOf(namespaceCombinations).optional().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
       needle: object({
         value: string().required(),
-        isRegex: boolean().optional(),
-        matchCase: boolean().optional()
-      }).nullable().optional().noUnknown(true).strict(),
+        isRegex: boolean(),
+        matchCase: boolean(),
+      }).nullable().optional().default(undefined).noUnknown(true).strict(),
       groupBy: object({
         type: string().oneOf(groupByTypes).min(1).required(),
         value: string().min(1).required(),
@@ -209,7 +209,7 @@ export async function validateMetadata(folder: string, stage?: string, inputVari
 async function validateVariables(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<{ [name: string]: DeploymentVariable } | undefined> {
   const s = spinner.get();
 
-  if(stage && ["description", "value"].includes(stage)) {
+  if (stage && ["description", "value"].includes(stage)) {
     const m = `Please use another value for the stage. ${stage} is forbidden.`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
@@ -238,10 +238,10 @@ async function validateVariables(folder: string, stage?: string, inputVariables?
     }
 
     variables[variableName] = variables[variableName] || {};
-    if(inputVariables) {
+    if (inputVariables) {
       variables[variableName]!.value = inputVariables[variableName];
     }
-    if(stage) {
+    if (stage) {
       variables[variableName]!.value = variables[variableName][stage];
     }
     if (typeof variables[variableName]?.default === "undefined" && typeof variables[variableName]?.value === "undefined") {
