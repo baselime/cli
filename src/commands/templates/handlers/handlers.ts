@@ -6,21 +6,20 @@ import { simpleGit } from 'simple-git';
 import { mkdirSync, rmdirSync } from "fs";
 
 async function create(path?: string, url?: string) {
-  //TODO: add downloading and uploading the license and README
   const s = spinner.get();
   if (!path && !url) {
     s.fail("must provide either --path or --url");
     return;
   }
   if (url) {
-    path = "/tmp/baselime/git"
-    rmdirSync(path, { recursive: true });
-    mkdirSync(path, { recursive: true });
+    const tempDirPath = "/tmp/baselime/git"
+    rmdirSync(tempDirPath, { recursive: true });
+    mkdirSync(tempDirPath, { recursive: true });
     const git = simpleGit("/tmp/baselime/git");
     s.start(`Fetching template from ${url}`);
-    const cloneError = await git.clone(url, path);
+    const cloneError = await git.clone(url!, tempDirPath);
     if (!cloneError) {
-      await createTemplateFromFile(path);
+      await createTemplateFromFile(tempDirPath);
     }
   } else {
     await createTemplateFromFile(path!)
@@ -41,6 +40,7 @@ async function createTemplateFromFile(path: string) {
   });
   s.succeed();
   outputs.create(template, "json");
+  // getUploadURL()
 }
 
 async function list() {
@@ -54,9 +54,14 @@ async function list() {
 async function get(workspaceId: string, name: string) {
   const s = spinner.get();
   s.start("Fetching the template");
-  const templates = await api.templateGet(workspaceId, name);
+  const template = await api.templateGet(workspaceId, name);
   s.succeed();
-  outputs.get(templates, "json");
+  outputs.get(template, "json");
+}
+
+async function getUploadURL(workspaceId: string, name: string) {
+  const response = await api.templateGetUploadUrl(workspaceId, name);
+  console.log(response);
 }
 
 export default {

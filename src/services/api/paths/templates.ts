@@ -1,6 +1,4 @@
-import { DeploymentResources } from "../../../commands/push/handlers/checks";
-import { client, publicClient } from "../clients";
-import yaml, { Document } from "yaml";
+import { client } from "../clients";
 
 
 export interface Template {
@@ -31,13 +29,18 @@ export interface TemplateCreateParams {
   template: string;
 }
 
+export interface TemplateUploadURLResponse {
+  readmeURL: string;
+  licenseURL: string;
+}
+
 async function templatesList(): Promise<Template[]> {
   const res = (await client.get("/templates")).data;
   return res.templates;
 }
 
-async function templateGet(workspaceId: string, template: string, isPublic: boolean = false): Promise<Template> {
-  const res = (await client.get(`/templates/${workspaceId}/${template}`, { params: { public: isPublic } })).data;
+async function templateGet(workspaceId: string, templateName: string, isPublic: boolean = false): Promise<Template> {
+  const res = (await client.get(`/templates/${workspaceId}/${templateName}`, { params: { public: isPublic } })).data;
   return res.template;
 }
 
@@ -46,8 +49,13 @@ async function templateCreate(template: TemplateCreateParams): Promise<Template>
   return res.template;
 }
 
+async function templateGetUploadUrl(workspaceId: string, templateName: string): Promise<TemplateUploadURLResponse> {
+  return (await client.get(`/templates/${workspaceId}/${templateName}/upload-url`, { params: { public: false } })).data;
+}
+
 export default {
   templatesList,
   templateGet,
-  templateCreate
+  templateCreate,
+  templateGetUploadUrl
 };
