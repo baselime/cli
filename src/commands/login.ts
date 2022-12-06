@@ -25,10 +25,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       [`
       # Intercatively authenticate against Baselime:
-      $0 auth
+      $0 login
 
       # Provide parameters on the command-line:
-      $0 auth --email hi@bob.lol --profile prod
+      $0 login --email hi@bob.lol --profile prod
       `]
     ])
     .fail((message, err, yargs) => {
