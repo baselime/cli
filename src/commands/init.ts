@@ -39,7 +39,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       # Provide a template on the command-line:
       # The template can be either a local template within Baselime or a public URL to a template
 
-      $0 init --service <service_name> --template @<workspace>/<template>
+      $0 init --service <service_name> --template <workspace>/<template>
       $0 init --service <service_name> --template <template-url>
       `]
     ])

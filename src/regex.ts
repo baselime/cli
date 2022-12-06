@@ -69,7 +69,7 @@ export function parseThreshold(input: string): AlertThreshold {
 }
 
 export function parseTemplateName(s: string): { workspaceId: string; template: string } {
-  const workspaceRegex = /[@\/]+/i;
+  const workspaceRegex = /^([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)$/i;
 
   return {
     workspaceId: s.split(workspaceRegex)[1],

@@ -17,7 +17,7 @@ export async function promptTemplateSelect(): Promise<string | undefined> {
 
   const s = spinner.get();
   s.start("Fetching your templates");
-  const templates = (await api.templatesList()).map(t => `@${t.workspaceId}/${t.name}`);
+  const templates = (await api.templatesList()).map(t => `${t.workspaceId}/${t.name}`);
   s.succeed();
 
   const { template } = await prompt<{ template: string }>({
