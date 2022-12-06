@@ -2,11 +2,11 @@ import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { verifyPlan } from "../../plan/handlers";
 import * as prompts from "./prompts";
-import { getMetadata } from "../../../services/parser/parser";
+import { validateMetadata } from "../../push/handlers/checks";
 
-async function destroy(config: string) {
+async function destroy(config: string, stage?: string) {
   const s = spinner.get();
-  const metadata = await getMetadata(config);
+  const metadata = await validateMetadata(config, stage);
   const resources = { queries: [], alerts: [] };
   s.start("Checking resources to destroy...");
   // Remove the provider to signal to the API that we're deleting the service

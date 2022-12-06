@@ -7,9 +7,9 @@ import Table from "cli-table3";
 import { DiffResponse, statusType } from "../../services/api/paths/diffs";
 import { blankChars } from "../../shared";
 
-async function plan(config: string, userVariableInputs: UserVariableInputs) {
+async function plan(config: string, stage: string, userVariableInputs: UserVariableInputs) {
   const s = spinner.get();
-  const { metadata, resources } = await checks.validate(config, userVariableInputs);
+  const { metadata, resources } = await checks.validate(config, stage, userVariableInputs);
   s.start("Completing baselime plan...");
   await verifyPlan(metadata, resources, false);
 }

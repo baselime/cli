@@ -30,7 +30,7 @@ async function create(path?: string, url?: string) {
 async function createTemplateFromFile(path: string) {
   const s = spinner.get();
   s.start(`Creating a template`);
-  const { metadata, template: t } = await pushHandlers.validate(path, {});
+  const { metadata, template: t } = await pushHandlers.validate(path);
 
   const template = await api.templateCreate({
     name: metadata.service,

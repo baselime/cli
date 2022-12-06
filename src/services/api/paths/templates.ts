@@ -18,9 +18,8 @@ export interface Template {
 export interface TemplateVariables {
   [name: string | number | symbol]: {
     description?: string;
-    default?: string | number | boolean;
-    value?: string | number | boolean;
-  } | undefined | null
+    [stage: string]: string | number | boolean | undefined;
+  } | undefined
 }
 
 export interface TemplateCreateParams {
