@@ -1,4 +1,5 @@
 import { QueryFilter, QueryOperation } from "./services/api/paths/queries";
+import crypto from "crypto";
 
 export function isUrl(s: string): boolean {
   try {
@@ -10,4 +11,11 @@ export function isUrl(s: string): boolean {
   }
 };
 
+
+export function randomString(size: number) {  
+  return crypto
+    .randomBytes(size)
+    .toString('base64')
+    .slice(0, size)
+}
 

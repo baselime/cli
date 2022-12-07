@@ -25,6 +25,16 @@ export async function promptServiceSelect(): Promise<Service | undefined> {
   return services.find(service => service.name === name);
 }
 
+export async function promptRunSavedQuery(): Promise<boolean> {
+  const { message } = await prompt<{ message: string }>({
+    type: "select",
+    name: "message",
+    message: `Run a saved query?`,
+    choices: ['Saved query', 'Interactive query builder',]
+  });
+  return message === "Saved query";
+}
+
 export async function promptQuerySelect(service?: string): Promise<Query | undefined> {
   const s = spinner.get();
   s.start("Fetching your queries");
