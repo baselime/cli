@@ -5,11 +5,41 @@ import { OutputFormat } from "../../../shared";
 import { getTimeframe } from "../../../services/timeframes/timeframes";
 import dayjs from "dayjs";
 import chalk from "chalk";
+import { NamespaceCombination, QueryFilter } from "../../../services/api/paths/queries";
 const utc = require('dayjs/plugin/utc')
 dayjs.extend(utc)
 
 
-async function createRun(format: OutputFormat, from: string, to: string, service: string, id: string) {
+async function createRun(data: {
+  format: OutputFormat,
+  datasets: string[],
+  filters: QueryFilter[],
+  needle?: string;
+  from: string,
+  to: string,
+  id: string,
+  namespaces: string[],
+  combination: NamespaceCombination,
+  follow: boolean,
+  service: string,
+  matchCase: boolean,
+  regex?: string,
+}) {
+  const {
+    format,
+    datasets,
+    filters,
+    needle,
+    from,
+    to,
+    namespaces,
+    combination,
+    follow,
+    matchCase,
+    regex,
+    service,
+    id,
+  } = data;
   const s = spinner.get();
   const timeframe = getTimeframe(from, to);
   const f = dayjs.utc(timeframe.from);
