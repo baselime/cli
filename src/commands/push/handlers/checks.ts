@@ -80,7 +80,7 @@ const querySchema = object({
         value: string().min(1).required(),
         orderBy: string().min(1).matches(calculationsRegex).optional(),
         limit: number().min(1).optional(),
-        order: string().oneOf(["ACS", "DESC"]).optional(),
+        order: string().oneOf(["ASC", "DESC"]).optional(),
       }).nullable().optional().default(undefined).noUnknown(true).strict(),
     }).noUnknown(true).required().strict(),
   }).noUnknown(true).required().strict(),
