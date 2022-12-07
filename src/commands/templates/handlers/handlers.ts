@@ -2,8 +2,7 @@ import spinner from "../../../services/spinner/index";
 import api from "../../../services/api/api";
 import outputs from "./outputs";
 import pushHandlers from "../../push/handlers/handlers";
-import { simpleGit } from 'simple-git';
-import { mkdirSync, rmdirSync } from "fs";
+import { cloneRepo, uploadExtraAssets } from "./fsHelper";
 import { Template } from "../../../services/api/paths/templates";
 
 async function create(path?: string, url?: string) {
@@ -12,18 +11,14 @@ async function create(path?: string, url?: string) {
     s.fail("must provide either --path or --url");
     return;
   }
+  let template: Template;
+  // If user provides URL, we override "path" with location where data got cloned from the URL
   if (url) {
-    const tempDirPath = "/tmp/baselime/git"
-    rmdirSync(tempDirPath, { recursive: true });
-    mkdirSync(tempDirPath, { recursive: true });
-    const git = simpleGit("/tmp/baselime/git");
-    s.start(`Fetching template from ${url}`);
-    const cloneError = await git.clone(url!, tempDirPath);
-    if (!cloneError) {
-      await createTemplateFromFile(tempDirPath);
-    }
-  } else {
-    await createTemplateFromFile(path!)
+    path = await cloneRepo(url);
+  }
+  if(path) {
+    template = await createTemplateFromFile(path);
+    await uploadExtraAssets(path!, template.workspaceId, template.name);
   }
 }
 
@@ -41,7 +36,7 @@ async function createTemplateFromFile(path: string): Promise<Template> {
   });
   s.succeed();
   outputs.create(template, "json");
-  // getUploadURL()
+  return template;
 }
 
 async function list() {
@@ -58,11 +53,6 @@ async function get(workspaceId: string, name: string) {
   const template = await api.templateGet(workspaceId, name);
   s.succeed();
   outputs.get(template, "json");
-}
-
-async function getUploadURL(workspaceId: string, name: string) {
-  const response = await api.templateGetUploadUrl(workspaceId, name);
-  console.log(response);
 }
 
 export default {

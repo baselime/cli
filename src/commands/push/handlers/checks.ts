@@ -142,7 +142,7 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
 
   const { resources, template } = (await readResources(resourceFilenames, metadata.variables)) || {};
   if (!isObject(resources)) {
-    const m = `invalid file format - must be an object`;
+    const m = `invalid file format - resources must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
@@ -217,7 +217,7 @@ async function validateVariables(folder: string, stage?: string, inputVariables?
 
   const variables = await readVariables(folder);
   if (!isObject(variables)) {
-    const m = `invalid file format - must be an object`;
+    const m = `invalid file format - variables must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }

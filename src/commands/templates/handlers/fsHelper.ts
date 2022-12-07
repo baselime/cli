@@ -2,16 +2,18 @@ import * as fs from "fs";
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { publicClient } from "../../../services/api/clients";
+import { mkdirSync, rmdirSync } from "fs";
+import { simpleGit } from "simple-git";
 
 export async function uploadExtraAssets(directory: string, workspaceId: string, templateName: string) {
   const s = spinner.get();
   const readmePath = getReadmePath(directory);
   const licensePath = getLicensePath(directory);
   if(readmePath || licensePath) {
-    s.info("preparing to publish extra assets");
+    s.info("Preparing to publish extra assets.");
     const data = await api.templateGetUploadUrl(workspaceId, templateName);
     if(readmePath) {
-      s.info("publishing README.md");
+      s.info("Publishing README.md");
       const buf = fs.readFileSync(`${directory}/README.md`);
       await publicClient.put(data.readmeURL, buf, {
         headers: {
@@ -20,7 +22,7 @@ export async function uploadExtraAssets(directory: string, workspaceId: string, 
       });
     }
     if(licensePath) {
-      s.info("publishing LICENSE.md");
+      s.info("Publishing LICENSE.md");
       const buf = fs.readFileSync(`${directory}/LICENSE.md`);
       await publicClient.put(data.licenseURL, buf, {
         headers: {
@@ -28,8 +30,8 @@ export async function uploadExtraAssets(directory: string, workspaceId: string, 
         },
       });
     }
+    s.succeed("Assets uploaded!");
   }
-
 }
 
 function getReadmePath(directory: string): string | undefined {
@@ -46,4 +48,23 @@ function getLicensePath(directory: string): string | undefined {
     return path
   }
   return undefined;
+}
+
+/**
+ * Given URL fetches files from repository.
+ * @param url - URL string to fetch
+ * @returns path containing cloned files, or undefined if cloning failed
+ */
+export async function cloneRepo(url: string): Promise<string | undefined> {
+  const s = spinner.get();
+  const tempDirPath = "/tmp/baselime/git";
+  rmdirSync(tempDirPath, { recursive: true });
+  mkdirSync(tempDirPath, { recursive: true });
+  const git = simpleGit("/tmp/baselime/git");
+  s.start(`Fetching template from ${url}`);
+  const cloneError = await git.clone(url!, tempDirPath);
+  if (!cloneError) {
+    return tempDirPath
+  }
+  return undefined
 }
