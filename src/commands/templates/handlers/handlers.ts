@@ -4,6 +4,7 @@ import outputs from "./outputs";
 import pushHandlers from "../../push/handlers/handlers";
 import { simpleGit } from 'simple-git';
 import { mkdirSync, rmdirSync } from "fs";
+import { Template } from "../../../services/api/paths/templates";
 
 async function create(path?: string, url?: string) {
   const s = spinner.get();
@@ -26,7 +27,7 @@ async function create(path?: string, url?: string) {
   }
 }
 
-async function createTemplateFromFile(path: string) {
+async function createTemplateFromFile(path: string): Promise<Template> {
   const s = spinner.get();
   s.start(`Creating a template`);
   const { metadata, template: t } = await pushHandlers.validate(path);

@@ -11,6 +11,7 @@ export interface Template {
   userId: string;
   created?: string;
   updated?: string;
+  downloadCounter: number
 }
 
 export interface TemplateVariables {
@@ -50,6 +51,10 @@ async function templateCreate(template: TemplateCreateParams): Promise<Template>
 
 async function templateGetUploadUrl(workspaceId: string, templateName: string): Promise<TemplateUploadURLResponse> {
   return (await client.get(`/templates/${workspaceId}/${templateName}/upload-url`, { params: { public: false } })).data;
+}
+
+async function templateDownload(workspaceId: string, templateName: string, serviceId: string): Promise<TemplateUploadURLResponse> {
+  return (await client.post(`/templates/${workspaceId}/${templateName}/download`, { serviceId })).data;
 }
 
 export default {
