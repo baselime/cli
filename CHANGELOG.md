@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.0.27 (7th December 2022)
+
+- Bug fixes
+
 ### 0.0.26 (6th December 2022)
 
 - Enable definition of multiple possible values for variables and select in the command flags
