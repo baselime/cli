@@ -7,7 +7,6 @@ import awsCronParser from "aws-cron-parser";
 import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
 import { mapValues } from "lodash";
-import { downloadAndSaveTemplates } from "../../../controllers/templates";
 
 
 const filterCombinations = ["AND", "OR"];
@@ -110,10 +109,6 @@ const metadataSchema = object({
   infrastructure: object({
     stacks: array().of(string().required()).optional(),
   }).noUnknown(true).optional().strict(),
-  templates: array()
-      .min(0)
-      .of(string())
-      .typeError("Must include a valid template 'workspace/name' specification"),
 }).noUnknown(true).strict();
 
 export type DeploymentQuery = InferType<typeof querySchema>;
@@ -142,16 +137,12 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
   }
 
   const metadata = await validateMetadata(folder, stage, inputVariables);
-  if(hasTemplates(metadata)) {
-    s.info("Downloading the templates");
-    filenames.concat(...await downloadAndSaveTemplates(folder, metadata.templates as string[], metadata.service));
-  }
 
   const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
   const { resources, template } = (await readResources(resourceFilenames, metadata.variables)) || {};
   if (!isObject(resources)) {
-    const m = `invalid file format - resources must be an object`;
+    const m = `invalid file format - must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
@@ -226,7 +217,7 @@ async function validateVariables(folder: string, stage?: string, inputVariables?
 
   const variables = await readVariables(folder);
   if (!isObject(variables)) {
-    const m = `invalid file format - variables must be an object`;
+    const m = `invalid file format - must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
@@ -342,10 +333,6 @@ function validateAlerts(alerts: any[], queries: any[]) {
   });
 
   return promises;
-}
-
-function hasTemplates(metadata: DeploymentService): boolean {
-  return !!metadata.templates && Array.isArray(metadata.templates) && metadata.templates.length > 0;
 }
 
 
