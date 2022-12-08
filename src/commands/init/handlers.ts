@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import api from "../../services/api/api";
-import { Ref, stringify, stringifyResources } from "../../services/parser/parser";
+import { stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../regex";
 import { DeploymentService } from "../push/handlers/checks";

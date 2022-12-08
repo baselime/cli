@@ -1,6 +1,5 @@
 import { client } from "../clients";
 
-
 export interface Template {
   workspaceId: string;
   name: string;
@@ -53,13 +52,14 @@ async function templateGetUploadUrl(workspaceId: string, templateName: string): 
   return (await client.get(`/templates/${workspaceId}/${templateName}/upload-url`, { params: { public: false } })).data;
 }
 
-async function templateDownload(workspaceId: string, templateName: string, serviceId: string): Promise<TemplateUploadURLResponse> {
-  return (await client.post(`/templates/${workspaceId}/${templateName}/download`, { serviceId })).data;
+async function templateDownload(workspaceId: string, templateName: string, serviceId: string): Promise<Template> {
+  return (await client.post(`/templates/${workspaceId}/${templateName}/download`, { serviceId })).data.template;
 }
 
 export default {
   templatesList,
   templateGet,
   templateCreate,
-  templateGetUploadUrl
+  templateGetUploadUrl,
+  templateDownload,
 };
