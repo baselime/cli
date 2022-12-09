@@ -12,7 +12,7 @@ function list(alerts: Alert[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Service", "Id", "Name", "Enabled", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Service", "Id", "Name", "Enabled", "Created (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alerts.forEach((alert) => {
     table.push([alert.service, alert.id, alert.name, alert.enabled, alert.created]);

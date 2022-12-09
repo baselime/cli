@@ -12,7 +12,7 @@ function list(services: Service[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Name", "Created (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   services.forEach((service) => {
     table.push([service.name, service.created]);
@@ -28,7 +28,7 @@ function describe(service: Service, deployments: Deployment[], format: OutputFor
   }  
   const table = new Table({
     chars: tableChars,
-    head: ["Name", "Status", "Deployment Id", "Created", "Updated"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Name", "Status", "Deployment Id", "Created (UTC)", "Updated (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   table.push([service.name, deployments[0].status, deployments[0].id, service.created, deployments[0].updated]);
   console.log(table.toString());

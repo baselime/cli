@@ -25,7 +25,7 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
 
   const runTable = new Table({
     chars: tableChars,
-    head: ["Id", "QueryId", "From", "To", "Status", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Id", "QueryId", "From", "To", "Status", "Created (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
 
   runTable.push([queryRun.id, queryRun.query.id, `${dayjs(queryRun.timeframe.from).format()}`, `${dayjs(queryRun.timeframe.to).format()}`, queryRun.status, queryRun.created]);

@@ -11,7 +11,7 @@ function list(queries: Query[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Service", "Id", "Name", "Created"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Service", "Id", "Name", "Created (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   queries.forEach((query) => {
     table.push([query.service, query.id, query.name, query.created]);
