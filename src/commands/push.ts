@@ -3,7 +3,7 @@ import { Arguments, CommandBuilder } from "yargs";
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import spinner from "../services/spinner/index";
 import handlers from "./push/handlers/handlers";
-import { UserVariableInputs } from "./push/handlers/checks";
+import { UserVariableInputs } from "./push/handlers/validators";
 
 export interface Options extends BaseOptions {
   config?: string;

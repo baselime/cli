@@ -3,7 +3,7 @@ import api from "../../services/api/api";
 import { stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../regex";
-import { DeploymentService } from "../push/handlers/checks";
+import { DeploymentService } from "../push/handlers/validators";
 import { promptStacksSelect } from "./prompts";
 const packageJson = require("../../../package.json");
 

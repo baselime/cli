@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import checks, { DeploymentService, DeploymentResources, UserVariableInputs } from "./checks";
+import checks, { DeploymentService, DeploymentResources, UserVariableInputs } from "./validators";
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { readFileSync } from "fs";

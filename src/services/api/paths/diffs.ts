@@ -1,4 +1,4 @@
-import { DeploymentResources } from "../../../commands/push/handlers/checks";
+import { DeploymentResources } from "../../../commands/push/handlers/validators";
 import { client } from "../clients";
 
 

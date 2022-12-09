@@ -2,7 +2,7 @@ import chalk from "chalk";
 import api from "../../services/api/api";
 import { Ref, stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import checks, { DeploymentService, DeploymentResources, UserVariableInputs } from "../push/handlers/checks";
+import checks, { DeploymentService, DeploymentResources, UserVariableInputs } from "../push/handlers/validators";
 import Table from "cli-table3";
 import { DiffResponse, statusType } from "../../services/api/paths/diffs";
 import { blankChars } from "../../shared";

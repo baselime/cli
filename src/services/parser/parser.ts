@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import yaml, { Document } from "yaml";
 import chalk from "chalk";
 import spinner from "../spinner/index";
-import { DeploymentService, DeploymentResources, DeploymentVariable, UserVariableInputs } from "../../commands/push/handlers/checks";
+import { DeploymentService, DeploymentResources, DeploymentVariable, UserVariableInputs } from "../../commands/push/handlers/validators";
 import mustache from "mustache";
 
 
