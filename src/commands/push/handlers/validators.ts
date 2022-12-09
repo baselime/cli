@@ -131,7 +131,7 @@ export interface DeploymentResources {
 async function validate(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[], template: string }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
-  const filenames = await getFileList(folder, [".yaml", ".yml"]);
+  let filenames = await getFileList(folder, [".yaml", ".yml"]);
 
   if (!filenames.includes(`${folder}/index.yml`)) {
     const m = "Please include a index.yml file in the config folder. This file is necessary to define the service and its metadata.";
@@ -144,7 +144,7 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
   if(metadata.templates) {
     s.info("Downloading templates");
     const paths = await downloadAndSaveTemplates(folder, metadata.templates as string[], metadata.service);
-    filenames.concat(...paths);
+    filenames = filenames.concat(...paths);
   }
 
   const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
