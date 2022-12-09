@@ -2,32 +2,27 @@ import spinner from "../../../services/spinner/index";
 import api from "../../../services/api/api";
 import outputs from "./outputs";
 import pushHandlers from "../../push/handlers/handlers";
-import { simpleGit } from 'simple-git';
-import { mkdirSync, rmdirSync } from "fs";
+import { cloneRepo, uploadExtraAssets } from "./fsHelper";
+import { Template } from "../../../services/api/paths/templates";
 
 async function create(path?: string, url?: string) {
-  //TODO: add downloading and uploading the license and README
   const s = spinner.get();
   if (!path && !url) {
     s.fail("must provide either --path or --url");
     return;
   }
+  let template: Template;
+  // If user provides URL, we override "path" with location where data got cloned from the URL
   if (url) {
-    path = "/tmp/baselime/git"
-    rmdirSync(path, { recursive: true });
-    mkdirSync(path, { recursive: true });
-    const git = simpleGit("/tmp/baselime/git");
-    s.start(`Fetching template from ${url}`);
-    const cloneError = await git.clone(url, path);
-    if (!cloneError) {
-      await createTemplateFromFile(path);
-    }
-  } else {
-    await createTemplateFromFile(path!)
+    path = await cloneRepo(url);
+  }
+  if(path) {
+    template = await createTemplateFromFile(path);
+    await uploadExtraAssets(path!, template.workspaceId, template.name);
   }
 }
 
-async function createTemplateFromFile(path: string) {
+async function createTemplateFromFile(path: string): Promise<Template> {
   const s = spinner.get();
   s.start(`Creating a template`);
   const { metadata, template: t } = await pushHandlers.validate(path);
@@ -41,6 +36,7 @@ async function createTemplateFromFile(path: string) {
   });
   s.succeed();
   outputs.create(template, "json");
+  return template;
 }
 
 async function list() {
@@ -54,9 +50,9 @@ async function list() {
 async function get(workspaceId: string, name: string) {
   const s = spinner.get();
   s.start("Fetching the template");
-  const templates = await api.templateGet(workspaceId, name);
+  const template = await api.templateGet(workspaceId, name);
   s.succeed();
-  outputs.get(templates, "json");
+  outputs.get(template, "json");
 }
 
 export default {
