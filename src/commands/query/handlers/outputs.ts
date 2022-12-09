@@ -4,7 +4,7 @@ import { OutputFormat, tableChars } from "../../../shared";
 import chalk from "chalk";
 import { QueryRun, Series } from "../../../services/api/paths/query-runs";
 import dayjs from "dayjs";
-import outputs from "../../events/handlers/outputs";
+import outputs from "../../events/stream/outputs";
 import { Event } from "../../../services/api/paths/events";
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
