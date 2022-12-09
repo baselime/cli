@@ -41,7 +41,7 @@ export async function readResources(filenames: string[], variables?: { [name: st
 
 }
 
-export async function readVariables(folder: string): Promise<any> {
+export async function readVariables(folder: string): Promise<Record<string, any> | undefined> {
   try {
     const file = (await readFile(`${folder}/index.yml`)).toString()
     const metadata = yaml.parse(file);
