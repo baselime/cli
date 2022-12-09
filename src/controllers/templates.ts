@@ -22,13 +22,13 @@ export async function downloadAndSaveTemplates(path: string, templates: string[]
   return filePaths;
 }
 
-async function downloadAndSaveTemplate(path: string, workspaceId: string, templateName: string, serviceId: string): Promise<string> {
+async function downloadAndSaveTemplate(path: string, workspaceId: string, templateName: string, serviceId: string): Promise<string | undefined> {
   const workspacePath = `${path}/.templates/${workspaceId}`
   const templateFilePath = `${workspacePath}/${templateName}.yml`;
 
   if(existsSync(templateFilePath)) {
     spinner.get().info(`Template ${workspaceId}/${templateName} already exists. Omitting download.`);
-    return templateFilePath;
+    return undefined;
   }
   mkdirSync(workspacePath, {
     recursive: true

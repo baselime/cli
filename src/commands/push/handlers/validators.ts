@@ -143,7 +143,7 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
 
   if(metadata.templates) {
     s.info("Downloading templates");
-    const paths = await downloadAndSaveTemplates(`${folder}/..`, metadata.templates as string[], metadata.service);
+    const paths = await downloadAndSaveTemplates(`${folder}`, metadata.templates as string[], metadata.service);
     filenames = filenames.concat(...paths);
   }
 
