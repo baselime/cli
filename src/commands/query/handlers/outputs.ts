@@ -23,13 +23,6 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
     return;
   }
 
-  const runTable = new Table({
-    chars: tableChars,
-    head: ["Id", "QueryId", "From", "To", "Status", "Created (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
-  });
-
-  runTable.push([queryRun.id, queryRun.query.id, `${dayjs(queryRun.timeframe.from).format()}`, `${dayjs(queryRun.timeframe.to).format()}`, queryRun.status, queryRun.created]);
-
   let aggregatesTable: Table.Table;
   const isGrouped = typeof aggregates._count !== "number";
   if (isGrouped) {
@@ -56,9 +49,10 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
     });
   }
 
-  console.log(runTable.toString());
+  console.log("")
   console.log(aggregatesTable.toString());
-  console.log(`Follow this url: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`)
+  console.log("")
+  console.log(`Explore the results at this url: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`);
 }
 
 export default {
