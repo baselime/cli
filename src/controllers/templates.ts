@@ -1,5 +1,5 @@
 import api from "../services/api/api";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
 import spinner from "../services/spinner";
 
 export async function downloadAndSaveTemplates(path: string, templates: string[], serviceId: string): Promise<string[]> {
@@ -22,12 +22,17 @@ export async function downloadAndSaveTemplates(path: string, templates: string[]
   return filePaths;
 }
 
-async function downloadAndSaveTemplate(path: string, workspaceId: string, templateName: string, serviceId: string): Promise<string | undefined> {
-  const templateFilePath = `${path}/template_${workspaceId}_${templateName}.yml`;
+async function downloadAndSaveTemplate(path: string, workspaceId: string, templateName: string, serviceId: string): Promise<string> {
+  const workspacePath = `${path}/.templates/${workspaceId}`
+  const templateFilePath = `${workspacePath}/${templateName}.yml`;
+
   if(existsSync(templateFilePath)) {
     spinner.get().info(`Template ${workspaceId}/${templateName} already exists. Omitting download.`);
-    return undefined
+    return templateFilePath;
   }
+  mkdirSync(workspacePath, {
+    recursive: true
+  });
   spinner.get().info(`Downloading template ${workspaceId}/${templateName}`);
   const templateData = await api.templateDownload(workspaceId, templateName, serviceId);
   const buf = Buffer.from(templateData.template);
