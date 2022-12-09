@@ -216,8 +216,8 @@ async function validateVariables(folder: string, stage?: string, inputVariables?
   }
 
   const variables = await readVariables(folder);
-  if (!isObject(variables)) {
-    const m = `invalid file format - must be an object`;
+  if (variables && !isObject(variables)) {
+    const m = `invalid metadata file format - variables must be an object`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
