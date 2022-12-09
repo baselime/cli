@@ -1,54 +1,60 @@
 import { readFile } from "fs/promises";
-import yaml, { Document } from "yaml";
+import yaml from "yaml";
 import chalk from "chalk";
 import spinner from "../spinner/index";
-import { DeploymentService, DeploymentResources, DeploymentVariable, UserVariableInputs } from "../../commands/push/handlers/validators";
+import { DeploymentResources, DeploymentVariable } from "../../commands/push/handlers/validators";
 import mustache from "mustache";
 
-
-export async function readResources(filenames: string[], variables?: { [name: string]: DeploymentVariable }): Promise<{resources: Record<string, Record<string, any>>; template: string}> {
-  const s = spinner.get();
+export async function readResourcesFromFiles(filenames: string[], variables?: { [name: string]: DeploymentVariable }): Promise<{ resources: Record<string, Record<string, any>>; template: string }> {
   const resources: Record<string, Record<string, any>> = {};
-  const files = await Promise.all(filenames.map(async filename => {
-    try {
-      return (await readFile(filename)).toString();
-    } catch (error) {
-      const message = `Error reading a file: ${filename}\n${(error as any).message || ''}`;
-      s.fail(chalk.bold(chalk.redBright(`Validation error: ${filename}`)));
-      console.error(message);
-      throw new Error(message);
-    }
-  }));
-
-  files.forEach((file, index) => {
-    try {
-      const data = parse(file, variables);
-      for (const key in data) {
-        if (Object.keys(resources).includes(key)) {
-          throw { code: "DUPLICATE_KEY", message: `Map keys must be unique across all config files: ${key} in ${filenames[index]}` };
-        }
-        resources[key] = data[key];
-      }
-    } catch (error) {
-      const message = `Error parsing a file\n${(error as any).code || ''}\n${(error as any).message || ''}`;
-      s.fail(chalk.bold(chalk.redBright(`Validation error: ${filenames[index]}`)));
-      console.error(message);
-      throw new Error(message);
-    }
-  });
-
+  // First read all the files
+  const files = await Promise.all(filenames.map(async filename => readResourcesFromFile(filename)));
+  // Then parse it, and append to resources
+  files.forEach((file, index) => parseAndAppendFileToResources(file, resources, variables));
   return {resources, template: files.join("\n")};
-
 }
 
-export async function readVariables(folder: string): Promise<Record<string, any> | undefined> {
+export function parseAndAppendFileToResources(fileContents: string, resources: Record<string, Record<string, any>>, variables?: { [name: string]: DeploymentVariable }) {
   try {
-    const file = (await readFile(`${folder}/index.yml`)).toString()
+    const data = parseFileContent(fileContents, variables);
+    appendToResourcesSafely(resources, data);
+  } catch (error) {
+    const message = `Error parsing a file\n${(error as any).code || ''}\n${(error as any).message || ''}`;
+    spinner.get().fail(chalk.bold(chalk.redBright(`Validation error: ${fileContents}`)));
+    console.error(message);
+    throw new Error(message);
+  }
+}
+
+function appendToResourcesSafely(resources: Record<string, any>, data: Record<string, Record<string, any>>) {
+  for (const key in data) {
+    if (Object.keys(resources).includes(key)) {
+      throw {code: "DUPLICATE_KEY", message: `Map keys must be unique across all config files: ${key}`};
+    }
+    resources[key] = data[key];
+  }
+}
+
+export async function readResourcesFromFile(path: string): Promise<string> {
+  const s = spinner.get();
+  try {
+    return (await readFile(path)).toString();
+  } catch (error) {
+    const message = `Error reading a file: ${path}\n${(error as any).message || ''}`;
+    s.fail(chalk.bold(chalk.redBright(`Validation error: ${path}`)));
+    console.error(message);
+    throw new Error(message);
+  }
+}
+
+export async function readVariables(path: string): Promise<Record<string, any> | undefined> {
+  try {
+    const file = (await readFile(path)).toString()
     const metadata = yaml.parse(file);
     return metadata.variables;
   } catch (error) {
     const s = spinner.get();
-    const message = `${(error as any).message || 'Error parsing metadata file for variables'}`;
+    const message = `${(error as any).message || `Error parsing variables from ${path}`}`;
     s.fail(chalk.bold(chalk.redBright("Validation error")));
     console.log(message);
     throw new Error(message);
@@ -58,7 +64,7 @@ export async function readVariables(folder: string): Promise<Record<string, any>
 export async function readMetadata(folder: string, variables?: { [name: string]: DeploymentVariable }): Promise<Record<string, Record<string, any>>> {
   try {
     const file = (await readFile(`${folder}/index.yml`)).toString()
-    const metadata = parse(file, variables);
+    const metadata = parseFileContent(file, variables);
     if (metadata.infrastructure && !metadata.infrastructure.stacks?.length) {
       metadata.infrastructure.stacks = undefined;
     }
@@ -72,11 +78,11 @@ export async function readMetadata(folder: string, variables?: { [name: string]:
   }
 }
 
-export function parse(s: string, variables?: { [name: string]: DeploymentVariable }): Record<string, Record<string, any>> {
+export function parseFileContent(contents: string, variables?: { [name: string]: DeploymentVariable }): Record<string, Record<string, any>> {
   const variableNames = Object.keys(variables || {});
   if (!variables || variableNames?.length === 0) {
     // @ts-ignore
-    return yaml.parse(s, { customTags: [ref] });
+    return yaml.parse(contents, {customTags: [ref]});
   }
 
   const vals: Record<string, any> = {}
@@ -86,19 +92,19 @@ export function parse(s: string, variables?: { [name: string]: DeploymentVariabl
     }
   });
 
-  const val = mustache.render(s, vals);
+  const val = mustache.render(contents, vals);
   // @ts-ignore
-  return yaml.parse(val, { customTags: [ref] });
+  return yaml.parse(val, {customTags: [ref]});
 }
 
 export function stringify(data: Record<string, any>): string {
   // @ts-ignore
-  return yaml.stringify(data, { customTags: [ref] });
+  return yaml.stringify(data, {customTags: [ref]});
 }
 
 export function stringifyResources(resources: DeploymentResources) {
   const data: Record<string, any> = {};
-  const { queries, alerts } = resources;
+  const {queries, alerts} = resources;
   queries?.forEach((elt) => {
     data[elt.id!] = {
       type: "query",
@@ -114,7 +120,7 @@ export function stringifyResources(resources: DeploymentResources) {
       type: "alert",
       properties: {
         ...elt.properties,
-        parameters: { ...elt.properties.parameters, query: new Ref(elt.properties.parameters.query) },
+        parameters: {...elt.properties.parameters, query: new Ref(elt.properties.parameters.query)},
         id: undefined,
       }
     };
@@ -126,6 +132,7 @@ export function stringifyResources(resources: DeploymentResources) {
 
 export class Ref {
   public value;
+
   constructor(value: string) {
     this.value = value;
   }
