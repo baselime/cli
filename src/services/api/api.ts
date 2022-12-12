@@ -13,7 +13,7 @@ import environments from "./paths/environments";
 import templates from "./paths/templates";
 import diffs from "./paths/diffs";
 import infrastructure from "./paths/infrastructure";
-import comments from "./paths/comments";
+import reports from "./paths/reports";
 
 export default {
   ...auth,
@@ -30,6 +30,6 @@ export default {
   ...templates,
   ...diffs,
   ...infrastructure,
-  ...comments,
+  ...reports,
   ...alertChecks
 };

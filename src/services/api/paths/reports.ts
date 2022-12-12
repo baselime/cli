@@ -1,7 +1,7 @@
 import { client } from "../clients";
 import { AlertCheck } from "./alert-checks";
 
-export interface GitHubCommentData {
+export interface GitHubReportData {
   repo: { owner: string, name: string };
   prNumber?: number;
   commit?: string;
@@ -9,9 +9,9 @@ export interface GitHubCommentData {
   token: string;
 }
 
-async function commentGithub(data: GitHubCommentData): Promise<boolean> {
+async function reportGithubCreate(data: GitHubReportData): Promise<boolean> {
   const { repo: { owner, name }, prNumber, commit, status, token } = data;
-  await client.post(`/comments/github`, {
+  await client.post(`/reports/github`, {
     repo: {
       owner,
       name,
@@ -25,5 +25,5 @@ async function commentGithub(data: GitHubCommentData): Promise<boolean> {
 }
 
 export default {
-  commentGithub,
+  reportGithubCreate,
 };

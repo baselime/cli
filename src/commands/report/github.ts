@@ -14,7 +14,7 @@ export interface Options extends BaseOptions {
 }
 
 export const command = "github";
-export const desc = "Post a Baselime comment to GitHub";
+export const desc = "Post a Baselime report to GitHub";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -23,12 +23,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       repo: { type: "string", desc: "Name of github repository", required: true },
       "pull-request": { type: "number", desc: "Pull-request number", required: false },
       "comnmit": { type: "string", desc: "Commit Id", required: false },
-      "github-token": { type: "string", desc: "Token used to post the GitHub comment", required: true },
+      "github-token": { type: "string", desc: "Token used to post the report on GitHub", required: true },
       path: { type: "string", desc: "Path to the Baselime output file", required: true },
     })
     .example([
       [`
-      # Post a comment to GitHub:
+      # Post a report to GitHub:
       $0 github --repo <org/repo> --pull-request <pr-number> --path <path-to-baselime-output> --github-token <girhub-token>
       `],
     ])
@@ -49,7 +49,7 @@ export async function handler(argv: Arguments<Options>) {
   const status = JSON.parse((await readFile(path)).toString()) as { version: string; service: string; alertChecks: AlertCheck[] };
 
   const [owner, name] = repo.split("/");
-  await api.commentGithub({
+  await api.reportGithubCreate({
     repo: { name, owner },
     prNumber,
     commit,
@@ -57,5 +57,5 @@ export async function handler(argv: Arguments<Options>) {
     token: githubToken,
   })
 
-  console.log("Comment posted to github");
+  console.log("Report posted to github");
 }
