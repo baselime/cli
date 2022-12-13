@@ -22,7 +22,10 @@ export async function verifyPlan(metadata: DeploymentService, resources: Deploym
       provider: metadata.provider,
       version: metadata.version,
       infrastructure: metadata.infrastructure,
-      templates: metadata.templates as any
+      // I've used "as any" because types defined in incoming metadata are infered from "yup", where as in api
+      // we use defined by TS
+      templates: metadata.templates as any,
+      variables: metadata.variables as any,
     },
     resources,
     reverse,

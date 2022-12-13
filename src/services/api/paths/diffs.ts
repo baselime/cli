@@ -1,4 +1,4 @@
-import { DeploymentResources } from "../../../commands/push/handlers/validators";
+import { DeploymentResources, DeploymentVariable } from "../../../commands/push/handlers/validators";
 import { client } from "../clients";
 import { TemplateVariable } from "./templates";
 
@@ -13,7 +13,8 @@ export interface DiffCreateRequest {
     infrastructure?: {
       stacks?: string[];
     },
-    templates?: TemplateMetadata[]
+    templates?: TemplateMetadata[];
+    variables: Record<string, DeploymentVariable>
   };
   reverse: boolean;
 }
