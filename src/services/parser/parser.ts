@@ -91,7 +91,7 @@ export function parseFileContent(contents: string, variables?: { [name: string]:
       vals[variable] = variables[variable]!.value || variables[variable]!.default;
     }
   });
-
+  
   const val = mustache.render(contents, vals);
   // @ts-ignore
   return yaml.parse(val, {customTags: [ref]});

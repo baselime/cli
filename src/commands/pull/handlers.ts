@@ -35,7 +35,7 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
 
   const deleteAndUpdatePromises = filenames.map(async filename => {
     const s = (await readFile(filename)).toString();
-    const { resources } = parseFileContent(s, metadata.variables) || {};
+    const resources = parseFileContent(s, metadata.variables) || {};
     const updatedQueries: DeploymentQuery[] = [];
     const updatedAlerts: DeploymentAlert[] = [];
     Object.keys(resources).forEach(key => {
