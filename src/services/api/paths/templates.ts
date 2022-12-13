@@ -5,7 +5,7 @@ export interface Template {
   name: string;
   description?: string;
   public: boolean;
-  variables: TemplateVariables;
+  variables?: Record<string, TemplateVariable>;
   template: string;
   userId: string;
   created?: string;
@@ -13,18 +13,16 @@ export interface Template {
   downloadCounter: number
 }
 
-export interface TemplateVariables {
-  [name: string | number | symbol]: {
-    description?: string;
-    [stage: string]: string | number | boolean | undefined;
-  } | undefined
+export interface TemplateVariable {
+  description?: string;
+  [stage: string]: string | number | boolean | undefined;
 }
 
 export interface TemplateCreateParams {
   name: string;
   description?: string;
   public: boolean;
-  variables?: TemplateVariables;
+  variables?: Record<string, TemplateVariable>;
   template: string;
 }
 

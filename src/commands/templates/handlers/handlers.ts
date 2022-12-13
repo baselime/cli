@@ -30,7 +30,7 @@ async function createTemplateFromFile(path: string): Promise<Template> {
   const template = await api.templateCreate({
     name: metadata.service,
     description: metadata.description,
-    variables: metadata.variables,
+    variables: metadata.variables as any,
     template: t,
     public: true,
   });

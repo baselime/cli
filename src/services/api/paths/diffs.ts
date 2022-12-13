@@ -1,5 +1,6 @@
 import { DeploymentResources } from "../../../commands/push/handlers/validators";
 import { client } from "../clients";
+import { TemplateVariable } from "./templates";
 
 
 export interface DiffCreateRequest {
@@ -11,9 +12,16 @@ export interface DiffCreateRequest {
     version: string;
     infrastructure?: {
       stacks?: string[];
-    }
+    },
+    templates?: TemplateMetadata[]
   };
   reverse: boolean;
+}
+
+export interface TemplateMetadata {
+  name: string;
+  variables?: Record<string, TemplateVariable>
+  applyOnSave?: boolean
 }
 
 enum ResourceTypes {

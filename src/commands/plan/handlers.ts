@@ -21,7 +21,8 @@ export async function verifyPlan(metadata: DeploymentService, resources: Deploym
       description: metadata.description,
       provider: metadata.provider,
       version: metadata.version,
-      infrastructure: metadata.infrastructure
+      infrastructure: metadata.infrastructure,
+      templates: metadata.templates as any
     },
     resources,
     reverse,

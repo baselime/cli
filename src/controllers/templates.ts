@@ -7,7 +7,6 @@ import { variableSchema } from "../commands/push/handlers/validators";
 import {
   parseAndAppendFileToResources,
   readResourcesFromFile,
-  readResourcesFromFiles
 } from "../services/parser/parser";
 
 export const templateSchema = object({
