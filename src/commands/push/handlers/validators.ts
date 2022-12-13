@@ -319,15 +319,7 @@ function validateAlerts(alerts: any[], queries: any[]) {
         }
       }
 
-      if (!convertedWindow) {
-        try {
-          awsCronParser.parse(frequency);
-        } catch (error) {
-          throw new Error(`Invalid window expression. Please follow the AWS Cron specs.`);
-        }
-      }
-
-      if (!convertedFrequency || convertedFrequency < 60000) {
+      if (convertedFrequency && convertedFrequency < 60000) {
         throw new Error(`Invalid frequency. Minimum is 1min.`);
       }
 
