@@ -44,7 +44,7 @@ async function handleTemplate(template: InferType<typeof templateSchema>, output
     await parseAndAppendFileToResources(fileContents, resources, template?.variables);
     s.succeed(`Parsing the template ${template.name} complete!`);
   } catch (e) {
-    spinner.get().fail(`Failed to download a template ${template}`);
+    spinner.get().fail(`Failed to download a template ${template.name}`);
     throw e;
   }
 }
