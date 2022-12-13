@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.0.29 (13th December 2022)
+
+- Bug fixes
+
 ### 0.0.28 (13th December 2022)
 
 - Add support for template variables
