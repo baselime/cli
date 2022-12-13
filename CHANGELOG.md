@@ -1,5 +1,14 @@
 # Changelog
 
+### 0.0.28 (13th December 2022)
+
+- Add support for template variables
+- Add baselime stream command
+- Improve output of query runs
+- Rename `baselime comment` to `baselime report`
+- Rename `baselime templates create` to `baselime templates report`
+- Bug fixes
+
 ### 0.0.27 (7th December 2022)
 
 - Bug fixes
