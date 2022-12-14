@@ -62,15 +62,15 @@ export async function handler(argv: Arguments<Options>) {
     status = JSON.parse((await readFile(path)).toString()) as { version: string; service: string; alertChecks: AlertCheck[] };
   } else {
     service = service || (await validateMetadata(config!)).service;
-    s.start("Checking...");
+    s.start("Creating snapshots...");
     const ids = (await api.alertsList(service)).map(alert => alert.id)
     const promises = ids.map(async id => { return await api.alertChecksCreate(service!, id, false) });
 
     const result = await Promise.all(promises);
-    s.succeed("All alert checks completed");
+    s.succeed("All alert snapshots created");
     console.log();
     const checks = result.map(result => result.check);
-    outputs.check(checks, "table");
+    outputs.snapshot(checks, "table");
     status = {
       version: getVersion(),
       alertChecks: checks,

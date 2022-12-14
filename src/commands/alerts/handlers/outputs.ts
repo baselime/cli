@@ -5,6 +5,8 @@ import chalk from "chalk";
 import { Alert } from "../../../services/api/paths/alerts";
 import { AlertCheck } from "../../../services/api/paths/alert-checks";
 
+const { BASELIME_DOMAIN = "baselime.io" } = process.env;
+
 function list(alerts: Alert[], format: OutputFormat) {
   if (format === "json") {
     console.log(JSON.stringify({ alerts }, null, 4));
@@ -21,7 +23,7 @@ function list(alerts: Alert[], format: OutputFormat) {
   console.log(`✨ ${chalk.bold(chalk.cyan(`${alerts.length} alerts`))}`);
 }
 
-function check(alertChecks: AlertCheck[], format: OutputFormat) {
+function snapshot(alertChecks: AlertCheck[], format: OutputFormat) {
   if (format === "json") {
     console.log(JSON.stringify({ alertChecks }, null, 4));
     return;
@@ -29,17 +31,24 @@ function check(alertChecks: AlertCheck[], format: OutputFormat) {
 
   const table = new Table({
     chars: tableChars,
-    head: ["Service", "Alert", "Triggered", "Threshold", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Service", "Alert", "Triggered", "Threshold", "Value", "Snapshot URL"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alertChecks.forEach(alertCheck => {
     const res = alertCheck.aggregates[alertCheck.calculationKey];
     const isGrouped = typeof res !== "number";
-    table.push([alertCheck.service, alertCheck.alertId, alertCheck.triggered, `${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}`, `${isGrouped ? JSON.stringify(res, undefined, 2) : res}`]);
+    table.push([
+      alertCheck.service,
+      alertCheck.alertId, 
+      alertCheck.triggered,
+      `${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}`,
+      `${isGrouped ? JSON.stringify(res, undefined, 2) : res}`,
+      `https://console.${BASELIME_DOMAIN}/${alertCheck.workspaceId}/${alertCheck.environmentId}/${alertCheck.service}/alerts/${alertCheck.alertId}/${alertCheck.id}`
+    ]);
   })
   console.log(`${table.toString()}`);
 }
 
 export default {
   list,
-  check,
+  snapshot,
 };

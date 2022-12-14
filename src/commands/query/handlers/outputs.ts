@@ -49,10 +49,10 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
     });
   }
 
-  console.log("")
+  console.log();
   console.log(aggregatesTable.toString());
-  console.log("")
-  console.log(`Explore the results at this url: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`);
+  console.log();
+  console.log(`Explore the query results at this unique and permanent snapshot url: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`);
 }
 
 export default {

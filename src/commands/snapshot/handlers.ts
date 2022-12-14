@@ -4,9 +4,9 @@ import spinner from "../../services/spinner";
 import { getVersion, OutputFormat } from "../../shared";
 import outputs from "../alerts/handlers/outputs";
 
-async function status(format: OutputFormat, data: { service: string, outFile: string }) {
+async function snapshot(format: OutputFormat, data: { service: string, outFile: string }) {
   const s = spinner.get();
-  s.start("Checking...");
+  s.start("Creating snapshots...");
   const ids = (await api.alertsList(data.service)).map(alert => alert.id)
   const promises = ids.map(async id => { return await api.alertChecksCreate(data.service, id, false) });
 
@@ -14,7 +14,7 @@ async function status(format: OutputFormat, data: { service: string, outFile: st
 
   const checks = result.map(result => result.check);
   s.succeed();
-  outputs.check(checks, format);
+  outputs.snapshot(checks, format);
   writeFileSync(data.outFile, JSON.stringify({ 
     version: getVersion(),
     service: data.service,
@@ -23,5 +23,5 @@ async function status(format: OutputFormat, data: { service: string, outFile: st
 }
 
 export default {
-  status,
+  snapshot,
 };

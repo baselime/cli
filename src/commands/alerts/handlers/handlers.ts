@@ -21,7 +21,7 @@ async function check(format: OutputFormat, data: { service: string; id?: string;
 
   const checks = result.map(result => result.check);
   s.succeed();
-  outputs.check(checks, format);
+  outputs.snapshot(checks, format);
 }
 
 export default {
