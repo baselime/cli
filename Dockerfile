@@ -30,5 +30,4 @@ WORKDIR /root/
 COPY --from=builder /app/bin/linux/baselime /usr/bin/
 
 ENTRYPOINT [ "/usr/bin/baselime" ]
-
-
+CMD ["--help"]
