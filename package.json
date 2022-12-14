@@ -32,7 +32,8 @@
     "prettier": "prettier --loglevel warn --write \"**/*.{ts,js,json,yaml}\"",
     "prettier:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",
     "lint": "eslint \"src/**/*.ts\" --fix",
-    "lint:check": "eslint \"src/**/*.ts\""
+    "lint:check": "eslint \"src/**/*.ts\"",
+    "release:patch": "npm version patch | xargs -i sh -c \"git push && git push origin {} && git push\""
   },
   "dependencies": {
     "aws-cron-parser": "^1.1.12",
