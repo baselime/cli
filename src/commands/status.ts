@@ -18,22 +18,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
       ...baseOptions,
-      config: {
-        type: "string",
-        desc: "The configuration folder to execute",
-        alias: "c",
-        default: ".baselime",
-      },
-      "out-file": {
-        type: "string",
-        desc: "The file to output the results to",
-        alias: "o",
-        default: "baselime-status.json",
-      },
-      "service": {
-        type: "string",
-        desc: "The service to check the status",
-      },
+      config: { type: "string", desc: "The configuration folder to check the status", alias: "c", default: ".baselime", },
+      "out-file": { type: "string", desc: "The file to output the results to", alias: "o", default: "baselime-status.json", },
+      "service": { type: "string", desc: "The service to check the status", },
     })
     .example([
       [`
@@ -49,7 +36,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
   const { config, profile, "out-file": outFile, format } = argv;
-  let { service: service } = argv;
+  let { service } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
