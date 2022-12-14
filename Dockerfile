@@ -5,7 +5,7 @@ SHELL ["/bin/bash", "-c"]
 ENV HOME /app
 
 # Install Packages
-RUN apt-get update -q && apt-get -y install unzip
+RUN apt-get update -q && apt-get -y install unzip upx
 
 WORKDIR /app
 
@@ -13,19 +13,22 @@ WORKDIR /app
 COPY . .
 RUN npm ci
 RUN npm run build
-RUN npm run package:linux
+RUN npm run package:alpine
+
 RUN chmod +x /app/bin/linux/baselime
 
 # Application
-FROM ubuntu:18.04 as app
+FROM alpine:3.17.0 as app
 
 # Tools needed for running diffs in CI integrations
-RUN apt-get update
-RUN apt-get -y install ca-certificates openssl openssh-client curl git bash jq 
+RUN apk add ca-certificates git
+
+# RUN apt-get update
+# RUN apt-get -y install ca-certificates openssl openssh-client curl git bash jq
 
 WORKDIR /root/
 COPY --from=builder /app/bin/linux/baselime /usr/bin/
 
-ENTRYPOINT [ "baselime" ]
+ENTRYPOINT [ "/usr/bin/baselime" ]
 
 
