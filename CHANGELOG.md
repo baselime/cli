@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.32] 2022-12-15
+
+### Added
+
+- Improved inline documentation
+- Improved messaging when an error occurs
+
 ## [0.0.31] 2022-12-15
 
 ### Added
