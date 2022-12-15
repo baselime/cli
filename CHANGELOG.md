@@ -1,60 +1,103 @@
 # Changelog
 
-### 0.0.31 (15th December 2022)
+All notable changes to this project will be documented in this file.
+
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [Unreleased]
+
+## [0.0.31] 2022-12-15
+
+### Added
 
 - Add option for shorter diff in `baselime plan`
 
-### 0.0.30 (14th December 2022)
+## [0.0.30] 2022-12-14
+
+### Added
 
 - Enables creating snapshots from within the `report` command
+
+### Changed
+
 - Reduces Docker image size
+
+### Fixed
+
 - Bug fixes
 
-### 0.0.29 (13th December 2022)
+## [0.0.29] 2022-12-13
+
+### Fixed
 
 - Bug fixes
 
-### 0.0.28 (13th December 2022)
+## [0.0.28] 2022-12-13
+
+### Added
 
 - Add support for template variables
 - Add baselime stream command
+
+### Changed
 - Improve output of query runs
 - Rename `baselime comment` to `baselime report`
 - Rename `baselime templates create` to `baselime templates report`
+
+### Fixed
+
 - Bug fixes
 
-### 0.0.27 (7th December 2022)
+## [0.0.27] 2022-12-7
+
+### Fixed
 
 - Bug fixes
 
-### 0.0.26 (6th December 2022)
+## [0.0.26] 2022-12-6
+
+### Added
 
 - Enable definition of multiple possible values for variables and select in the command flags
 
-### 0.0.25 (5th December 2022)
+## [0.0.25] 2022-12-05
+
+### Added
 
 - Add support for negative numbers as alert thresholds
 - Validate filters, calculations, thesholds and order bys inline
 - Add `templates` commands
-- Rename applications to services
 - Add support for observability as code variables
 - Add support for inline variables
 - Add support for running queries without calculations
 
-### 0.0.24 (30th November 2022)
+### Changed
 
-- Deprecate channels
+- Rename applications to services
+
+## [0.0.24] 2022-11-30
+
+### Added
+
 - Add support for inline channels in alerts
-- Rename `apply` to `push`
-- Rename `refresh` to `pull`
 - Add `baselime query` command
 
-### 0.0.23 (11th November 2022)
+### Changed
+
+- Rename `apply` to `push`
+- Rename `refresh` to `pull`
+
+### Deprecated
+
+- Deprecate channels
+
+## [0.0.23] 2022-11-11
 
 - Add support for search needles in queries
 - Add support for multiple datasets in queries
 
-### 0.0.22 (31st October 2022)
+## [0.0.22] 2022-10-31
 
 - Add support for `orderBy`, `limit` and `order` in queries
 - Add support for geting API key from environment variable
@@ -64,28 +107,28 @@
 - Deprecate email alerts
 - Deprecate individual functions in `index.yml` file
 
-### 0.0.21 (9th October 2022)
+## [0.0.21] 2022-10-09
 
 - Add Dockerfile
 - Imporoved prompts
 - Improved outputs
 - Bug fixes
 
-### 0.0.20 (8th October 2022)
+## [0.0.20] 2022-10-08
 
 - Add support for `comment` commands
 - Add support for `status` command
 - Improved outputs
 - Bug fixes
 
-### 0.0.19 (3rd October 2022)
+## [0.0.19] 2022-10-03
 
 - Add support for cron expression for alerts
 - Improved outputs
 - Remove the need for `auth` when `login`, `logout` and `iam`
 - Bug fixes
 
-### 0.0.18 (26th September 2022)
+## [0.0.18] 2022-09-26
 
 - Add support for stacks in the application definition
 - Add support for `IN` and `NOT_IN` operations for query filters
@@ -95,78 +138,78 @@
 - Interactive `queries run` command
 - Bug fixes
 
-### 0.0.17 (21st September 2022)
+## [0.0.17] 2022-09-21
 
 - Add support for the application flag in the `events stream` command
 
-### 0.0.16 (19th September 2022)
+## [0.0.16] 2022-09-19
 
 - Add support for filters and searches in the `events stream` command
 - Error handling
 - Bug fixes
 
-### 0.0.15 (13th September 2022)
+## [0.0.15] 2022-09-13
 
 - Remove the need for `:` when declaring query filters and alert thresholds
 
-### 0.0.14 (12th September 2022)
+## [0.0.14] 2022-09-12
 
 - Enable setting the `provider` in an application
 - Enable setting the `functions` and `infrastructure` in the `index.yml` for an application
 - List `functions` when running `baselime init` to populate the `infrastructure` field of the `index.yml` 
 - Bug fixes
 
-### 0.0.13 (8th September 2022)
+## [0.0.13] 2022-09-08
 
 - Implement `refresh` command
 - Enable setting up global namespaces for all queries in an application
 - Bug fixes
 
-### 0.0.12 (5th September 2022)
+## [0.0.12] 2022-09-05
 
 - Bug fixes
 
-### 0.0.11 (2nd September 2022)
+## [0.0.11] 2022-09-02
 
 - Implement `plan` and `destroy` commands
 - Bug fixes
 
-### 0.0.10 (24th August 2022)
+## [0.0.10] 2022-08-24
 
 - Add support for `slack` and `webhook` channel types
 - Bug fixes
 
-### 0.0.9 (12th August 2022)
+## [0.0.9] 2022-08-12
 
 - Add support for templates when initialising a new application with `baselime init`
 - Bug fixes
 
-### 0.0.8 (1st August 2022)
+## [0.0.8] 2022-09-01
 
 - Migrate to using a `.baselime` folder rather than a `.baselime.yml` file
 
-### 0.0.7 (29th July 2022)
+## [0.0.7] 2022-07-29
 
 - Adds `dashboards` command
 - Prevents unknown keys in resources schemas
 - Adds collection of telemetry data
 - Bug fixes
 
-### 0.0.6 (4th July 2022)
+## [0.0.6] 2022-07-04
 
 - Adds `channels` command
 - Adds `charts` command
 - Add support for queries with `groupBy`
 - Bug fixes
 
-### 0.0.5 (17th June 2022)
+## [0.0.5] 2022-06-17
 
 - Adds `upgrade` command
 - Improves default query and alert created with `init` command
 - Add `environment setup` command
 - Bug fixes
 
-### 0.0.4 (3rd June 2022)
+## [0.0.4] 2022-06-03
 
 - Adds `--follow` flag to `events stream` command
 - Adds namespace combination to queries and the `events stream` command
@@ -175,7 +218,7 @@
 - Adds sample queries, alerts and channels in the file generated by `baselime init`
 - Bug fixes
 
-### 0.0.3 (23rd May 2022)
+## [0.0.3] 2022-05-23
 
 - Adds `auth` commands
 - Adds `applications` commands
@@ -186,11 +229,11 @@
 - Better documentation
 - Bug fixes
 
-### 0.0.2 (5th May 2022)
+## [0.0.2] 2022-05-05
 
 - Adds support for alerts channels
 - Bug fixes
 
-### 0.0.1 (18th April 2022)
+## [0.0.1] 2022-04-18
 
 - Initial release
