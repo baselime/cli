@@ -1,5 +1,15 @@
 # Changelog
 
+### 0.0.31 (15th December 2022)
+
+- Add option for shorter diff in `baselime plan`
+
+### 0.0.30 (14th December 2022)
+
+- Enables creating snapshots from within the `report` command
+- Reduces Docker image size
+- Bug fixes
+
 ### 0.0.29 (13th December 2022)
 
 - Bug fixes
