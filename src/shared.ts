@@ -41,12 +41,18 @@ Support: forum.baselime.io
 Bugs: github.com/baselime/cli/issues
   `));
   const argv = hideBin(process.argv);
+
+  console.log(`${yargs.help()}`);
+  if (message || err.message) {
+    console.log("\n\n")
+    console.error(chalk.redBright(chalk.bold(message || err.message)));
+  }
+
   if (err instanceof Error && (argv.includes("-d") || argv.includes("--debug"))) {
     console.error(err);
   } else {
     console.log(chalk.bold("Use the --debug flag to view the complete stack trace."))
   }
-  console.log(`${yargs.help()}`);
   process.exit(1);
 }
 

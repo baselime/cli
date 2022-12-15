@@ -12,7 +12,7 @@ export interface Options extends BaseOptions {
 }
 
 export const command = "snapshot";
-export const desc = "Runs all the alerts in the current service, create snapshots of the results, displays the results in the terminal, and outputs them to a file";
+export const desc = "Check all the alerts in the current service, create snapshots of the results, displays the results in the terminal, and outputs them to a file";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs

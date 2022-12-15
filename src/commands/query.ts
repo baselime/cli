@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { Arguments, CommandBuilder } from "yargs";
 import { parseFilter } from "../regex";
 import { NamespaceCombination } from "../services/api/paths/queries";
@@ -24,7 +25,8 @@ export interface Options extends BaseOptions {
   "match-case": boolean;
 }
 export const command = "query";
-export const desc = "Run a query";
+export const desc = `Run a query
+Use ${chalk.bold("baselime query")} without any flags for the interactive mode`;
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs

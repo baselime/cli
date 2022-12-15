@@ -9,7 +9,7 @@ const packageJson = require("../../package.json");
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
 export const command = "upgrade";
-export const desc = "Upgrades the Baselime CLI to the latest version";
+export const desc = "Upgrade the Baselime CLI to the latest version";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
   return yargs

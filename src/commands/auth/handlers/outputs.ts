@@ -17,6 +17,9 @@ export function userConfigFound(profile: string) {
 
 export function credentialsConfigured(path: string) {
   console.log(`✨ API Key written to ${chalk.cyan(path)}`);
+  console.log(`
+Next steps:
+  1. ${chalk.bold("baselime init")} to initialise Observability as Code in one of your repos`);
   process.exit(0);
 }
 

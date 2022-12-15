@@ -8,6 +8,7 @@ import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
 import { init } from "./init/handlers";
 import { promptForService, promptTemplateSelect } from "./init/prompts";
+import chalk from "chalk";
 
 export interface Options extends BaseOptions {
   service?: string;
@@ -17,7 +18,7 @@ export interface Options extends BaseOptions {
 }
 
 export const command = "init";
-export const desc = "Prepare your working directory for other commands";
+export const desc = "Initialise Observability as Code in one of your repos";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -76,4 +77,10 @@ export async function handler(argv: Arguments<Options>) {
 
   await init(folder, service, description, provider, template);
   s.succeed(`${folder} Generated`);
+
+  console.log(`\n
+Next steps:
+  1. ${chalk.bold("baselime push")} to sync this service with the Baselime backend
+  2. ${chalk.bold("baselime query")} to run a query
+  3. ${chalk.bold("baselime snapshot")} to check all the alerts in this service`)
 }
