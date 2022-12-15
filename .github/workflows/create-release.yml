@@ -155,6 +155,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  homebrew-release:
+    needs: [create-release]
+    runs-on: macos-latest
+    steps:
+      - name: Release Homebrew Formula
+        if: github.event.release.prerelease != true
+        uses: garden-io/update-homebrew-action@v1
+        with:
+          packageName: 'cli'
+          templatePath: 'Formula/baselime.rb'
+          tapRepo: 'baselime/homebrew-tap'
+          srcRepo: 'baselime/cli'
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+
+  
   publish-docker-image:
     needs: [create-release]
     runs-on: ubuntu-latest
