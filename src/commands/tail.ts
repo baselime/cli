@@ -29,7 +29,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       datasets: {
         type: "array",
-        desc: "The datasets to stream",
+        desc: "The datasets to tail",
         default: [],
       },
       service: { type: "string", desc: "The service to tail. When specified, additional filters and namespaces are combined with the filters of the service" },

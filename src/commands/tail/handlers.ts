@@ -47,7 +47,7 @@ async function tail(data: {
   }
 
   if (!follow) {
-    s.start("Streaming your events");
+    s.start("Tailing your events");
     const { from: f, to: t } = getTimeframe(from, to);
     const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, service: service, namespaceCombination: combination, offset: 0, limit: 100 });
     s.succeed();

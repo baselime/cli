@@ -23,7 +23,6 @@ export interface Event {
   _logId: string;
   _baselimeId: string;
   _now?: number;
-  _stream: string;
   [key: string]: any;
 }
 

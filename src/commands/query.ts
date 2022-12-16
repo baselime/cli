@@ -41,7 +41,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         default: [],
       },
       filters: { type: "array", desc: "A set of filters to apply when running the query; multiple filters can be passed", default: [] },
-      calculations: { type: "array", desc: "A set of filters to apply to the stream; multiple filters can be passed", default: [] },
+      calculations: { type: "array", desc: "A set of calculations to claculations to compute; multiple calculations can be added", default: [] },
       needle: { type: "string", desc: "A string to search in the fields and values of every event" },
       regex: { type: "string", desc: "A regular expression to search in the fields and valies of every event. If there's both a needle and a regex, the regex is considered in priority" },
       "match-case": { type: "boolean", desc: "Match case if a needle is specified", default: false },
