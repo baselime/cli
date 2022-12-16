@@ -62,6 +62,7 @@ export enum QueryOperation {
   DOES_NOT_EXIST = "DOES_NOT_EXIST",
   IN = "IN",
   NOT_IN = "NOT_IN",
+  STARTS_WITH = "STARTS_WITH",
 }
 
 export interface Query {

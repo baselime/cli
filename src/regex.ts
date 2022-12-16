@@ -5,9 +5,9 @@ const operations = Object.values(QueryOperation) as QueryOperation[];
 const operatiors = Object.values(QueryOperator) as QueryOperator[];
 export const queryFilterRegex = new RegExp("^([\\w.@-]+)\\s(" + operations.join("|") + ")\\s?'?(.*?)?'?$");
 export const alertThresholdRegex = new RegExp(
-  "^(" + operations.filter((o) => !["INCLUDES", "IN", "NOT_IN", "EXISTS", "DOES_NOT_EXIST"].some((f) => o === f)).join("|") + ")\\s([-+]?[0-9]*)$"
+  "^(" + operations.filter((o) => !["INCLUDES", "IN", "NOT_IN", "EXISTS", "DOES_NOT_EXIST", "STARTS_WITH"].some((f) => o === f)).join("|") + ")\\s([-+]?[0-9]*)$"
 );
-export const calculationsRegex = new RegExp(`(${operatiors.join("|")})\\(([^)]*)\\)|(COUNT)$`);
+export const calculationsRegex = new RegExp(`(${operatiors.filter(c => c !== "COUNT").join("|")})\\(([^)]*)\\)|(COUNT)$`);
    
 
 export function extractCalculation(input: string): QueryCalculation {
