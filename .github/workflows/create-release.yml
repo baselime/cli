@@ -170,7 +170,6 @@ jobs:
 
   homebrew-release:
     needs: [create-release]
-    name: Bump Homebrew formula
     runs-on: ubuntu-latest
     steps:
       - name: Extract version
