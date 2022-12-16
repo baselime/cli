@@ -1,16 +1,16 @@
-import spinner from "../../../services/spinner/index";
-import api from "../../../services/api/api";
-import { OutputFormat } from "../../../shared";
-import { getTimeframe } from "../../../services/timeframes/timeframes";
+import spinner from "../../services/spinner/index";
+import api from "../../services/api/api";
+import { OutputFormat } from "../../shared";
+import { getTimeframe } from "../../services/timeframes/timeframes";
 import outputs from "./outputs";
 import { promisify } from "util";
 import dayjs from "dayjs";
 const wait = promisify(setTimeout);
 import utc from "dayjs/plugin/utc"
-import { NamespaceCombination, QueryFilter, SearchNeedle } from "../../../services/api/paths/queries";
+import { NamespaceCombination, QueryFilter, SearchNeedle } from "../../services/api/paths/queries";
 dayjs.extend(utc);
 
-async function stream(data: {
+async function tail(data: {
   format: OutputFormat,
   datasets: string[],
   filters: QueryFilter[],
@@ -51,7 +51,7 @@ async function stream(data: {
     const { from: f, to: t } = getTimeframe(from, to);
     const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, service: service, namespaceCombination: combination, offset: 0, limit: 100 });
     s.succeed();
-    outputs.stream(events.events, format);
+    outputs.tail(events.events, format);
     return;
   }
 
@@ -62,11 +62,11 @@ async function stream(data: {
 
     f = events.events[0] ? dayjs.utc(events.events[0]._timestamp).valueOf() : f;
     t = now.valueOf();
-    outputs.stream(events.events, format);
+    outputs.tail(events.events, format);
     await wait(2000);
   }
 }
 
 export default {
-  stream,
+  tail,
 };

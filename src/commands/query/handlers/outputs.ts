@@ -4,7 +4,7 @@ import { OutputFormat, tableChars } from "../../../shared";
 import chalk from "chalk";
 import { QueryRun, Series } from "../../../services/api/paths/query-runs";
 import dayjs from "dayjs";
-import outputs from "../../events/stream/outputs";
+import outputs from "../../tail/outputs";
 import { Event } from "../../../services/api/paths/events";
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
@@ -19,7 +19,7 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
   }
 
   if (!aggregates) {
-    outputs.stream(events || [], format);
+    outputs.tail(events || [], format);
     return;
   }
 
