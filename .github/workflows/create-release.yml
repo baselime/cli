@@ -153,6 +153,8 @@ jobs:
         run: |
           echo "## ${{ env.RELEASE_VERSION }} (${{ env.RELEASE_DATE }})" >> checksums.md
           echo "${{ steps.changelog_reader.outputs.changes }}" >> checksums.md
+          echo "" >> checksums.md
+          echo "" >> checksums.md
           sha256sum baselime-darwin-x64-${{ env.RELEASE_VERSION }}.tar.gz >> checksums.md
           sha256sum baselime-linux-x64-${{ env.RELEASE_VERSION }}.tar.gz >> checksums.md
 
