@@ -153,7 +153,6 @@ jobs:
         run: |
           echo "## ${{ env.RELEASE_VERSION }} (${{ env.RELEASE_DATE }})" >> checksums.md
           echo "${{ steps.changelog_reader.outputs.changes }}" >> checksums.md
-          echo "---\n" >> checksums.md
           sha256sum baselime-darwin-x64-${{ env.RELEASE_VERSION }}.tar.gz >> checksums.md
           sha256sum baselime-linux-x64-${{ env.RELEASE_VERSION }}.tar.gz >> checksums.md
 
@@ -171,17 +170,25 @@ jobs:
 
   homebrew-release:
     needs: [create-release]
-    runs-on: macos-latest
+    name: Bump Homebrew formula
+    runs-on: ubuntu-latest
     steps:
-      - name: Release Homebrew Formula
-        if: github.event.release.prerelease != true
-        uses: garden-io/update-homebrew-action@v1
+      - name: Extract version
+        id: extract-version
+        run: |
+          printf "::set-output name=%s::%s\n" tag-name "${GITHUB_REF#refs/tags/}"
+      - uses: mislav/bump-homebrew-formula-action@v2
+        if: "!contains(github.ref, '-')" # skip prereleases
         with:
-          packageName: 'cli'
-          templatePath: 'Formula/baselime.rb'
-          tapRepo: 'baselime/homebrew-tap'
-          srcRepo: 'baselime/cli'
-          authToken: ${{ secrets.GITHUB_TOKEN }}
+          formula-name: baselime
+          formula-path: Formula/baselime.rb
+          homebrew-tap: Baselime/homebrew-tap
+          base-branch: master
+          download-url: https://github.com/baselime/cli/releases/download/${{ steps.extract-version.outputs.tag-name }}/baselime-darwin-x64-${{ steps.extract-version.outputs.tag-name }}.tar.gz
+          commit-message: |
+            {{formulaName}} {{version}}
+        env:
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
 
   
   publish-docker-image:
