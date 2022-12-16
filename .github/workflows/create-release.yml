@@ -254,7 +254,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Update using:\n```Linux/MacOS: sudo baselime upgrade\nHomebrew: brew upgrade baselime\nnpm: npm i -g baselime```"
+                    "text": "Update using:\n```Linux/MacOS: sudo baselime upgrade\nHomebrew: brew upgrade baselime\nnpm: npm i -g @baselime/cli```"
                   }
                 },
                 {
