@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.35] 2022-12-16
+
+### Removed
+
+- Removed `baselime stream` command
+
+### Added
+
+- Added `baselime tail` command
+
 ## [0.0.34] 2022-12-16
 
 ### Removed
