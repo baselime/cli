@@ -239,13 +239,13 @@ jobs:
           channel-id: 'C03EJ5F51M1'
           payload: |
             {
-              "text": "[Release] Baselime CLI v${{ steps.changelog_reader.outputs.version }}",
+              "text": "[Release] Baselime CLI v${{ steps.tag_name.outputs.current_version }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*[Release] Baselime CLI v${{ steps.changelog_reader.outputs.version }}*"
+                    "text": "*[Release] Baselime CLI v${{ steps.tag_name.outputs.current_version }}*"
                   }
                 },
                 {
@@ -259,7 +259,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<https://github.com/Baselime/cli/releases/tag/v${{ steps.changelog_reader.outputs.version }}|https://github.com/Baselime/cli/releases/tag/v${{ steps.changelog_reader.outputs.version }}>"
+                    "text": "<https://github.com/Baselime/cli/releases/tag/v${{ steps.tag_name.outputs.current_version }}|https://github.com/Baselime/cli/releases/tag/v${{ steps.tag_name.outputs.current_version }}>"
                   }
                 }
               ]
