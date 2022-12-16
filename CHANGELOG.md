@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.33] 2022-12-16
+
+### Removed
+
+- `--short` flag in `plan` command
+
 ## [0.0.32] 2022-12-15
 
 ### Added
