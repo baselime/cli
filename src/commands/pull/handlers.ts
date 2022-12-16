@@ -5,8 +5,8 @@ import { statusType } from "../../services/api/paths/diffs";
 import { parseFileContent, stringify, stringifyResources } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { getVersion } from "../../shared";
+import { verifyPlan } from "../push/handlers/handlers";
 import checks, { DeploymentAlert, DeploymentQuery, UserVariableInputs } from "../push/handlers/validators";
-import { verifyPlan } from "../plan/handlers";
 import { promptRefresh } from "./prompts";
 
 

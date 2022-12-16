@@ -1,8 +1,8 @@
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
-import { verifyPlan } from "../../plan/handlers";
 import * as prompts from "./prompts";
 import { validateMetadata } from "../../push/handlers/validators";
+import { verifyPlan } from "../../push/handlers/handlers";
 
 async function destroy(config: string, stage?: string) {
   const s = spinner.get();

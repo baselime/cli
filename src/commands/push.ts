@@ -8,6 +8,7 @@ import { UserVariableInputs } from "./push/handlers/validators";
 export interface Options extends BaseOptions {
   config?: string;
   yes?: boolean;
+  "dry-run"?: boolean;
   variables?: (string | number)[];
 }
 
@@ -30,6 +31,11 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         alias: "y",
         default: false,
       },
+      "dry-run": {
+        type: "boolean",
+        desc: "Checks the changes that will be made to the remote when applying, without actually making the request",
+        default: false,
+      },
       variables: {
         type: "array",
         desc: "The variables to replace when doing the plan",
@@ -47,7 +53,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { config, profile, yes, variables: vars } = argv;
+  const { config, profile, yes, variables: vars, "dry-run": dryRun } = argv;
   spinner.init(!!argv.quiet);
 
   await authenticate(profile);
@@ -61,6 +67,6 @@ export async function handler(argv: Arguments<Options>) {
       variables[key.trim()] = val.trim();
     });
   }
-  await handlers.push(config!, stage, variables, yes!);
+  await handlers.push(config!, stage, variables, yes!, dryRun!);
 }
 
