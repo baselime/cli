@@ -7,14 +7,14 @@ import Table from "cli-table3";
 import { DiffResponse, statusType } from "../../services/api/paths/diffs";
 import { blankChars } from "../../shared";
 
-async function plan(config: string, stage: string, userVariableInputs: UserVariableInputs, fullDiff?: boolean) {
+async function plan(config: string, stage: string, userVariableInputs: UserVariableInputs) {
   const s = spinner.get();
   const { metadata, resources } = await checks.validate(config, stage, userVariableInputs);
   s.start("Completing baselime plan...");
-  await verifyPlan(metadata, resources, false, fullDiff);
+  await verifyPlan(metadata, resources, false);
 }
 
-export async function verifyPlan(metadata: DeploymentService, resources: DeploymentResources, reverse: boolean, fullDiff?: boolean) {
+export async function verifyPlan(metadata: DeploymentService, resources: DeploymentResources, reverse: boolean) {
   const diff = await api.diffsCreate({
     service: metadata.service,
     metadata: {
@@ -31,49 +31,47 @@ export async function verifyPlan(metadata: DeploymentService, resources: Deploym
     reverse,
   });
 
-  await displayDiff(metadata.service, diff, fullDiff);
+  await displayDiff(metadata.service, diff);
   return diff;
 }
 
-export async function displayDiff(service: string, diff: DiffResponse, fullDiff: boolean = true) {
+export async function displayDiff(service: string, diff: DiffResponse) {
   const s = spinner.get();
   const { resources: { queries, alerts }, service: appDiff } = diff;
 
-  if(fullDiff) {
-    const serviceTable = new Table({ chars: blankChars });
-    serviceTable.push(getYamlString({ status: appDiff.status, value: appDiff.service }));
+  const serviceTable = new Table({ chars: blankChars });
+  serviceTable.push(getYamlString({ status: appDiff.status, value: appDiff.service }));
 
-    const table = new Table({ chars: blankChars });
+  const table = new Table({ chars: blankChars });
 
-    queries.forEach(q => {
-      const { status, resource } = q;
-      if (status === statusType.VALUE_UNCHANGED) return;
+  queries.forEach(q => {
+    const { status, resource } = q;
+    if (status === statusType.VALUE_UNCHANGED) return;
 
-      const value: Record<string, any> = {};
-      value[resource.id!] = { type: "query", properties: resource.properties }
-      table.push(getYamlString({ status, value }));
-    });
+    const value: Record<string, any> = {};
+    value[resource.id!] = { type: "query", properties: resource.properties }
+    table.push(getYamlString({ status, value }));
+  });
 
-    alerts.forEach(a => {
-      const { status, resource } = a;
-      if (status === statusType.VALUE_UNCHANGED) return;
+  alerts.forEach(a => {
+    const { status, resource } = a;
+    if (status === statusType.VALUE_UNCHANGED) return;
 
-      const value: Record<string, any> = {};
-      value[resource.id!] = {
-        type: "alert",
-        properties: {
-          ...resource.properties,
-          channels: resource.properties.channels,
-          parameters: { ...resource.properties.parameters, query: new Ref(resource.properties.parameters.query) }
-        }
-      };
-      table.push(getYamlString({ status, value }));
-    });
+    const value: Record<string, any> = {};
+    value[resource.id!] = {
+      type: "alert",
+      properties: {
+        ...resource.properties,
+        channels: resource.properties.channels,
+        parameters: { ...resource.properties.parameters, query: new Ref(resource.properties.parameters.query) }
+      }
+    };
+    table.push(getYamlString({ status, value }));
+  });
 
-    console.log("\n\n" + chalk.bold(chalk.cyanBright(`Services: ${service}`)))
-    console.log("\n\n" + serviceTable.toString() + "\n\n");
-    console.log("\n\n" + table.toString() + "\n\n");
-  }
+  console.log("\n\n" + chalk.bold(chalk.cyanBright(`Services: ${service}`)))
+  console.log("\n\n" + serviceTable.toString() + "\n\n");
+  console.log("\n\n" + table.toString() + "\n\n");
 
   const allResources = [...queries, ...alerts];
   const serviceStatus = (() => {

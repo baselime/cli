@@ -23,10 +23,6 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         alias: "c",
         default: ".baselime",
       },
-      short: {
-        type: "boolean",
-        desc: "Show short version of diff",
-      },
       variables: {
         type: "array",
         desc: "The variables to replace when doing the plan",
@@ -45,7 +41,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
-  const { config, profile, variables: vars, short } = argv;
+  const { config, profile, variables: vars } = argv;
   await authenticate(profile);
 
   let stage = "";
@@ -58,6 +54,6 @@ export async function handler(argv: Arguments<Options>) {
       variables[key.trim()] = val.trim();
     });
   }
-  await handlers.plan(config as string, stage, variables, !short as boolean);
+  await handlers.plan(config as string, stage, variables);
 }
 
