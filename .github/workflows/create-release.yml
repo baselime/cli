@@ -224,6 +224,12 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           push: true
+      - name: Update dockerhub readme
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: baselime/baselime
 
   notify-community:
     needs: [publish-docker-image, homebrew-release]

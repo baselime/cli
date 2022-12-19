@@ -67,6 +67,9 @@ $ npm install @baselime/cli -g
 Binary releases are available on
 [GitHub Releases](https://github.com/baselime/cli/releases/latest).
 
+### Docker
+Binary is also distributed as a [docker image](https://hub.docker.com/r/baselime/baselime)
+
 ### Validate installation
 
 In all cases the installation can be validated by running `baselime -v` in the
