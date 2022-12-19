@@ -15,6 +15,5 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     `]
     ])
     .commandDir("report")
-    .demandCommand()
     .strict()
 };
