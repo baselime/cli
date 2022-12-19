@@ -11,7 +11,7 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     })
     .example([
       [`
-      $0 report github --repo <org/repo> --pull-request <pr-number> --path <path-to-baselime-output> --github-token <girhub-token>
+      $0 report github --repo <org/repo> --pull-request <pr-number> --path <path-to-baselime-output> --github-token <github-token>
     `]
     ])
     .commandDir("report")

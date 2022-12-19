@@ -35,7 +35,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       [`
       # Post a report to GitHub:
-      $0 github --repo <org/repo> --pull-request <pr-number> --github-token <girhub-token>
+      $0 github --repo <org/repo> --pull-request <pr-number> --github-token <github-token>
 
       # Post a report to GitHub with explicit path to Baselime output file:
       $0 github --repo <org/repo> --pull-request <pr-number> --path <path-to-baselime-output> --github-token <github-token>
