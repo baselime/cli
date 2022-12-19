@@ -7,7 +7,7 @@ import { promisify } from "util";
 import dayjs from "dayjs";
 const wait = promisify(setTimeout);
 import utc from "dayjs/plugin/utc"
-import { NamespaceCombination, QueryFilter, SearchNeedle } from "../../services/api/paths/queries";
+import { QueryFilter, SearchNeedle } from "../../services/api/paths/queries";
 dayjs.extend(utc);
 
 async function tail(data: {
@@ -17,8 +17,6 @@ async function tail(data: {
   needle?: string;
   from: string,
   to: string,
-  namespaces: string[],
-  combination: NamespaceCombination,
   follow: boolean,
   service?: string,
   matchCase: boolean,
@@ -31,8 +29,6 @@ async function tail(data: {
     needle,
     from,
     to,
-    namespaces,
-    combination,
     follow,
     matchCase,
     regex,
@@ -49,7 +45,7 @@ async function tail(data: {
   if (!follow) {
     s.start("Tailing your events");
     const { from: f, to: t } = getTimeframe(from, to);
-    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, service: service, namespaceCombination: combination, offset: 0, limit: 100 });
+    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, service: service, offset: 0, limit: 100 });
     s.succeed();
     outputs.tail(events.events, format);
     return;
@@ -57,7 +53,7 @@ async function tail(data: {
 
   let { from: f, to: t } = getTimeframe("1minute", "now");
   while (true) {
-    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, namespaces, service: service, namespaceCombination: combination, offset: 0, limit: 100 });
+    const events = await api.listEvents({ datasets, filters, needle: n, from: f, to: t, service: service, offset: 0, limit: 100 });
     const now = dayjs();
 
     f = events.events[0] ? dayjs.utc(events.events[0]._timestamp).valueOf() : f;

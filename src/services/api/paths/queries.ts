@@ -2,8 +2,6 @@ import { client } from "../clients";
 
 export interface QueryParameters {
   datasets: string[];
-  namespaces?: string[];
-  namespaceCombination?: NamespaceCombination;
   filters?: Array<QueryFilter>;
   filterCombination: "AND" | "OR";
   calculations?: QueryCalculation[];
@@ -76,12 +74,6 @@ export interface Query {
   userId: string;
   created?: string;
   updated?: string;
-}
-
-export enum NamespaceCombination {
-  INCLUDE = "INCLUDE",
-  EXCLUDE = "EXCLUDE",
-  STARTS_WITH = "STARTS_WITH",
 }
 
 export interface SearchNeedle {

@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import { Arguments, CommandBuilder } from "yargs";
 import { parseFilter } from "../regex";
-import { NamespaceCombination } from "../services/api/paths/queries";
 import spinner from "../services/spinner";
 
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
@@ -16,8 +15,6 @@ export interface Options extends BaseOptions {
   to?: string;
   datasets: string[];
   follow: boolean;
-  namespaces: string[];
-  combination: string;
   filters: string[];
   calculations: string[];
   needle?: string;
@@ -47,8 +44,6 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       "match-case": { type: "boolean", desc: "Match case if a needle is specified", default: false },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", },
-      namespaces: { type: "array", desc: "The namespaces to query; if no namespace is specified all namespaces are queries; multiple namespaces can be passed", default: [] },
-      combination: { type: "string", desc: "The combination to use when multiple namespaces are specified", default: "include", choices: ["include", "exclude", "starts_with"] },
     })
     .example([
       [`
@@ -71,7 +66,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  let { profile, id, datasets, filters, from, to, format, follow, namespaces, combination, needle, "match-case": matchCase, regex, service } = argv;
+  let { profile, id, datasets, filters, from, to, format, follow, needle, "match-case": matchCase, regex, service } = argv;
 
   spinner.init(!!argv.quiet);
   await authenticate(profile);
@@ -106,11 +101,9 @@ export async function handler(argv: Arguments<Options>) {
     filters: fs,
     from,
     to,
-    namespaces,
     needle,
     matchCase,
     regex,
-    combination: combination.toUpperCase() as NamespaceCombination,
     follow,
     service: service
   });

@@ -1,6 +1,6 @@
 import { stringify } from "qs";
 import { client } from "../clients";
-import { NamespaceCombination, QueryFilter, SearchNeedle } from "./queries";
+import { QueryFilter, SearchNeedle } from "./queries";
 
 export interface EventsListRequest {
   datasets: string[];
@@ -9,8 +9,6 @@ export interface EventsListRequest {
   service?: string;
   from: number;
   to: number;
-  namespaces: string[];
-  namespaceCombination: NamespaceCombination;
   offset: number;
   limit: number;
 }

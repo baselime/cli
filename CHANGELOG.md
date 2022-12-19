@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Added support for STARTs_WITH query filter
+- Added support for namespaces in query filters using $baselime.namespace as key
+- Allow $ in query filters
+
+### Deprecated
+
+- namespaces and namespaceCombination in query definitions
+- Removed the concept of namespaceCombination
 
 ## [0.0.35] 2022-12-16
 

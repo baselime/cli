@@ -11,7 +11,6 @@ import { stepTemplates, templateSchema } from "../../../controllers/templates";
 
 
 const filterCombinations = ["AND", "OR"];
-const namespaceCombinations = ["INCLUDE", "EXCLUDE", "STARTS_WITH"];
 const channelTypes = ["slack", "webhook"];
 const groupByTypes = ["string", "number", "boolean"];
 
@@ -64,13 +63,11 @@ const querySchema = object({
         .of(string())
         .required()
         .typeError("Must include at least 1 dataset"),
-      namespaces: array().of(string()).optional(),
       calculations: array()
         .of(string().matches(calculationsRegex).required())
         .optional().nullable(),
       filters: array().of(string().matches(queryFilterRegex).required()).optional(),
       filterCombination: string().oneOf(filterCombinations).optional().typeError('filterCombination must be set to AND or OR.'),
-      namespaceCombination: string().oneOf(namespaceCombinations).optional().typeError('namespaceCombination must be set to INCLUDE, EXCLUDE or STARTS_WITH.'),
       needle: object({
         value: string().required(),
         isRegex: boolean(),
