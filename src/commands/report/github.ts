@@ -26,7 +26,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       repo: { type: "string", desc: "Name of github repository", required: true },
       "pull-request": { type: "number", desc: "Pull-request number", required: false },
-      "comnmit": { type: "string", desc: "Commit Id", required: false },
+      "commit": { type: "string", desc: "Commit Id", required: false },
       "github-token": { type: "string", desc: "Token used to post the report on GitHub", required: true },
       path: { type: "string", desc: "Path to the Baselime output file", required: false },
       service: { type: "string", desc: "The service to create the report for. Defaults to the service specified in the .baselime folder, if it exists.", },
@@ -88,7 +88,7 @@ export async function handler(argv: Arguments<Options>) {
     commit,
     status,
     token: githubToken,
-  })
+  });
 
   s.succeed("Report posted to GitHub");
 }
