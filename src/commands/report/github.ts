@@ -68,7 +68,6 @@ export async function handler(argv: Arguments<Options>) {
     throw new Error("Please specifiy either --commit or --pull-request");
   }
   let status = await commonHandler(profile, quiet, path, config, service);
-  console.log('got status', status)
   const [owner, name] = repo.split("/");
 
   const s = spinner.get();
