@@ -32,10 +32,38 @@ export async function handler(argv: Arguments<BaseOptions>) {
 
   const { version: latestVersion } = await getLatestVersion();
   const { version } = packageJson;
-  if (version === latestVersion) {
-    return console.log(`You're currently using the latest version of the Baselime CLI: v${latestVersion}`);
-  }
-  const res = execSync(`curl -s https://get.${BASELIME_DOMAIN} | sh`);
-  console.log(res.toString());
+  // if (version === latestVersion) {
+  //   return console.log(`You're currently using the latest version of the Baselime CLI: v${latestVersion}`);
+  // }
+  const result = await runForOS();
+  console.log(result);
+  // const res = execSync(`curl -s https://get.${BASELIME_DOMAIN} | sh`);
+  // console.log(res.toString());
   console.log(`Upgraded to v${latestVersion}`);
+}
+
+async function runForOS(): Promise<string> {
+  switch (process.platform) {
+    case "darwin":
+      return darwin();
+    case "linux":
+      return linux();
+  }
+}
+
+async function darwin(): Promise<string> {
+
+}
+
+function linux(): string {
+  return installFromShell();
+}
+
+async function windows() {
+
+}
+
+function installFromShell(): string {
+  const res = execSync(`curl -s https://get.${BASELIME_DOMAIN} | sh`);
+  res.toString();
 }
