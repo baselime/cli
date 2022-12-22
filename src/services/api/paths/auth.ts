@@ -42,6 +42,14 @@ async function generateOneTimePassword(email: string) {
   await publicClient.post("/auth/otp", { email });
 }
 
+async function getWorkspaces(accessToken: string) {
+  const { workspaces } = (
+    await publicClient.get("/auth/workspaces", { headers: {
+      authorization: `Bearer ${accessToken}`
+    } })
+  ).data;
+  return workspaces;
+}
 async function getWorkspacesByOneTimePassword(
   otp: string,
 ): Promise<Workspace[]> {
@@ -54,15 +62,20 @@ async function getWorkspacesByOneTimePassword(
 async function getApiKey(
   workspaceId: string,
   environmentId: string,
-  otp: string,
+  otp?: string,
+  idToken?: string
 ): Promise<string> {
   const { apiKey } = (
     await publicClient.get("/auth/api-key", {
       params: { otp, environmentId, workspaceId },
+      headers: {
+        ...idToken && { authorization: `Bearer ${idToken}`}
+      }
     })
   ).data;
   return apiKey;
 }
+
 
 async function getApiKeyPermissions(): Promise<{ key: APIKey; workspace: Workspace; environment: Environment }> {
   const { key, workspace, environment } = (await client.get("auth")).data
@@ -72,6 +85,7 @@ async function getApiKeyPermissions(): Promise<{ key: APIKey; workspace: Workspa
 export default {
   generateOneTimePassword,
   getWorkspacesByOneTimePassword,
+  getWorkspaces,
   getApiKey,
   getApiKeyPermissions,
 };

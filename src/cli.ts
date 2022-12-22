@@ -4,15 +4,15 @@ import yargs, { Arguments } from "yargs";
 import { hideBin } from "yargs/helpers";
 import { getVersion } from "./shared";
 import { trackCommand } from "./services/telemetry/telemetry";
-
+import * as open from "open";
 async function track(args: Arguments) {
   const command = args._[0];
   await trackCommand(command.toString(), args);
   return;
 }
 
-
-yargs(hideBin(process.argv))
+console.log('hellooooo')
+  yargs(hideBin(process.argv))
   .commandDir("commands")
   .demandCommand()
   .usage("baselime [command]\nThe power of Baselime in the command-line")
@@ -24,3 +24,4 @@ yargs(hideBin(process.argv))
   .middleware(track, false)
   .alias({ h: "help", v: "version" })
   .argv;
+
