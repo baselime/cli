@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.39] 2022-12-22
+
+### Added
+- baselime login improvements
+- google oauth flow to login
+- baselime login --demo to run the demo
+
 ## [0.0.38] 2022-12-19
 
 ### Added
