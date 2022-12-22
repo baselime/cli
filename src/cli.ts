@@ -11,8 +11,7 @@ async function track(args: Arguments) {
   return;
 }
 
-console.log('hellooooo')
-  yargs(hideBin(process.argv))
+yargs(hideBin(process.argv))
   .commandDir("commands")
   .demandCommand()
   .usage("baselime [command]\nThe power of Baselime in the command-line")
