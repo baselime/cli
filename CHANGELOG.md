@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.40] 2022-12-23
+
+### Fixed
+
+- Fixed and refactored baselime login 
 ## [0.0.39] 2022-12-22
 
 ### Added
