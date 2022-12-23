@@ -42,19 +42,14 @@ async function generateOneTimePassword(email: string) {
   await publicClient.post("/auth/otp", { email });
 }
 
-async function getWorkspaces(accessToken: string) {
+async function getWorkspaces(accessToken?: string, otp?: string) {
   const { workspaces } = (
-    await publicClient.get("/auth/workspaces", { headers: {
-      authorization: `Bearer ${accessToken}`
-    } })
-  ).data;
-  return workspaces;
-}
-async function getWorkspacesByOneTimePassword(
-  otp: string,
-): Promise<Workspace[]> {
-  const { workspaces } = (
-    await publicClient.get("/auth/workspaces", { params: { otp } })
+    await publicClient.get("/auth/workspaces", {
+      headers: {
+        authorization: `Bearer ${accessToken}`
+      },
+      params: { otp },
+    })
   ).data;
   return workspaces;
 }
@@ -62,14 +57,14 @@ async function getWorkspacesByOneTimePassword(
 async function getApiKey(
   workspaceId: string,
   environmentId: string,
+  idToken?: string,
   otp?: string,
-  idToken?: string
 ): Promise<string> {
   const { apiKey } = (
     await publicClient.get("/auth/api-key", {
       params: { otp, environmentId, workspaceId },
       headers: {
-        ...idToken && { authorization: `Bearer ${idToken}`}
+        ...idToken && { authorization: `Bearer ${idToken}` }
       }
     })
   ).data;
@@ -82,10 +77,15 @@ async function getApiKeyPermissions(): Promise<{ key: APIKey; workspace: Workspa
   return { key, workspace, environment };
 }
 
+async function getAuthConfig(): Promise<{ url: string, pool: string; client: string }> {
+  const res = (await publicClient.get("/auth/config")).data;
+  return res.config;
+}
+
 export default {
   generateOneTimePassword,
-  getWorkspacesByOneTimePassword,
   getWorkspaces,
   getApiKey,
   getApiKeyPermissions,
+  getAuthConfig,
 };
