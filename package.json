@@ -27,6 +27,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "package:linux": "cp ./node_modules/open/xdg-open ./build/xdg-open && pkg . --no-bytecode --targets node14-linux-x64 --output bin/linux/baselime",
+    "package:alpine": "cp ./node_modules/open/xdg-open ./build/xdg-open && pkg . --no-bytecode --targets node14-alpine-x64 --output bin/linux/baselime",
     "package:macos": "pkg . --no-bytecode --targets node14-macos-x64 --output bin/macos/baselime",
     "prettier": "prettier --loglevel warn --write \"**/*.{ts,js,json,yaml}\"",
     "prettier:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",
