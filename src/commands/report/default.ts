@@ -45,6 +45,6 @@ export async function handler(argv: Arguments<Options>) {
   if(outputFile) {
     writeFileSync(outputFile, Buffer.from(JSON.stringify(status)));
   } else {
-    console.log(status)
+    console.log(JSON.stringify(status, undefined, 2));
   }
 }
