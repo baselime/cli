@@ -12,7 +12,6 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     .example([
       [`
       $0 queries list
-      $0 queries run --id <query_id> --from <from> --to <to> --format json
     `]
     ])
     .commandDir("queries")

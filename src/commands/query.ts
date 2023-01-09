@@ -23,7 +23,7 @@ export interface Options extends BaseOptions {
 }
 export const command = "query";
 export const desc = `Run a query
-Use ${chalk.bold("baselime query")} without any flags for the interactive mode`;
+Use baselime query without any flags for the interactive mode`;
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -40,7 +40,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       filters: { type: "array", desc: "A set of filters to apply when running the query; multiple filters can be passed", default: [] },
       calculations: { type: "array", desc: "A set of calculations to claculations to compute; multiple calculations can be added", default: [] },
       needle: { type: "string", desc: "A string to search in the fields and values of every event" },
-      regex: { type: "string", desc: "A regular expression to search in the fields and valies of every event. If there's both a needle and a regex, the regex is considered in priority" },
+      regex: { type: "string", desc: "A regular expression to search in the fields and valies of every event. If there is both a needle and a regex, the regex is considered in priority" },
       "match-case": { type: "boolean", desc: "Match case if a needle is specified", default: false },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", },

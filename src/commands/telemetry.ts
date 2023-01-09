@@ -2,7 +2,7 @@ import { CommandBuilder } from "yargs";
 import { BaseOptions, baseOptions } from "../shared";
 
 export const command = "telemetry";
-export const desc = "Manage Baselime's telemetry collection";
+export const desc = "Manage Baselime telemetry collection";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
   return yargs

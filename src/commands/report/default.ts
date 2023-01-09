@@ -25,10 +25,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       .example([
         [`
       # Post a report to stdout:
-      $0
+      $0 report 
 
       # Post a report to file:
-      $0 --path <path-to-baselime-output>
+      $0 report --path <path-to-baselime-output>
       `],
       ])
       .fail((message, err, yargs) => {

@@ -5,13 +5,13 @@ import { printError } from "../../shared";
 
 
 export const command = "disable";
-export const desc = "Disable Baselime's telemetry collection";
+export const desc = "Disable Baselime telemetry collection";
 
 export const builder: CommandBuilder = (yargs) => {
   return yargs
     .example([
       [`
-      # Disable Baselime's telemetry collection:
+      # Disable Baselime telemetry collection:
       $0 telemetry disable
       `],
     ])
