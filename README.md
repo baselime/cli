@@ -115,7 +115,7 @@ bugfixes and improvements, and submitting pull requests to the project.
 
 ## License
 
-&copy; Baselime Limited, 2022
+&copy; Baselime Limited, 2023
 
 Distributed under MIT License (`The MIT License`).
 
