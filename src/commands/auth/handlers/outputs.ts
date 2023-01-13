@@ -19,7 +19,8 @@ export function credentialsConfigured(path: string) {
   console.log(`✨ API Key written to ${chalk.cyan(path)}`);
   console.log(`
 Next steps:
-  1. ${chalk.bold("baselime init")} to initialise Observability as Code in one of your repos`);
+  1. Navigate to one of your services folders
+  2. Run ${chalk.bold("baselime init")} to initialise Observability as Code in the service`);
   process.exit(0);
 }
 

@@ -139,7 +139,7 @@ export class Ref {
 }
 
 const ref = {
-  identify: (value: any) => value.constructor === Ref,
+  identify: (value: any) => value?.constructor === Ref,
   tag: '!ref',
   resolve(doc: any, cst: any) {
     return doc;

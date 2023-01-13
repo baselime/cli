@@ -9,7 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Clarifications in commands documentations 
+- Clarifications in commands documentations
+- Making selecting stacks in the baselime init command more straightforward
 
 ## [0.0.41] 2022-12-23
 
