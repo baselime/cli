@@ -11,7 +11,7 @@ export interface Options extends BaseOptions {
 }
 
 export const command = "publish";
-export const desc = "Publish template";
+export const desc = "Publish one or multiple templates";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
@@ -34,7 +34,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       })
       .example([
         [`
-      $0 templates publish --from .templates --profile prod`,
+      $0 templates publish --path .templates --profile prod`,
         ],
       ])
       .fail((message, err, yargs) => {

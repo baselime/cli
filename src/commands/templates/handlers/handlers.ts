@@ -7,7 +7,7 @@ import { Template } from "../../../services/api/paths/templates";
 
 async function publish(path?: string, url?: string) {
   const s = spinner.get();
-  if (!path && !url) {
+  if (!(path || url)) {
     s.fail("must provide either --path or --url");
     return;
   }
@@ -16,15 +16,18 @@ async function publish(path?: string, url?: string) {
   if (url) {
     path = await cloneRepo(url);
   }
-  if(path) {
-    template = await createTemplateFromFile(path);
-    await uploadExtraAssets(path!, template.workspaceId, template.name);
+  if(!path) {
+    s.fail(`Please ensure you have read/write permissions to the path ${path}`);
+    return;
   }
+
+  template = await createTemplateFromFile(path);
+  await uploadExtraAssets(path!, template.workspaceId, template.name);
 }
 
 async function createTemplateFromFile(path: string): Promise<Template> {
   const s = spinner.get();
-  s.start(`Creating a template`);
+  s.start("Creating a template");
   const { metadata, template: t } = await pushHandlers.validate(path);
 
   const template = await api.templateCreate({

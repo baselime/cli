@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Clarifications in commands documentations 
+
 ## [0.0.41] 2022-12-23
 
 ### Fixed
@@ -17,7 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- Fixed and refactored baselime login 
+- Fixed and refactored baselime login
+
 ## [0.0.39] 2022-12-22
 
 ### Added
@@ -34,7 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Added support for STARTs_WITH query filter
+- Added support for STARTS_WITH query filter
 - Added support for namespaces in query filters using $baselime.namespace as key
 - Allow $ in query filters
 
