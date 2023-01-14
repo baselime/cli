@@ -19,8 +19,8 @@ export interface AlertCheck {
 }
 
 
-async function alertChecksCreate(service: string, id: string, trigger?: boolean): Promise<{ alert: Alert, check: AlertCheck }> {
-  const { alert, check } = (await client.post(`/alert-checks`, { service, alertId: id, trigger })).data;
+async function alertChecksCreate(service: string, id: string, trigger?: boolean, quiet?: boolean): Promise<{ alert: Alert, check: AlertCheck }> {
+  const { alert, check } = (await client.post("/alert-checks", { service, alertId: id, trigger, quiet })).data;
   return { alert, check };
 }
 

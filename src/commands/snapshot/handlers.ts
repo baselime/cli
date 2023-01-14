@@ -8,7 +8,7 @@ async function snapshot(format: OutputFormat, data: { service: string, outFile: 
   const s = spinner.get();
   s.start("Creating snapshots...");
   const ids = (await api.alertsList(data.service)).map(alert => alert.id)
-  const promises = ids.map(async id => { return await api.alertChecksCreate(data.service, id, false) });
+  const promises = ids.map(async id => { return await api.alertChecksCreate(data.service, id, false, false) });
 
   const result = await Promise.all(promises);
 

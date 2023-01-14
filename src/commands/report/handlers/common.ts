@@ -19,7 +19,7 @@ export async function commonHandler(profile: string, quiet: boolean, path?: stri
     service = service || (await validateMetadata(config!)).service;
     s.start("Creating snapshots...");
     const ids = (await api.alertsList(service)).map(alert => alert.id)
-    const promises = ids.map(async id => { return await api.alertChecksCreate(service!, id, false) });
+    const promises = ids.map(async id => { return await api.alertChecksCreate(service!, id, false, false) });
 
     const result = await Promise.all(promises);
     s.succeed("All alert snapshots created");
