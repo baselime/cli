@@ -43,10 +43,11 @@ async function push(config: string, stage: string, userVariableInputs: UserVaria
   let deployment: Deployment | undefined = undefined;
   let count = 0;
   const maxCheck = 20;
+  await wait(800);
   while (!isComplete && count < maxCheck) {
     await wait(800);
     deployment = await api.deploymentGet(metadata.service, id);
-    isComplete = deployment.status != DeploymentStatus.IN_PROGRESS;
+    isComplete = deployment.status !== DeploymentStatus.IN_PROGRESS;
     console.log(`\nStatus: ${chalk.bold(deployment.status)}`);
     count += 1;
   }
@@ -55,7 +56,7 @@ async function push(config: string, stage: string, userVariableInputs: UserVaria
     return;
   }
   if (deployment?.status === DeploymentStatus.IN_PROGRESS) {
-    s.info(`Connection timed out.`);
+    s.info("Connection timed out.");
     return;
   }
   s.fail(`Failed to push an observability plan: ${chalk.bold(chalk.redBright(id))}
