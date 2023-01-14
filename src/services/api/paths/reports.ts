@@ -9,9 +9,14 @@ export interface GitHubReportData {
   token: string;
 }
 
+export interface SlackReportData {
+  channel: string;
+  status: { version: string; alertChecks: AlertCheck[]; service: string };
+}
+
 async function reportGithubCreate(data: GitHubReportData): Promise<boolean> {
   const { repo: { owner, name }, prNumber, commit, status, token } = data;
-  await client.post(`/reports/github`, {
+  await client.post("/reports/github", {
     repo: {
       owner,
       name,
@@ -24,6 +29,16 @@ async function reportGithubCreate(data: GitHubReportData): Promise<boolean> {
   return true;
 }
 
+async function reportSlackCreate(data: SlackReportData): Promise<boolean> {
+  const { channel, status } = data;
+  await client.post("/reports/slack", {
+    status,
+    channel,
+  });
+  return true;
+}
+
 export default {
   reportGithubCreate,
+  reportSlackCreate,
 };

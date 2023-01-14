@@ -9,7 +9,8 @@ function getBaseUrl(): string {
   const { BASELIME_DOMAIN = "baselime.io" } = process.env;
   const index = argv.findIndex(val => val === "--endpoint");
   if (index > -1) {
-    return argv[index + 1];
+    const endpoint = argv[index + 1];
+    return endpoint;
   }
   return `https://go.${BASELIME_DOMAIN}/v1/`;
 }

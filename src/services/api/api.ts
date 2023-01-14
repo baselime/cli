@@ -14,6 +14,7 @@ import templates from "./paths/templates";
 import diffs from "./paths/diffs";
 import infrastructure from "./paths/infrastructure";
 import reports from "./paths/reports";
+import slack from "./paths/slack";
 
 export default {
   ...auth,
@@ -31,5 +32,6 @@ export default {
   ...diffs,
   ...infrastructure,
   ...reports,
-  ...alertChecks
+  ...alertChecks,
+  ...slack,
 };
