@@ -1,5 +1,5 @@
 import api from "../services/api/api";
-import { existsSync, mkdirSync, rmdirSync, rmSync, writeFileSync } from "fs";
+import { mkdirSync, rmdirSync, writeFileSync } from "fs";
 import spinner from "../services/spinner";
 import { InferType, lazy, object, string } from "yup";
 import { mapValues } from "lodash";
@@ -32,7 +32,7 @@ async function handleTemplate(template: InferType<typeof templateSchema>, output
     throw new Error(`invalid template ${template}`);
   }
   const [workspaceId, templateName] = template.name.split("/");
-  if (!workspaceId || !templateName) {
+  if (!(workspaceId && templateName)) {
     throw new Error(`invalid template ${template}`);
   }
   try {

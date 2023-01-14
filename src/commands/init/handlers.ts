@@ -23,13 +23,11 @@ export async function init(
   s.start("Generating your config folder");
 
 
-  // let variables = undefined;
-  let variables;
+  let templates;
   if (templateUrl) {
     const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
-    const { template, variables: templateVariables } = await api.templateGet(workspaceId, templateName, true);;
-    variables = templateVariables;
-    writeFileSync(`${folder}/resources.yml`, template);
+    const { variables } = await api.templateGet(workspaceId, templateName, true);;
+    templates = [{ name: `${workspaceId}/${templateName}`, variables }];
   }
 
 
@@ -41,7 +39,7 @@ export async function init(
     infrastructure: {
       stacks,
     },
-    variables: variables as any,
+    templates: templates as any,
   };
 
   if (Object.values(metadata.infrastructure || {}).every(v => v === undefined || v?.length === 0)) {

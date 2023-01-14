@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Clarifications in commands documentations
 - Making selecting stacks in the baselime init command more straightforward
 
+## Changed
+
+- baselime init adds the template in the index.yml file instead of downloading it
+
 ## [0.0.41] 2022-12-23
 
 ### Fixed

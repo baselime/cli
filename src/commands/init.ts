@@ -80,7 +80,11 @@ export async function handler(argv: Arguments<Options>) {
 
   console.log(`\n
 Next steps:
-  1. ${chalk.bold("baselime push")} to sync this service with the Baselime backend
-  2. ${chalk.bold("baselime query")} to run a query
-  3. ${chalk.bold("baselime snapshot")} to check all the alerts in this service`)
+  1. ${chalk.bold("Create a .yml")} file in the ${folder} folder and write observability resources
+  2. ${chalk.bold("baselime push")} to sync this service with the Baselime backend
+  3. ${chalk.bold("baselime query")} to run a query
+  4. ${chalk.bold("baselime snapshot")} to check all the alerts in this service
+  
+Learn how to write observability resources using the Observability Reference Language: https://docs.baselime.io/observability-reference-language/overview/
+`)
 }
