@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Clarifications in commands documentations
 - Making selecting stacks in the baselime init command more straightforward
 - Do not prompt for the query if the query id is provided in the baselime query command 
+- Fix baselime query output edge cases
 
 ### Changed
 

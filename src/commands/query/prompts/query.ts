@@ -29,7 +29,7 @@ export async function promptRunSavedQuery(): Promise<boolean> {
   const { message } = await prompt<{ message: string }>({
     type: "select",
     name: "message",
-    message: `Run a saved query?`,
+    message: "Run a saved query?",
     choices: ['Saved query', 'Interactive query builder',]
   });
   return message === "Saved query";
@@ -60,7 +60,7 @@ export async function promptFrom(): Promise<string> {
     type: "input",
     name: "from",
     initial: "1hour",
-    message: `${chalk.bold("Start time: (UTC start time - may also be relative eg: 1h, 20mins):")}`,
+    message: "Start time: (UTC start time - may also be relative eg: 1h, 20mins)",
   });
 
   return from;
@@ -71,7 +71,7 @@ export async function promptTo(): Promise<string> {
     type: "input",
     name: "to",
     initial: "now",
-    message: `${chalk.bold("End time: (UTC end time - may also be relative eg: 1h, 20mins, now):")}`,
+    message: "End time: (UTC end time - may also be relative eg: 1h, 20mins, now):",
   });
 
   return to;

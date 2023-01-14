@@ -25,13 +25,17 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
 
   let aggregatesTable: Table.Table;
   const isGrouped = typeof aggregates._count !== "number";
+  const calculationKeys = Object.keys(aggregates).filter(k => k !== "_count")
   if (isGrouped) {
     const groups = Object.keys(aggregates._count);
-    const calculationKeys = Object.keys(aggregates).filter(k => k !== "_count")
     aggregatesTable = new Table({
       chars: tableChars,
       head: ["", ...calculationKeys].map((e) => `${chalk.bold(chalk.cyan(e))}`),
     });
+
+    if(!groups.length) {
+      aggregatesTable.push(["No results for the given groupBy"]);
+    }
 
     groups.forEach(group => {
       const vals = calculationKeys.map(key => (aggregates as Record<string, Record<string, number>>)[key][group])
@@ -40,19 +44,16 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
   } else {
     aggregatesTable = new Table({
       chars: tableChars,
-      head: ["Aggregate", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+      head: [...calculationKeys].map((e) => `${chalk.bold(chalk.cyan(e))}`),
     });
 
-    Object.keys(aggregates).forEach((key: string) => {
-      if (key === "_count") return;
-      aggregatesTable.push([key, (aggregates as Record<string, number>)[key]]);
-    });
+    aggregatesTable.push(calculationKeys.map(key => (aggregates as Record<string, number>)[key]));
   }
 
   console.log();
   console.log(aggregatesTable.toString());
   console.log();
-  console.log(`Explore the query results at this unique and permanent snapshot url: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`);
+  console.log(`Explore the query results: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`);
 }
 
 export default {
