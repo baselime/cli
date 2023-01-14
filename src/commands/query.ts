@@ -73,14 +73,14 @@ export async function handler(argv: Arguments<Options>) {
 
   service ??= (await promptServiceSelect())?.name || "";
 
-  const isSaved = await promptRunSavedQuery();
+  const isSaved = id ? true : await promptRunSavedQuery();
   if (isSaved) {
     id ??= (await promptQuerySelect(service))?.id || "";
   } else {
     id ??= `new-query-${randomString(6)}`
   }
 
-  if (!service || !id) {
+  if (!(service && id)) {
     throw new Error("service and query id are required");
   }
 
