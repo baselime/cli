@@ -1,0 +1,14 @@
+name: validate
+
+on: push
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: rome/setup-rome@v0.4
+        with:
+          version: latest
+      - run: rome ci .

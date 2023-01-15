@@ -70,9 +70,7 @@ async function queryRunGet(params: QueryRunGetParams): Promise<{ queryRun: Query
   return res;
 }
 
-async function queryRunCreate(
-  params: QueryRunCreateParams,
-): Promise<{
+async function queryRunCreate(params: QueryRunCreateParams): Promise<{
   queryRun: QueryRun;
   calculations: { series: Series[]; aggregates?: Record<string, number | Record<string, number>> };
   events: { events?: Event[]; count?: number; series?: Series[]; fields?: { name: string; type: string }[] };
