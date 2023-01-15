@@ -19,7 +19,7 @@ export type OutputFormat = "json" | "table";
 export const baseOptions = {
   profile: { type: "string", default: "default" },
   quiet: { type: "boolean", default: false },
-  debug: { type: "boolean", default: false, alias: "d" },
+  debug: { type: "boolean", default: false },
   endpoint: { type: "string", hidden: true },
   format: { type: "string", desc: "Format to output the data in", default: "table", choices: ["table", "json"] },
 } as const;
