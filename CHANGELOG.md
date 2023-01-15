@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - baselime init adds the template in the index.yml file instead of downloading it
+- Adopt rome.tools for linting and formatting
 
 ### Added
 

@@ -1,0 +1,15 @@
+{
+  "formatter": {
+    "ignore": ["build"],
+    "lineWidth": 180,
+    "indentStyle": "space"
+  },
+  "linter": {
+    "ignore": ["build"],
+    "rules": {
+      "suspicious": {
+        "noExplicitAny": "off"
+      }
+    }
+  }
+}
