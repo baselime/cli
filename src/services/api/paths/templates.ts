@@ -10,7 +10,7 @@ export interface Template {
   userId: string;
   created?: string;
   updated?: string;
-  downloadCounter: number
+  downloadCounter: number;
 }
 
 export interface TemplateVariable {

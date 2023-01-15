@@ -3,17 +3,18 @@ import { CommandBuilder } from "yargs";
 import { disable } from "../../services/telemetry/telemetry";
 import { printError } from "../../shared";
 
-
 export const command = "disable";
 export const desc = "Disable Baselime telemetry collection";
 
 export const builder: CommandBuilder = (yargs) => {
   return yargs
     .example([
-      [`
+      [
+        `
       # Disable Baselime telemetry collection:
       $0 telemetry disable
-      `],
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);

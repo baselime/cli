@@ -21,9 +21,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .options({
       ...baseOptions,
       provider: { type: "string", desc: "The cloud provider", choices: ["aws"] },
-      account: { type: "string", desc: "The account number", },
-      region: { type: "string", desc: "The region", },
-      alias: { type: "string", desc: "An alias for the environment (eg. 'prod')", },
+      account: { type: "string", desc: "The account number" },
+      region: { type: "string", desc: "The region" },
+      alias: { type: "string", desc: "An alias for the environment (eg. 'prod')" },
       email: { type: "string", desc: "Email of the user", alias: "e" },
     })
     .demandOption("provider")
@@ -31,10 +31,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .demandOption("region")
     .demandOption("alias")
     .example([
-      [`
+      [
+        `
       # Connect an AWS environment:
       $0 environments connect --provider aws --account <account_numner> --region <region> --alias <alias>
-      `],
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);
@@ -44,10 +46,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
 
-  const { provider, account, region, alias, format} = argv;
+  const { provider, account, region, alias, format } = argv;
   let { email } = argv;
- 
-  email ??= (await promptForEmail());
+
+  email ??= await promptForEmail();
 
   s.start("Sending email verification request");
   await api.generateOneTimePassword(email);
@@ -55,6 +57,5 @@ export async function handler(argv: Arguments<Options>) {
 
   const otp = await promptForOneTimePassword(email);
 
-  await handlers.connect(format, provider, { account , region }, alias, otp);
-
+  await handlers.connect(format, provider, { account, region }, alias, otp);
 }

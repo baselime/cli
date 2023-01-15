@@ -18,12 +18,18 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .options({
       ...baseOptions,
-      config: { type: "string", desc: "The configuration folder of the service to snapshot. Defaults to the service specified in the .baselime folder, if it exists.", alias: "c", default: ".baselime", },
-      "out-file": { type: "string", desc: "The file to output the results to", alias: "o", default: "baselime-snapshot.json", },
-      "service": { type: "string", desc: "The service to snapshot. This will be used to determine the service if no service is provided.", },
+      config: {
+        type: "string",
+        desc: "The configuration folder of the service to snapshot. Defaults to the service specified in the .baselime folder, if it exists.",
+        alias: "c",
+        default: ".baselime",
+      },
+      "out-file": { type: "string", desc: "The file to output the results to", alias: "o", default: "baselime-snapshot.json" },
+      service: { type: "string", desc: "The service to snapshot. This will be used to determine the service if no service is provided." },
     })
     .example([
-      [`
+      [
+        `
       $0 snapshot
       $0 snapshot --config .baselime --out-file file.json`,
       ],
@@ -42,6 +48,5 @@ export async function handler(argv: Arguments<Options>) {
 
   service = service || (await validateMetadata(config!)).service;
 
-  await handlers.snapshot(format!, { service, outFile })
+  await handlers.snapshot(format!, { service, outFile });
 }
-

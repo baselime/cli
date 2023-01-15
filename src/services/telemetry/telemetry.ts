@@ -13,7 +13,7 @@ interface EventContext {
   anonymousId: string;
   serviceId: string;
   sessionId: string;
-};
+}
 
 const conf = initializeConf();
 const serviceId = hash(getRawServiceId());
@@ -60,14 +60,8 @@ function notify() {
   }
   conf.set(TELEMETRY_KEY_NOTIFY_DATE, Date.now().toString());
 
-  console.log(
-    `${chalk.cyan.bold(
-      "Attention"
-    )}: Baselime now collects completely anonymous telemetry regarding usage. This is used to guide our roadmap.`
-  );
-  console.log(
-    "You can learn more, including how to opt-out of this anonymous program, by heading over to:"
-  );
+  console.log(`${chalk.cyan.bold("Attention")}: Baselime now collects completely anonymous telemetry regarding usage. This is used to guide our roadmap.`);
+  console.log("You can learn more, including how to opt-out of this anonymous program, by heading over to:");
   console.log("https://docs.baselime.io/cli/anonymous-telemetry");
   console.log();
   record("downloaded", {});
@@ -92,7 +86,7 @@ function record(command: string, properties: any): Promise<any> {
       source: "cli",
       command,
       properties,
-      timestammp: + new Date(),
+      timestammp: +new Date(),
     },
   });
 }

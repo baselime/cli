@@ -30,7 +30,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       provider: { type: "string", desc: "Cloud provider", default: "aws", choices: ["aws"] },
     })
     .example([
-      [`
+      [
+        `
       # Initialise a service:
       $0 init
 
@@ -42,7 +43,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
       $0 init --service <service_name> --template <workspace>/<template>
       $0 init --service <service_name> --template <template-url>
-      `]
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);
@@ -86,5 +88,5 @@ Next steps:
   4. ${chalk.bold("baselime snapshot")} to check all the alerts in this service
   
 Learn how to write observability resources using the Observability Reference Language: https://docs.baselime.io/observability-reference-language/overview/
-`)
+`);
 }

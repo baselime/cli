@@ -9,8 +9,7 @@ import { Event } from "../../../services/api/paths/events";
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
-
-function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, number | Record<string, number>>, series: Series[], events?: Event[], format: OutputFormat }) {
+function getQueryRun(data: { queryRun: QueryRun; aggregates?: Record<string, number | Record<string, number>>; series: Series[]; events?: Event[]; format: OutputFormat }) {
   const { queryRun, aggregates, series, events, format } = data;
 
   if (format === "json") {
@@ -25,7 +24,7 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
 
   let aggregatesTable: Table.Table;
   const isGrouped = typeof aggregates._count !== "number";
-  const calculationKeys = Object.keys(aggregates).filter(k => k !== "_count")
+  const calculationKeys = Object.keys(aggregates).filter((k) => k !== "_count");
   if (isGrouped) {
     const groups = Object.keys(aggregates._count);
     aggregatesTable = new Table({
@@ -33,12 +32,12 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
       head: ["", ...calculationKeys].map((e) => `${chalk.bold(chalk.cyan(e))}`),
     });
 
-    if(!groups.length) {
+    if (!groups.length) {
       aggregatesTable.push(["No results for the given groupBy"]);
     }
 
-    groups.forEach(group => {
-      const vals = calculationKeys.map(key => (aggregates as Record<string, Record<string, number>>)[key][group])
+    groups.forEach((group) => {
+      const vals = calculationKeys.map((key) => (aggregates as Record<string, Record<string, number>>)[key][group]);
       aggregatesTable.push([group, ...vals]);
     });
   } else {
@@ -47,13 +46,15 @@ function getQueryRun(data: { queryRun: QueryRun, aggregates?: Record<string, num
       head: [...calculationKeys].map((e) => `${chalk.bold(chalk.cyan(e))}`),
     });
 
-    aggregatesTable.push(calculationKeys.map(key => (aggregates as Record<string, number>)[key]));
+    aggregatesTable.push(calculationKeys.map((key) => (aggregates as Record<string, number>)[key]));
   }
 
   console.log();
   console.log(aggregatesTable.toString());
   console.log();
-  console.log(`Explore the query results: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`);
+  console.log(
+    `Explore the query results: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`,
+  );
 }
 
 export default {

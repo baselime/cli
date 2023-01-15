@@ -11,4 +11,4 @@ export async function getLatestVersion(): Promise<Version> {
 
 export default {
   getLatestVersion,
-}
+};

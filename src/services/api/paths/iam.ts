@@ -5,7 +5,7 @@ export interface User {
 }
 
 async function iamGet(): Promise<User> {
-  const res = (await client.get("/iam",)).data;
+  const res = (await client.get("/iam")).data;
   return res.user;
 }
 

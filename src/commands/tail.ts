@@ -39,7 +39,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       follow: { type: "boolean", desc: "Wait for additional data to be appended when the end of the tail is reached", default: false, alias: "f" },
     })
     .example([
-      [`
+      [
+        `
       # Tail a dataset
       $0 tail --datasets <dataset_name> --from 3hours to now
 
@@ -71,7 +72,6 @@ export async function handler(argv: Arguments<Options>) {
     matchCase,
     regex,
     follow,
-    service: service
+    service: service,
   });
 }
-

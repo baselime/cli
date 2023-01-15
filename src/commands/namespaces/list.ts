@@ -21,13 +21,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", default: "now" },
     })
     .example([
-      [`
+      [
+        `
       # List all the namespaces ingested across all datasets for the past hour:
       $0 namespaces list
 
       # List all the namespaces ingested for an service in the past 3 hours:
       $0 namespaces list --service <service_name> --from 3hours --to now
-      `],
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);

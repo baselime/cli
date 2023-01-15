@@ -40,13 +40,17 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       filters: { type: "array", desc: "A set of filters to apply when running the query; multiple filters can be passed", default: [] },
       calculations: { type: "array", desc: "A set of calculations to claculations to compute; multiple calculations can be added", default: [] },
       needle: { type: "string", desc: "A string to search in the fields and values of every event" },
-      regex: { type: "string", desc: "A regular expression to search in the fields and valies of every event. If there is both a needle and a regex, the regex is considered in priority" },
+      regex: {
+        type: "string",
+        desc: "A regular expression to search in the fields and valies of every event. If there is both a needle and a regex, the regex is considered in priority",
+      },
       "match-case": { type: "boolean", desc: "Match case if a needle is specified", default: false },
-      from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", },
-      to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now", },
+      from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins" },
+      to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now" },
     })
     .example([
-      [`
+      [
+        `
         # Run a query in interactive mode
         $0 query
 
@@ -58,7 +62,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         
         # Run a query inline with a calculation on events matching a regular expression
         $0 query --calculations <operator>(<key>) --regex <regex>
-    `],
+    `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);
@@ -77,18 +82,17 @@ export async function handler(argv: Arguments<Options>) {
   if (isSaved) {
     id ??= (await promptQuerySelect(service))?.id || "";
   } else {
-    id ??= `new-query-${randomString(6)}`
+    id ??= `new-query-${randomString(6)}`;
   }
 
   if (!(service && id)) {
     throw new Error("service and query id are required");
   }
 
-  if(!isSaved) {
+  if (!isSaved) {
     spinner.get().info("Under cunstruction. Please run a saved query whilst we build the interactive query builder.");
     return;
   }
-
 
   from ??= await promptFrom();
   to ??= await promptTo();
@@ -105,7 +109,6 @@ export async function handler(argv: Arguments<Options>) {
     matchCase,
     regex,
     follow,
-    service: service
+    service: service,
   });
 }
-

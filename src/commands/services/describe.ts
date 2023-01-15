@@ -22,8 +22,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     })
     .demandOption("name")
     .example([
-      [`
-      $0 services describe --name <service_name>`
+      [
+        `
+      $0 services describe --name <service_name>`,
       ],
     ])
     .demandOption(["name"])
@@ -38,4 +39,3 @@ export async function handler(argv: Arguments<Options>) {
   await authenticate(profile);
   await handlers.describe(name, format!);
 }
-

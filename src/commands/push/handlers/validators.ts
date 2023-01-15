@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { object, string, number, array, boolean, InferType, lazy, mixed } from 'yup';
+import { object, string, number, array, boolean, InferType, lazy, mixed } from "yup";
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
 import { readMetadata, readResourcesFromFiles, readVariables } from "../../../services/parser/parser";
@@ -8,7 +8,6 @@ import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
 import { mapValues } from "lodash";
 import { stepTemplates, templateSchema } from "../../../controllers/templates";
-
 
 const filterCombinations = ["AND", "OR"];
 const channelTypes = ["slack", "webhook"];
@@ -32,13 +31,18 @@ const alertSchema = object({
       .noUnknown(true)
       .strict(),
     enabled: boolean().optional(),
-    channels: array().min(1).of(object({
-      type: string().oneOf(channelTypes).required(),
-      targets: array().of(string().required()),
-    })
-      .required()
-      .noUnknown(true)
-      .strict()).required(),
+    channels: array()
+      .min(1)
+      .of(
+        object({
+          type: string().oneOf(channelTypes).required(),
+          targets: array().of(string().required()),
+        })
+          .required()
+          .noUnknown(true)
+          .strict(),
+      )
+      .required(),
   })
     .required()
     .noUnknown(true)
@@ -48,7 +52,7 @@ const alertSchema = object({
   .strict();
 
 const webhookSchema = object({
-  webhook: string().url().required().typeError('Webhook must be valid URL')
+  webhook: string().url().required().typeError("Webhook must be valid URL"),
 });
 
 const querySchema = object({
@@ -58,57 +62,73 @@ const querySchema = object({
     name: string().optional(),
     description: string().optional(),
     parameters: object({
-      datasets: array()
-        .min(1)
-        .of(string())
-        .required()
-        .typeError("Must include at least 1 dataset"),
-      calculations: array()
-        .of(string().matches(calculationsRegex).required())
-        .optional().nullable(),
+      datasets: array().min(1).of(string()).required().typeError("Must include at least 1 dataset"),
+      calculations: array().of(string().matches(calculationsRegex).required()).optional().nullable(),
       filters: array().of(string().matches(queryFilterRegex).required()).optional(),
-      filterCombination: string().oneOf(filterCombinations).optional().typeError('filterCombination must be set to AND or OR.'),
+      filterCombination: string().oneOf(filterCombinations).optional().typeError("filterCombination must be set to AND or OR."),
       needle: object({
         value: string().required(),
         isRegex: boolean(),
         matchCase: boolean(),
-      }).nullable().optional().default(undefined).noUnknown(true).strict(),
+      })
+        .nullable()
+        .optional()
+        .default(undefined)
+        .noUnknown(true)
+        .strict(),
       groupBy: object({
         type: string().oneOf(groupByTypes).min(1).required(),
         value: string().min(1).required(),
         orderBy: string().min(1).matches(calculationsRegex).optional(),
         limit: number().min(1).optional(),
         order: string().oneOf(["ASC", "DESC"]).optional(),
-      }).nullable().optional().default(undefined).noUnknown(true).strict(),
-    }).noUnknown(true).required().strict(),
-  }).noUnknown(true).required().strict(),
-}).noUnknown(true).strict();
-
-export const variableSchema = lazy(obj => object(
-  mapValues(obj, () => {
-    return lazy(val => {
-      const type = typeof val;
-      if (type === "number") return number();
-      if (type === "boolean") return boolean();
-      return string();
+      })
+        .nullable()
+        .optional()
+        .default(undefined)
+        .noUnknown(true)
+        .strict(),
     })
+      .noUnknown(true)
+      .required()
+      .strict(),
   })
-)).optional();
+    .noUnknown(true)
+    .required()
+    .strict(),
+})
+  .noUnknown(true)
+  .strict();
 
+export const variableSchema = lazy((obj) =>
+  object(
+    mapValues(obj, () => {
+      return lazy((val) => {
+        const type = typeof val;
+        if (type === "number") return number();
+        if (type === "boolean") return boolean();
+        return string();
+      });
+    }),
+  ),
+).optional();
 
 const metadataSchema = object({
   version: string().required(),
   service: string().required().matches(idRegex),
   description: string().optional(),
   provider: string().required().oneOf(["aws"]),
-  variables: lazy(obj => object(
-    mapValues(obj, () => variableSchema)
-  )).optional(),
+  variables: lazy((obj) => object(mapValues(obj, () => variableSchema))).optional(),
   infrastructure: object({
     stacks: array().of(string().required()).optional(),
-  }).noUnknown(true).optional().strict(),
+  })
+    .noUnknown(true)
+    .optional()
+    .strict(),
   templates: array().of(templateSchema).optional(),
-}).noUnknown(true).strict();
+})
+  .noUnknown(true)
+  .strict();
 
 export type DeploymentQuery = InferType<typeof querySchema>;
 export type DeploymentAlert = InferType<typeof alertSchema>;
@@ -124,7 +144,11 @@ export interface DeploymentResources {
   alerts?: DeploymentAlert[];
 }
 
-async function validate(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<{ metadata: DeploymentService, resources: DeploymentResources, filenames: string[], template: string }> {
+async function validate(
+  folder: string,
+  stage?: string,
+  inputVariables?: UserVariableInputs,
+): Promise<{ metadata: DeploymentService; resources: DeploymentResources; filenames: string[]; template: string }> {
   const s = spinner.get();
   s.start("Checking the configuration files...");
   let filenames = await getFileList(folder, [".yaml", ".yml"], [".templates"]);
@@ -137,7 +161,7 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
 
   const metadata = await validateMetadata(folder, stage, inputVariables);
 
-  const resourceFilenames = filenames.filter(a => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
+  const resourceFilenames = filenames.filter((a) => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
 
   const { resources, template } = (await readResourcesFromFiles(resourceFilenames, metadata.variables)) || {};
   if (!isObject(resources)) {
@@ -146,17 +170,16 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
     throw new Error(m);
   }
 
-  if(metadata.templates) {
+  if (metadata.templates) {
     await stepTemplates(folder, resources, metadata.templates, metadata.service);
   }
 
   const allResources = {
     queries: [] as any[],
     alerts: [] as any[],
-  }
+  };
 
-
-  Object.keys(resources).forEach(id => {
+  Object.keys(resources).forEach((id) => {
     const resource = resources[id];
     if (!isObject(resource)) {
       const m = `${id}: invalid object format`;
@@ -180,17 +203,14 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
 
   const { queries, alerts } = allResources;
 
-  await Promise.all([
-    ...validateAlerts(alerts, queries),
-    ...validateQueries(queries),
-  ]);
+  await Promise.all([...validateAlerts(alerts, queries), ...validateQueries(queries)]);
 
   s.succeed("Valid configuration folder");
   return { metadata, resources: allResources, filenames: resourceFilenames, template };
 }
 
 function isObject(val: any): boolean {
-  return typeof val === 'object' && !Array.isArray(val) && val !== null;
+  return typeof val === "object" && !Array.isArray(val) && val !== null;
 }
 
 export async function validateMetadata(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<DeploymentService> {
@@ -263,18 +283,18 @@ async function validateEachVariable(variables: Record<string, any> | undefined, 
 function validateQueries(queries: any[]) {
   const s = spinner.get();
 
-  const promises = queries.map(async item => {
+  const promises = queries.map(async (item) => {
     try {
       const res = await querySchema.validate(item);
       const filters = res.properties.parameters.filters;
       const calculations = res.properties.parameters.calculations;
       const groupBy = res.properties.parameters.groupBy;
 
-      filters?.forEach(filter => {
+      filters?.forEach((filter) => {
         parseFilter(filter);
       });
 
-      calculations?.forEach(calculation => {
+      calculations?.forEach((calculation) => {
         extractCalculation(calculation);
       });
 
@@ -295,12 +315,12 @@ function validateQueries(queries: any[]) {
 function validateAlerts(alerts: any[], queries: any[]) {
   const s = spinner.get();
 
-  const promises = alerts.map(async item => {
+  const promises = alerts.map(async (item) => {
     try {
       const alert = await alertSchema.validate(item);
       const threshold = alert.properties.parameters.threshold;
       parseThreshold(threshold);
-      const query = queries.find(query => query.id === alert.properties.parameters.query);
+      const query = queries.find((query) => query.id === alert.properties.parameters.query);
       if (!query) {
         throw new Error(`The following query was not found in this service: ${alert.properties.parameters.query}`);
       }
@@ -320,10 +340,10 @@ function validateAlerts(alerts: any[], queries: any[]) {
         throw new Error("Invalid frequency. Minimum is 1min.");
       }
 
-      if (!convertedWindow || convertedWindow < 60000) { // undefined or less than 1 minute
+      if (!convertedWindow || convertedWindow < 60000) {
+        // undefined or less than 1 minute
         throw new Error("Invalid window.");
       }
-
     } catch (error) {
       const message = `alert: ${item.id}: ${error}`;
       s.fail(chalk.bold(chalk.redBright("Alert validation error")));
@@ -335,7 +355,6 @@ function validateAlerts(alerts: any[], queries: any[]) {
   return promises;
 }
 
-
 export default {
   validate,
-}
+};

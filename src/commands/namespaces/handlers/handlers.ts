@@ -4,7 +4,7 @@ import outputs from "./outputs";
 import { OutputFormat } from "../../../shared";
 import { getTimeframe } from "../../../services/timeframes/timeframes";
 
-async function list(format: OutputFormat, from: string, to: string, service?: string, ) {
+async function list(format: OutputFormat, from: string, to: string, service?: string) {
   const s = spinner.get();
   s.start("Fetching your namespaces");
   const { from: f, to: t } = getTimeframe(from, to);

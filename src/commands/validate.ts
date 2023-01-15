@@ -29,7 +29,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       },
     })
     .example([
-      [`
+      [
+        `
       $0 validate
       $0 validate --config .baselime --profile prod`,
       ],
@@ -49,11 +50,10 @@ export async function handler(argv: Arguments<Options>) {
   if (vars?.length === 1 && !vars[0].toString().includes("=")) {
     stage = vars[0].toString();
   } else {
-    vars?.map(variable => {
+    vars?.map((variable) => {
       const [key, val] = variable.toString().split("=");
       variables[key.trim()] = val.trim();
     });
   }
   await handlers.validate(config!, stage, variables);
 }
-

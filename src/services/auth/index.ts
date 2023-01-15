@@ -8,18 +8,13 @@ export interface UserConfig {
   environment?: string;
 }
 
-export async function writeUserAuth(
-  profile: string,
-  userConfig: UserConfig,
-): Promise<string> {
+export async function writeUserAuth(profile: string, userConfig: UserConfig): Promise<string> {
   const configPath = getAuthProfilePath(profile);
   await outputJson(configPath, userConfig);
   return configPath;
 }
 
-export async function deleteUserAuth(
-  profile: string,
-): Promise<string> {
+export async function deleteUserAuth(profile: string): Promise<string> {
   const configPath = getAuthProfilePath(profile);
   await remove(configPath);
   return configPath;

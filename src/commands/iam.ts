@@ -13,13 +13,15 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
       ...baseOptions,
     })
     .example([
-      [`
+      [
+        `
       # Check authentication status for default profile:
       $0 iam
 
       # Check authentication status of a specified profiel:
       $0 iam --profile prod
-      `]
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);

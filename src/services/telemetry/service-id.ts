@@ -2,13 +2,10 @@ import { execSync } from "child_process";
 
 function getServiceIdByGit() {
   try {
-    const originBuffer = execSync(
-      "git config --local --get remote.origin.url",
-      {
-        timeout: 1000,
-        stdio: "pipe",
-      }
-    );
+    const originBuffer = execSync("git config --local --get remote.origin.url", {
+      timeout: 1000,
+      stdio: "pipe",
+    });
 
     return String(originBuffer).trim();
   } catch (_) {

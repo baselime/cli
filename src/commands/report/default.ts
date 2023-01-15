@@ -16,24 +16,31 @@ export const desc = "Post a Baselime report to file or stdout";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
-      .options({
-        ...baseOptions,
-        path: { type: "string", desc: "Path to the Baselime output file", required: false },
-        "out-file": { type: "string", desc: "Path to the Baselime output file", required: false },
-        config: { type: "string", desc: "The configuration folder to create the report for. This will be used to determine the service if no service is provided.", alias: "c", default: ".baselime", },
-      })
-      .example([
-        [`
+    .options({
+      ...baseOptions,
+      path: { type: "string", desc: "Path to the Baselime output file", required: false },
+      "out-file": { type: "string", desc: "Path to the Baselime output file", required: false },
+      config: {
+        type: "string",
+        desc: "The configuration folder to create the report for. This will be used to determine the service if no service is provided.",
+        alias: "c",
+        default: ".baselime",
+      },
+    })
+    .example([
+      [
+        `
       # Post a report to stdout:
       $0 report 
 
       # Post a report to file:
       $0 report --path <path-to-baselime-output>
-      `],
-      ])
-      .fail((message, err, yargs) => {
-        printError(message, err, yargs);
-      });
+      `,
+      ],
+    ])
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
+    });
 };
 
 export async function handler(argv: Arguments<Options>) {
@@ -42,7 +49,7 @@ export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
   await authenticate(profile);
   const status = await commonHandler(profile, quiet, path, config, service, format);
-  if(outputFile) {
+  if (outputFile) {
     writeFileSync(outputFile, Buffer.from(JSON.stringify(status)));
   } else {
     console.log(JSON.stringify(status, undefined, 2));

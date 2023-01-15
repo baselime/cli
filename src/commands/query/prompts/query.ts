@@ -8,7 +8,7 @@ import spinner from "../../../services/spinner";
 export async function promptServiceSelect(): Promise<Service | undefined> {
   const s = spinner.get();
   s.start("Fetching your services");
-  const services = (await api.servicesList());
+  const services = await api.servicesList();
   s.succeed();
 
   if (services.length === 0) {
@@ -19,10 +19,12 @@ export async function promptServiceSelect(): Promise<Service | undefined> {
     type: "select",
     name: "name",
     message: `${chalk.bold("Please select an service")}`,
-    choices: services.map(service => { return { name: service.name, value: service.name } }),
+    choices: services.map((service) => {
+      return { name: service.name, value: service.name };
+    }),
   });
 
-  return services.find(service => service.name === name);
+  return services.find((service) => service.name === name);
 }
 
 export async function promptRunSavedQuery(): Promise<boolean> {
@@ -30,7 +32,7 @@ export async function promptRunSavedQuery(): Promise<boolean> {
     type: "select",
     name: "message",
     message: "Run a saved query?",
-    choices: ['Saved query', 'Interactive query builder',]
+    choices: ["Saved query", "Interactive query builder"],
   });
   return message === "Saved query";
 }
@@ -38,7 +40,7 @@ export async function promptRunSavedQuery(): Promise<boolean> {
 export async function promptQuerySelect(service?: string): Promise<Query | undefined> {
   const s = spinner.get();
   s.start("Fetching your queries");
-  const queries = (await api.queriesList(service));
+  const queries = await api.queriesList(service);
   s.succeed();
 
   if (queries.length === 0) {
@@ -49,10 +51,12 @@ export async function promptQuerySelect(service?: string): Promise<Query | undef
     type: "select",
     name: "id",
     message: `${chalk.bold("Please select a query")}`,
-    choices: queries.map(query => { return { name: query.id, value: query.id } }),
+    choices: queries.map((query) => {
+      return { name: query.id, value: query.id };
+    }),
   });
 
-  return queries.find(q => q.id === id);
+  return queries.find((q) => q.id === id);
 }
 
 export async function promptFrom(): Promise<string> {

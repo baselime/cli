@@ -16,7 +16,7 @@ async function publish(path?: string, url?: string) {
   if (url) {
     path = await cloneRepo(url);
   }
-  if(!path) {
+  if (!path) {
     s.fail(`Please ensure you have read/write permissions to the path ${path}`);
     return;
   }
@@ -61,5 +61,5 @@ async function get(workspaceId: string, name: string) {
 export default {
   publish,
   list,
-  get
+  get,
 };

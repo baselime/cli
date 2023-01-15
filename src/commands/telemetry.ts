@@ -10,12 +10,14 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
       ...baseOptions,
     })
     .example([
-      [`
+      [
+        `
       $0 telemetry enable
       $0 telemetry disable
-    `]
+    `,
+      ],
     ])
     .commandDir("telemetry")
     .demandCommand()
-    .strict()
+    .strict();
 };

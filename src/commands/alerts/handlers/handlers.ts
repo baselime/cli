@@ -14,12 +14,14 @@ async function list(format: OutputFormat, service?: string) {
 async function check(format: OutputFormat, data: { service: string; id?: string; trigger?: boolean }) {
   const s = spinner.get();
   s.start("Checking...");
-  const ids = data.id ? [data.id] : (await api.alertsList(data.service)).map(alert => alert.id)
-  const promises = ids.map(async id => { return await api.alertChecksCreate(data.service, id, data.trigger) });
+  const ids = data.id ? [data.id] : (await api.alertsList(data.service)).map((alert) => alert.id);
+  const promises = ids.map(async (id) => {
+    return await api.alertChecksCreate(data.service, id, data.trigger);
+  });
 
   const result = await Promise.all(promises);
 
-  const checks = result.map(result => result.check);
+  const checks = result.map((result) => result.check);
   s.succeed();
   outputs.snapshot(checks, format);
 }

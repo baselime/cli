@@ -10,12 +10,13 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
       ...baseOptions,
     })
     .example([
-      [`
+      [
+        `
       $0 alerts list
-    `]
+    `,
+      ],
     ])
     .commandDir("alerts")
     .demandCommand()
-    .strict()
+    .strict();
 };
-

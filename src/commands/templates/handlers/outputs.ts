@@ -16,19 +16,13 @@ function list(templates: Template[], format: OutputFormat) {
     const table = new Table({
       head: ["Name", "Description", "Public", "Workspace ID"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
     });
-    templates.forEach(template => {
-      table.push([
-        template.name,
-        template.description,
-        template.public,
-        template.workspaceId,
-      ])
+    templates.forEach((template) => {
+      table.push([template.name, template.description, template.public, template.workspaceId]);
     });
     console.log(table.toString());
     return;
   }
 }
-
 
 function get(template: Template, format: OutputFormat) {
   if (format === "json") {
@@ -40,5 +34,5 @@ function get(template: Template, format: OutputFormat) {
 export default {
   create,
   list,
-  get
+  get,
 };

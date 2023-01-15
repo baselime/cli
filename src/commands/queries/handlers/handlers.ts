@@ -4,8 +4,8 @@ import outputs from "./outputs";
 import { OutputFormat } from "../../../shared";
 import dayjs from "dayjs";
 import chalk from "chalk";
-const utc = require('dayjs/plugin/utc')
-dayjs.extend(utc)
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
 
 async function list(format: OutputFormat, service?: string) {
   const s = spinner.get();

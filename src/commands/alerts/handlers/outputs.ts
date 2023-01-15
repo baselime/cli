@@ -33,18 +33,18 @@ function snapshot(alertChecks: AlertCheck[], format: OutputFormat) {
     chars: tableChars,
     head: ["Service", "Alert", "Triggered", "Threshold", "Value", "Snapshot URL"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  alertChecks.forEach(alertCheck => {
+  alertChecks.forEach((alertCheck) => {
     const res = alertCheck.aggregates[alertCheck.calculationKey];
     const isGrouped = typeof res !== "number";
     table.push([
       alertCheck.service,
-      alertCheck.alertId, 
+      alertCheck.alertId,
       alertCheck.triggered,
       `${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}`,
       `${isGrouped ? JSON.stringify(res, undefined, 2) : res}`,
-      `https://console.${BASELIME_DOMAIN}/${alertCheck.workspaceId}/${alertCheck.environmentId}/${alertCheck.service}/alerts/${alertCheck.alertId}/${alertCheck.id}`
+      `https://console.${BASELIME_DOMAIN}/${alertCheck.workspaceId}/${alertCheck.environmentId}/${alertCheck.service}/alerts/${alertCheck.alertId}/${alertCheck.id}`,
     ]);
-  })
+  });
   console.log(`${table.toString()}`);
 }
 

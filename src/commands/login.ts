@@ -8,7 +8,6 @@ import { promptForEnvironment, promptForOneTimePassword, promptReplaceExistingPr
 import * as open from "open";
 import { PORT, startServer } from "../services/auth/server";
 
-
 export interface Options extends BaseOptions {
   email?: string;
   profile: string;
@@ -25,19 +24,20 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       profile: { type: "string", desc: "Alias of the profile", default: "default" },
     })
     .example([
-      [`
+      [
+        `
       # Intercatively authenticate against Baselime:
       $0 login
 
       # Provide parameters on the command-line:
       $0 login --profile prod
-      `]
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);
     });
 };
-
 
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
@@ -55,12 +55,12 @@ export async function handler(argv: Arguments<Options>) {
         process.exit(0);
       }
     }
-  } catch (_) { }
+  } catch (_) {}
 
   let oathData = { id_token: "", otp: "" };
-  
+
   if (demo) {
-    const email = "demo@baselime.io"
+    const email = "demo@baselime.io";
     const otp = await promptForOneTimePassword(email);
     oathData.otp = otp;
   } else {
@@ -68,7 +68,7 @@ export async function handler(argv: Arguments<Options>) {
     const config = await api.getAuthConfig();
     const creds = await startServer(config, argv);
 
-    const loginUrl = `${config.url}/oauth2/authorize?client_id=${config.client}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:${PORT}`
+    const loginUrl = `${config.url}/oauth2/authorize?client_id=${config.client}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:${PORT}`;
     await open.default(loginUrl);
 
     oathData.id_token = (await creds.getCreds()).id_token;

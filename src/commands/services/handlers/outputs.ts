@@ -25,7 +25,7 @@ function describe(service: Service, deployments: Deployment[], format: OutputFor
   if (format === "json") {
     console.log(JSON.stringify({ service, deployments }, null, 4));
     return;
-  }  
+  }
   const table = new Table({
     chars: tableChars,
     head: ["Name", "Status", "Deployment Id", "Created (UTC)", "Updated (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),

@@ -21,6 +21,4 @@ yargs(hideBin(process.argv))
   .version("version", "Show the current Baselime CLI version", getVersion())
   .strict()
   .middleware(track, false)
-  .alias({ h: "help", v: "version" })
-  .argv;
-
+  .alias({ h: "help", v: "version" }).argv;

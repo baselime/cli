@@ -9,10 +9,10 @@ export async function uploadExtraAssets(directory: string, workspaceId: string, 
   const s = spinner.get();
   const readmePath = getReadmePath(directory);
   const licensePath = getLicensePath(directory);
-  if(readmePath || licensePath) {
+  if (readmePath || licensePath) {
     s.info("Preparing to publish extra assets.");
     const data = await api.templateGetUploadUrl(workspaceId, templateName);
-    if(readmePath) {
+    if (readmePath) {
       s.info("Publishing README.md");
       const buf = fs.readFileSync(`${directory}/README.md`);
       await publicClient.put(data.readmeURL, buf, {
@@ -21,7 +21,7 @@ export async function uploadExtraAssets(directory: string, workspaceId: string, 
         },
       });
     }
-    if(licensePath) {
+    if (licensePath) {
       s.info("Publishing LICENSE.md");
       const buf = fs.readFileSync(`${directory}/LICENSE.md`);
       await publicClient.put(data.licenseURL, buf, {
@@ -35,17 +35,17 @@ export async function uploadExtraAssets(directory: string, workspaceId: string, 
 }
 
 function getReadmePath(directory: string): string | undefined {
-  const path = `${directory}/README.md`
-  if(fs.existsSync(path)) {
-    return path
+  const path = `${directory}/README.md`;
+  if (fs.existsSync(path)) {
+    return path;
   }
   return undefined;
 }
 
 function getLicensePath(directory: string): string | undefined {
-  const path = `${directory}/LICENSE.md`
-  if(fs.existsSync(path)) {
-    return path
+  const path = `${directory}/LICENSE.md`;
+  if (fs.existsSync(path)) {
+    return path;
   }
   return undefined;
 }
@@ -64,7 +64,7 @@ export async function cloneRepo(url: string): Promise<string | undefined> {
   s.start(`Fetching template from ${url}`);
   const cloneError = await git.clone(url!, tempDirPath);
   if (!cloneError) {
-    return tempDirPath
+    return tempDirPath;
   }
-  return undefined
+  return undefined;
 }

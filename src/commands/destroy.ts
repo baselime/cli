@@ -23,7 +23,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       },
     })
     .example([
-      [`
+      [
+        `
       $0 destroy
       $0 destroy --config .baselime --profile prod`,
       ],
@@ -41,4 +42,3 @@ export async function handler(argv: Arguments<Options>) {
 
   await handlers.destroy(config!);
 }
-

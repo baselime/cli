@@ -13,7 +13,7 @@ interface EnvironmentData {
   isCI: boolean;
   ciName: string | null;
   baselimeVersion: string;
-};
+}
 
 let data: EnvironmentData | undefined;
 
@@ -42,4 +42,3 @@ export function getEnvironmentData(): EnvironmentData {
 
   return data;
 }
-

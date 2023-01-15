@@ -7,7 +7,7 @@ const argv = hideBin(process.argv);
 
 function getBaseUrl(): string {
   const { BASELIME_DOMAIN = "baselime.io" } = process.env;
-  const index = argv.findIndex(val => val === "--endpoint");
+  const index = argv.findIndex((val) => val === "--endpoint");
   if (index > -1) {
     const endpoint = argv[index + 1];
     return endpoint;
@@ -37,7 +37,7 @@ client.interceptors.response.use(
     const s = spinner.get();
     s.fail();
     const response = error.response?.data;
-    const message = response ? `${response.status || "Error"} - ${response.message}` : error.message
+    const message = response ? `${response.status || "Error"} - ${response.message}` : error.message;
     console.log(`${chalk.red(chalk.bold(message))}`);
     throw error;
   },

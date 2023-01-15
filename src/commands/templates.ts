@@ -6,15 +6,17 @@ export const desc = "Manage templates";
 
 export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
   return yargs
-      .options({
-        ...baseOptions,
-      })
-      .example([
-        [`
+    .options({
+      ...baseOptions,
+    })
+    .example([
+      [
+        `
       $0 templates create
-    `]
-      ])
-      .commandDir("templates")
-      .demandCommand()
-      .strict()
+    `,
+      ],
+    ])
+    .commandDir("templates")
+    .demandCommand()
+    .strict();
 };

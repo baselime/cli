@@ -45,9 +45,7 @@ export async function promptForOneTimePassword(email: string): Promise<string> {
   return otp.trim();
 }
 
-export async function promptReplaceExistingProfile(
-  profile: string,
-): Promise<boolean> {
+export async function promptReplaceExistingProfile(profile: string): Promise<boolean> {
   const { confirm } = await prompt<{ confirm: boolean }>({
     type: "confirm",
     name: "confirm",
@@ -57,20 +55,17 @@ export async function promptReplaceExistingProfile(
   return confirm;
 }
 
-export async function promptForEnvironment(
-  workspaces: Workspace[],
-): Promise<{ workspaceId: string; environmentId: string }> {
-  const environments = workspaces
-    .flatMap((workspace) => {
-      return workspace.environments?.map((env: Record<string, any>) => {
-        return {
-          workspace: workspace.name,
-          workspaceId: workspace.id,
-          id: env.id,
-          alias: env.alias,
-        };
-      });
+export async function promptForEnvironment(workspaces: Workspace[]): Promise<{ workspaceId: string; environmentId: string }> {
+  const environments = workspaces.flatMap((workspace) => {
+    return workspace.environments?.map((env: Record<string, any>) => {
+      return {
+        workspace: workspace.name,
+        workspaceId: workspace.id,
+        id: env.id,
+        alias: env.alias,
+      };
     });
+  });
 
   if (environments.length === 0) {
     throw new Error("No environment found. Please create at least one Baselime environment.");

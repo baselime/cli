@@ -5,10 +5,9 @@ const operations = Object.values(QueryOperation) as QueryOperation[];
 const operatiors = Object.values(QueryOperator) as QueryOperator[];
 export const queryFilterRegex = new RegExp(`^([\\w.@\$-]+)\\s(${operations.join("|")})\\s?'?(.*?)?'?$`);
 export const alertThresholdRegex = new RegExp(
-  `^(${operations.filter((o) => !["INCLUDES", "IN", "NOT_IN", "EXISTS", "DOES_NOT_EXIST", "STARTS_WITH"].some((f) => o === f)).join("|")})\\s([-+]?[0-9]*)$`
+  `^(${operations.filter((o) => !["INCLUDES", "IN", "NOT_IN", "EXISTS", "DOES_NOT_EXIST", "STARTS_WITH"].some((f) => o === f)).join("|")})\\s([-+]?[0-9]*)$`,
 );
-export const calculationsRegex = new RegExp(`(${operatiors.filter(c => c !== "COUNT").join("|")})\\(([^)]*)\\)|(COUNT)$`);
-   
+export const calculationsRegex = new RegExp(`(${operatiors.filter((c) => c !== "COUNT").join("|")})\\(([^)]*)\\)|(COUNT)$`);
 
 export function extractCalculation(input: string): QueryCalculation {
   if (input === "COUNT") {
@@ -29,7 +28,7 @@ export function extractCalculation(input: string): QueryCalculation {
 export function parseFilter(input: string): QueryFilter {
   const parts = input.match(queryFilterRegex);
 
-  if (!((parts?.[1] ) && parts[2])) {
+  if (!(parts?.[1] && parts[2])) {
     throw new Error(`Filter '${input}' must match ${queryFilterRegex}`);
   }
 
@@ -37,7 +36,7 @@ export function parseFilter(input: string): QueryFilter {
   const operation = Object.values(QueryOperation).find((i) => i === parts[2])!;
   const value = parts[3];
 
-  if(value === undefined && operation !== QueryOperation.EXISTS && operation !==  QueryOperation.DOES_NOT_EXIST) {
+  if (value === undefined && operation !== QueryOperation.EXISTS && operation !== QueryOperation.DOES_NOT_EXIST) {
     throw new Error(`Filter '${input}' must have right hand side operand`);
   }
 
@@ -55,7 +54,7 @@ export function parseFilter(input: string): QueryFilter {
 export function parseThreshold(input: string): AlertThreshold {
   const parts = input.match(alertThresholdRegex);
 
-  if (!((parts?.[1] ) && parts[2])) {
+  if (!(parts?.[1] && parts[2])) {
     throw new Error(`Threshold '${input}' must match ${alertThresholdRegex}`);
   }
 
@@ -73,6 +72,6 @@ export function parseTemplateName(s: string): { workspaceId: string; template: s
 
   return {
     workspaceId: s.split(workspaceRegex)[1],
-    template: s.split(workspaceRegex)[2]
-  }
+    template: s.split(workspaceRegex)[2],
+  };
 }

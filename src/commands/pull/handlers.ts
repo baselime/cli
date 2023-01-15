@@ -9,7 +9,6 @@ import { verifyPlan } from "../push/handlers/handlers";
 import checks, { DeploymentAlert, DeploymentQuery, UserVariableInputs } from "../push/handlers/validators";
 import { promptRefresh } from "./prompts";
 
-
 async function pull(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
   const s = spinner.get();
   const { metadata, resources, filenames } = await checks.validate(config, stage, userVariableInputs);
@@ -22,23 +21,23 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
     process.exit(0);
   }
 
-  const { resources: { queries, alerts }, service: appDiff } = diff;
-  const allResources = [
-    ...queries,
-    ...alerts,
-  ];
-  const toDelete = allResources.filter(r => r.status === statusType.VALUE_DELETED);
-  const toUpdate = allResources.filter(r => r.status === statusType.VALUE_UPDATED);
+  const {
+    resources: { queries, alerts },
+    service: appDiff,
+  } = diff;
+  const allResources = [...queries, ...alerts];
+  const toDelete = allResources.filter((r) => r.status === statusType.VALUE_DELETED);
+  const toUpdate = allResources.filter((r) => r.status === statusType.VALUE_UPDATED);
 
-  const toDeleteIds = toDelete.map(resource => resource.resource.id);
-  const toUpdateIds = toUpdate.map(resource => resource.resource.id);
+  const toDeleteIds = toDelete.map((resource) => resource.resource.id);
+  const toUpdateIds = toUpdate.map((resource) => resource.resource.id);
 
-  const deleteAndUpdatePromises = filenames.map(async filename => {
+  const deleteAndUpdatePromises = filenames.map(async (filename) => {
     const s = (await readFile(filename)).toString();
     const resources = parseFileContent(s, metadata.variables) || {};
     const updatedQueries: DeploymentQuery[] = [];
     const updatedAlerts: DeploymentAlert[] = [];
-    Object.keys(resources).forEach(key => {
+    Object.keys(resources).forEach((key) => {
       resources[key].id = key;
       if (toDeleteIds.includes(key)) {
         console.log(`Deleting ${key}`);
@@ -46,7 +45,7 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
       }
       if (toUpdateIds.includes(key)) {
         console.log(`Updating ${key}`);
-        const { resource } = toUpdate.find(resource => resource.resource.id === key)!;
+        const { resource } = toUpdate.find((resource) => resource.resource.id === key)!;
         resources[key] = { ...resource, type: resources[key].type };
       }
 
@@ -69,12 +68,12 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
   });
 
   const createPromise = (async () => {
-    const newQueries = queries.filter(q => q.status === statusType.VALUE_CREATED).map(q => q.resource);
-    const newAlerts = alerts.filter(a => a.status === statusType.VALUE_CREATED).map(q => q.resource);
+    const newQueries = queries.filter((q) => q.status === statusType.VALUE_CREATED).map((q) => q.resource);
+    const newAlerts = alerts.filter((a) => a.status === statusType.VALUE_CREATED).map((q) => q.resource);
     // @ts-ignore
     const dd = stringifyResources({ queries: newQueries, alerts: newAlerts });
     if (!dd) return;
-    const now = (new Date()).toISOString();
+    const now = new Date().toISOString();
     const path = `${config}/imported/${now}.yml`;
     outputFileSync(path, dd);
     console.log(`Imported resources stored in ${path}. Please do not delete this file.`);
@@ -89,8 +88,6 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
 
   await Promise.all([...deleteAndUpdatePromises, createPromise, servicePromise]);
 }
-
-
 
 export default {
   pull,

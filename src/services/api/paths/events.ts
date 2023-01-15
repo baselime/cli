@@ -34,12 +34,13 @@ export interface SeriesData {
   [key: string]: number | undefined | Record<string, number>;
 }
 
-
-export async function listEvents(data: EventsListRequest): Promise<{ events: Event[]; fields: { name: string, type: string, }[]; series: Series[]; count: number; timeframe: { from: number; to: number; } }> {
+export async function listEvents(
+  data: EventsListRequest,
+): Promise<{ events: Event[]; fields: { name: string; type: string }[]; series: Series[]; count: number; timeframe: { from: number; to: number } }> {
   const res = (await client.get(`/events/?${stringify(data)}`)).data;
   return res.events;
 }
 
 export default {
   listEvents,
-}
+};

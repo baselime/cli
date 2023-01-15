@@ -10,12 +10,13 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
       ...baseOptions,
     })
     .example([
-      [`
+      [
+        `
       $0 environments connect
-    `]
+    `,
+      ],
     ])
     .commandDir("environments")
     .demandCommand()
-    .strict()
+    .strict();
 };
-

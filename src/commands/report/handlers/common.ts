@@ -18,19 +18,21 @@ export async function commonHandler(profile: string, quiet: boolean, path?: stri
   } else {
     service = service || (await validateMetadata(config!)).service;
     s.start("Creating snapshots...");
-    const ids = (await api.alertsList(service)).map(alert => alert.id)
-    const promises = ids.map(async id => { return await api.alertChecksCreate(service!, id, false, false) });
+    const ids = (await api.alertsList(service)).map((alert) => alert.id);
+    const promises = ids.map(async (id) => {
+      return await api.alertChecksCreate(service!, id, false, false);
+    });
 
     const result = await Promise.all(promises);
     s.succeed("All alert snapshots created");
     console.log();
-    const checks = result.map(result => result.check);
+    const checks = result.map((result) => result.check);
     outputs.snapshot(checks, format || "table");
     status = {
       version: getVersion(),
       alertChecks: checks,
       service,
-    }
+    };
   }
   return status;
 }

@@ -22,7 +22,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       trigger: { type: "boolean", desc: "Flag to trigger the alert as part of the check" },
     })
     .example([
-      [`
+      [
+        `
       # Check all the alerts in an service:
       $0 alerts check --service <service_name>
 
@@ -31,7 +32,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
       # Check and trigger all the alerts in an service:
       $0 alerts check --service <service_name> --trigger
-      `],
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);
@@ -43,11 +45,10 @@ export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
-
   service ??= (await promptServiceSelect())?.name || "";
   id ??= (await promptAlertSelect(service))?.id || "";
 
-  if(!(service && id)) {
+  if (!(service && id)) {
     throw new Error("service and alert id are required");
   }
   await handlers.check(format!, { service, id, trigger });

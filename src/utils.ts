@@ -9,13 +9,8 @@ export function isUrl(s: string): boolean {
   } catch (_) {
     return false;
   }
-};
-
-
-export function randomString(size: number) {  
-  return crypto
-    .randomBytes(size)
-    .toString('base64')
-    .slice(0, size)
 }
 
+export function randomString(size: number) {
+  return crypto.randomBytes(size).toString("base64").slice(0, size);
+}

@@ -6,6 +6,5 @@ export async function postPayload(payload: Record<string, any>) {
     const { BASELIME_DOMAIN = "baselime.io" } = process.env;
     const endpoint = `https://telemetry.${BASELIME_DOMAIN}/v1/cli`;
     await axios.post(endpoint, [payload]);
-  } catch (_) {
-  }
+  } catch (_) {}
 }

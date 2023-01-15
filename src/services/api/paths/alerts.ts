@@ -17,7 +17,6 @@ export enum ChannelTypes {
   WEBHOOK = "webhook",
 }
 
-
 export interface Alert {
   parameters: AlertParameters;
   id: string;
@@ -42,7 +41,6 @@ async function alertsList(service?: string): Promise<Alert[]> {
   const res = (await client.get("/alerts", { params: { service } })).data;
   return res.alerts;
 }
-
 
 export default {
   alertsList,

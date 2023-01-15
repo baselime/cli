@@ -3,8 +3,6 @@ import { deleteUserAuth } from "../services/auth";
 import spinner from "../services/spinner";
 import { baseOptions, BaseOptions, printError } from "../shared";
 
-
-
 export interface Options extends BaseOptions {
   profile: string;
 }
@@ -19,13 +17,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       profile: { type: "string", desc: "Alias of the profile", default: "default" },
     })
     .example([
-      [`
+      [
+        `
       # Intercatively select the environment to log out of:
       $0 logout
 
       # Provide parameters on the command-line:
       $0  logout --profile prod
-      `]
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);

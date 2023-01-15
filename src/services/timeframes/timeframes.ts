@@ -1,4 +1,4 @@
-import ms from 'ms'
+import ms from "ms";
 import dayjs from "dayjs";
 
 export function getTimeframe(from: string, to: string): { from: number; to: number } {
@@ -9,5 +9,5 @@ export function getTimeframe(from: string, to: string): { from: number; to: numb
   return {
     from: f.valueOf(),
     to: t.valueOf(),
-  }
+  };
 }

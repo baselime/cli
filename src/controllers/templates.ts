@@ -4,31 +4,26 @@ import spinner from "../services/spinner";
 import { InferType, lazy, object, string } from "yup";
 import { mapValues } from "lodash";
 import { variableSchema } from "../commands/push/handlers/validators";
-import {
-  parseAndAppendFileToResources,
-  readResourcesFromFile,
-} from "../services/parser/parser";
+import { parseAndAppendFileToResources, readResourcesFromFile } from "../services/parser/parser";
 
 export const templateSchema = object({
   name: string().required(),
-  variables: lazy(obj => object(
-      mapValues(obj, () => variableSchema)
-  )).optional()
+  variables: lazy((obj) => object(mapValues(obj, () => variableSchema))).optional(),
 }).optional();
 
 export async function stepTemplates(outputPath: string, resources: Record<string, any>, templates: InferType<typeof templateSchema>[], serviceId: string) {
   const templatesDir = `${outputPath}/.templates`;
   rmdirSync(templatesDir, {
-    recursive: true
+    recursive: true,
   });
-  for await(let template of templates) {
+  for await (let template of templates) {
     await handleTemplate(template, templatesDir, serviceId, resources);
   }
 }
 
 async function handleTemplate(template: InferType<typeof templateSchema>, outputPath: string, serviceId: string, resources: Record<string, any>) {
   const s = spinner.get();
-  if(!template?.name) {
+  if (!template?.name) {
     throw new Error(`invalid template ${template}`);
   }
   const [workspaceId, templateName] = template.name.split("/");
@@ -50,9 +45,9 @@ async function handleTemplate(template: InferType<typeof templateSchema>, output
 }
 
 async function downloadTemplate(parentDir: string, workspaceId: string, templateName: string, serviceId: string): Promise<string> {
-  const workspacePath = `${parentDir}/${workspaceId}`
+  const workspacePath = `${parentDir}/${workspaceId}`;
   mkdirSync(workspacePath, {
-    recursive: true
+    recursive: true,
   });
   const templateFilePath = `${workspacePath}/${templateName}.yml`;
   const s = spinner.get();

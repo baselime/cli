@@ -2,7 +2,7 @@ import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { OutputFormat } from "../../../shared";
 
-async function connect(format: OutputFormat, provider: string, params: { account: string, region: string }, alias: string, otp: string) {
+async function connect(format: OutputFormat, provider: string, params: { account: string; region: string }, alias: string, otp: string) {
   const s = spinner.get();
   if (provider !== "aws") {
     return console.log("Baselime currently only supports environments on AWS");
@@ -23,4 +23,4 @@ async function connect(format: OutputFormat, provider: string, params: { account
 
 export default {
   connect,
-}
+};

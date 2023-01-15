@@ -7,11 +7,11 @@ interface awsConnect {
   alias: string;
 }
 
-async function awsConnect(params: awsConnect): Promise<{ url: string; }> {
+async function awsConnect(params: awsConnect): Promise<{ url: string }> {
   const res = (await publicClient.put("/environments/aws/connect", params)).data;
   return res;
 }
 
 export default {
-  awsConnect
+  awsConnect,
 };

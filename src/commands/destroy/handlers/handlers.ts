@@ -23,7 +23,6 @@ async function destroy(config: string, stage?: string) {
   s.succeed("Service deleted");
 }
 
-
 export default {
   destroy,
 };

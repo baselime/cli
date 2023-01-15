@@ -6,13 +6,16 @@ import { getAuthProfilePath } from "../../../services/auth";
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
-
 export function welcome() {
   console.log(`${chalk.bold(chalk.greenBright("Welcome to Baselime"))}\n`);
 }
 
 export function userConfigFound(profile: string) {
-  console.log(`You're already authenticated as ${chalk.cyan(profile)}.\n\nIf you would like to configure a new profile, run the following:\n${chalk.bold(`$ baselime auth --profile ${chalk.cyan("<new_baselime_profile_name>")}`)}\n`);
+  console.log(
+    `You're already authenticated as ${chalk.cyan(profile)}.\n\nIf you would like to configure a new profile, run the following:\n${chalk.bold(
+      `$ baselime auth --profile ${chalk.cyan("<new_baselime_profile_name>")}`,
+    )}\n`,
+  );
 }
 
 export function credentialsConfigured(path: string) {
@@ -38,11 +41,13 @@ export function iam(profile: string, key: APIKey, workspace: Workspace, environm
 
   const permissionsTable = new Table({
     chars: tableChars,
-    head: ["Permission", "Value",].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Permission", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  Object.keys(key.permissions).sort().map(k => {
-    permissionsTable.push([k, (key.permissions as any)[k]]);
-  });
+  Object.keys(key.permissions)
+    .sort()
+    .map((k) => {
+      permissionsTable.push([k, (key.permissions as any)[k]]);
+    });
 
   console.log(`\n${path}`);
   console.log(BASELIME_DOMAIN);

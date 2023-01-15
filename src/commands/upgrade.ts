@@ -1,10 +1,9 @@
 import { Arguments, CommandBuilder } from "yargs";
 import { baseOptions, BaseOptions, printError } from "../shared";
-import { execSync } from 'child_process';
+import { execSync } from "child_process";
 import { getLatestVersion } from "../services/api/paths/cli";
 import spinner from "../services/spinner";
 const packageJson = require("../../package.json");
-
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
@@ -17,10 +16,12 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
       ...baseOptions,
     })
     .example([
-      [`
+      [
+        `
       # Upgrade:
       $0 upgrade
-      `]
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);

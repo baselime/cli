@@ -17,13 +17,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       service: { type: "string", desc: "Name of the service" },
     })
     .example([
-      [`
+      [
+        `
       # List all the alerts:
       $0 alerts list
 
       # List all the alerts for an service:
       $0 alerts list --service <service_name>
-      `],
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);
@@ -31,7 +33,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, format, service: service, } = argv;
+  const { profile, format, service: service } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
   await handlers.list(format!, service);

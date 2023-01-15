@@ -13,10 +13,12 @@ export const desc = "List all the services";
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
     .example([
-      [`
+      [
+        `
       # List all the services:
       $0 services list
-      `],
+      `,
+      ],
     ])
     .fail((message, err, yargs) => {
       printError(message, err, yargs);
@@ -24,7 +26,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, format, } = argv;
+  const { profile, format } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
   await handlers.list(format!);

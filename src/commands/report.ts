@@ -10,10 +10,12 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
       ...baseOptions,
     })
     .example([
-      [`
+      [
+        `
       $0 report github --repo <org/repo> --pull-request <pr-number> --path <path-to-baselime-output> --github-token <github-token>
-    `]
+    `,
+      ],
     ])
     .commandDir("report")
-    .strict()
+    .strict();
 };

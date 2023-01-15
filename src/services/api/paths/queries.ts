@@ -16,11 +16,11 @@ export interface QueryFilter {
   type: string;
 }
 
-export interface QueryGroupBy { 
+export interface QueryGroupBy {
   type: "string" | "number" | "boolean";
   value: string;
   orderBy?: string;
-  limit?: number; 
+  limit?: number;
   order?: "ASC" | "DESC";
 }
 
@@ -81,7 +81,6 @@ export interface SearchNeedle {
   isRegex?: boolean;
   matchCase?: boolean;
 }
-
 
 async function queriesList(service?: string): Promise<Query[]> {
   const res = (await client.get("/queries", { params: { service } })).data;

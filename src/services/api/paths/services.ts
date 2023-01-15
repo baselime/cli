@@ -11,7 +11,7 @@ export interface Service {
     version: string;
     infrastructure?: {
       stacks?: string[];
-    }
+    };
   };
   created?: string;
   updated?: string;

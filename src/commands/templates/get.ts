@@ -3,9 +3,8 @@ import spinner from "../../services/spinner";
 import { authenticate, baseOptions, BaseOptions, printError } from "../../shared";
 import handlers from "./handlers/handlers";
 
-
 export interface Options extends BaseOptions {
-  name: string
+  name: string;
   workspaceId: string;
 }
 
@@ -14,29 +13,30 @@ export const desc = "Retrieves the template";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs
-      .options({
-        ...baseOptions,
-        workspaceId: {
-          type: "string",
-          desc: "Workspace ID",
-          alias: "w",
-          required: true,
-        },
-        name: {
-          type: "string",
-          desc: "Name of the template",
-          alias: "n",
-          required: true,
-        },
-      })
-      .example([
-        [`
+    .options({
+      ...baseOptions,
+      workspaceId: {
+        type: "string",
+        desc: "Workspace ID",
+        alias: "w",
+        required: true,
+      },
+      name: {
+        type: "string",
+        desc: "Name of the template",
+        alias: "n",
+        required: true,
+      },
+    })
+    .example([
+      [
+        `
       $0 templates create --profile prod`,
-        ],
-      ])
-      .fail((message, err, yargs) => {
-        printError(message, err, yargs);
-      });
+      ],
+    ])
+    .fail((message, err, yargs) => {
+      printError(message, err, yargs);
+    });
 };
 
 export async function handler(argv: Arguments<Options>) {

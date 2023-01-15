@@ -6,41 +6,30 @@ import outputs from "./outputs";
 import { promisify } from "util";
 import dayjs from "dayjs";
 const wait = promisify(setTimeout);
-import utc from "dayjs/plugin/utc"
+import utc from "dayjs/plugin/utc";
 import { QueryFilter, SearchNeedle } from "../../services/api/paths/queries";
 dayjs.extend(utc);
 
 async function tail(data: {
-  format: OutputFormat,
-  datasets: string[],
-  filters: QueryFilter[],
+  format: OutputFormat;
+  datasets: string[];
+  filters: QueryFilter[];
   needle?: string;
-  from: string,
-  to: string,
-  follow: boolean,
-  service?: string,
-  matchCase: boolean,
-  regex?: string,
+  from: string;
+  to: string;
+  follow: boolean;
+  service?: string;
+  matchCase: boolean;
+  regex?: string;
 }) {
-  const {
-    format,
-    datasets,
-    filters,
-    needle,
-    from,
-    to,
-    follow,
-    matchCase,
-    regex,
-    service,
-  } = data;
+  const { format, datasets, filters, needle, from, to, follow, matchCase, regex, service } = data;
   const s = spinner.get();
 
   const n: SearchNeedle = {
     item: needle || regex || "",
     isRegex: !!regex,
     matchCase,
-  }
+  };
 
   if (!follow) {
     s.start("Tailing your events");

@@ -8,7 +8,7 @@ import spinner from "../../../services/spinner";
 export async function promptServiceSelect(): Promise<Service | undefined> {
   const s = spinner.get();
   s.start("Fetching your service");
-  const services = (await api.servicesList());
+  const services = await api.servicesList();
   s.succeed();
 
   if (services.length === 0) {
@@ -19,16 +19,18 @@ export async function promptServiceSelect(): Promise<Service | undefined> {
     type: "select",
     name: "name",
     message: `${chalk.bold("Please select an service")}`,
-    choices: services.map(service => { return { name: service.name, value: service.name } }),
+    choices: services.map((service) => {
+      return { name: service.name, value: service.name };
+    }),
   });
 
-  return services.find(service => service.name === name);
+  return services.find((service) => service.name === name);
 }
 
 export async function promptAlertSelect(service?: string): Promise<Alert | undefined> {
   const s = spinner.get();
   s.start("Fetching your alert");
-  const alerts = (await api.alertsList(service));
+  const alerts = await api.alertsList(service);
   s.succeed();
 
   if (alerts.length === 0) {
@@ -39,8 +41,10 @@ export async function promptAlertSelect(service?: string): Promise<Alert | undef
     type: "select",
     name: "id",
     message: `${chalk.bold("Please select an alert")}`,
-    choices: alerts.map(query => { return { name: query.id, value: query.id } }),
+    choices: alerts.map((query) => {
+      return { name: query.id, value: query.id };
+    }),
   });
 
-  return alerts.find(q => q.id === id);
+  return alerts.find((q) => q.id === id);
 }

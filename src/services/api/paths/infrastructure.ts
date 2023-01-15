@@ -2,12 +2,12 @@ import { client } from "../clients";
 
 export interface LambdaFunction {
   name: string;
-  type: "lambda",
+  type: "lambda";
 }
 
 export interface CloudFormationStack {
   name: string;
-  type: "cloudformation",
+  type: "cloudformation";
 }
 
 async function stacksList(provider: string): Promise<CloudFormationStack[]> {
