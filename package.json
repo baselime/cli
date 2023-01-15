@@ -26,6 +26,7 @@
     "watch": "tsc --watch",
     "lint": "npx rome check .",
     "format": "npx rome format .",
+    "rome:fix": "npx rome check . --apply-suggested && npx rome format . --write ",
     "package:linux": "cp ./node_modules/open/xdg-open ./build/xdg-open && pkg . --no-bytecode --targets node14-linux-x64 --output bin/linux/baselime",
     "package:alpine": "cp ./node_modules/open/xdg-open ./build/xdg-open && pkg . --no-bytecode --targets node14-alpine-x64 --output bin/linux/baselime",
     "package:macos": "pkg . --no-bytecode --targets node14-macos-x64 --output bin/macos/baselime",
