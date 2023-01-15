@@ -41,7 +41,7 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
       resources[key].id = key;
       if (toDeleteIds.includes(key)) {
         console.log(`Deleting ${key}`);
-        resources[key] = undefined;
+        (resources[key] as any) = undefined;
       }
       if (toUpdateIds.includes(key)) {
         console.log(`Updating ${key}`);
