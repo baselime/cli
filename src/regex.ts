@@ -7,6 +7,9 @@ export const queryFilterRegex = new RegExp(`^([\\w.@\$-]+)\\s(${operations.join(
 export const alertThresholdRegex = new RegExp(
   `^(${operations.filter((o) => !["INCLUDES", "IN", "NOT_IN", "EXISTS", "DOES_NOT_EXIST", "STARTS_WITH"].some((f) => o === f)).join("|")})\\s([-+]?[0-9]*)$`,
 );
+
+const arrayFilterRegex = new RegExp(`^(.+) (${["IN", "NOT_IN"].join("|")}) \\((.+)\\)$`);
+
 export const calculationsRegex = new RegExp(`(${operatiors.filter((c) => c !== "COUNT").join("|")})\\(([^)]*)\\)|(COUNT)$`);
 
 export function extractCalculation(input: string): QueryCalculation {
@@ -34,10 +37,19 @@ export function parseFilter(input: string): QueryFilter {
 
   const key = parts[1];
   const operation = Object.values(QueryOperation).find((i) => i === parts[2])!;
-  const value = parts[3];
+  let value = parts[3];
 
   if (value === undefined && operation !== QueryOperation.EXISTS && operation !== QueryOperation.DOES_NOT_EXIST) {
     throw new Error(`Filter '${input}' must have right hand side operand`);
+  }
+
+  if ([QueryOperation.IN, QueryOperation.NOT_IN].some((o) => o === operation)) {
+    const isValid = arrayFilterRegex.test(input);
+    const match = input.match(arrayFilterRegex);
+    if (!(isValid && match)) {
+      throw new Error(`Make sure that the right hand side operand ${value} is wrapped in parantheses '()' and separated with commas ','`);
+    }
+    value = match[3];
   }
 
   if (String(Number(value)) === value) {
