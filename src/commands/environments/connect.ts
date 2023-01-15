@@ -49,7 +49,7 @@ export async function handler(argv: Arguments<Options>) {
  
   email ??= (await promptForEmail());
 
-  s.start(`Sending email verification request`);
+  s.start("Sending email verification request");
   await api.generateOneTimePassword(email);
   s.succeed();
 

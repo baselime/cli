@@ -141,7 +141,7 @@ async function validate(folder: string, stage?: string, inputVariables?: UserVar
 
   const { resources, template } = (await readResourcesFromFiles(resourceFilenames, metadata.variables)) || {};
   if (!isObject(resources)) {
-    const m = `invalid file format - must be an object`;
+    const m = "invalid file format - must be an object";
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
@@ -225,13 +225,13 @@ async function validateMetadataVariables(folder: string, stage?: string, inputVa
 async function validateEachVariable(variables: Record<string, any> | undefined, inputVariables?: UserVariableInputs, stage?: string) {
   const s = spinner.get();
   if (variables && !isObject(variables)) {
-    const m = `invalid metadata file format - variables must be an object`;
+    const m = "invalid metadata file format - variables must be an object";
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
 
   const variableNames = Object.keys(variables || {});
-  if (!variables || !variableNames?.length) return;
+  if (!(variables && variableNames?.length)) return;
 
   for (let index = 0; index < variableNames.length; index += 1) {
     const variableName = variableNames[index];
@@ -312,16 +312,16 @@ function validateAlerts(alerts: any[], queries: any[]) {
         try {
           awsCronParser.parse(frequency);
         } catch (error) {
-          throw new Error(`Invalid frequency expression. Please follow the AWS Cron specs.`);
+          throw new Error("Invalid frequency expression. Please follow the AWS Cron specs.");
         }
       }
 
       if (convertedFrequency && convertedFrequency < 60000) {
-        throw new Error(`Invalid frequency. Minimum is 1min.`);
+        throw new Error("Invalid frequency. Minimum is 1min.");
       }
 
       if (!convertedWindow || convertedWindow < 60000) { // undefined or less than 1 minute
-        throw new Error(`Invalid window.`);
+        throw new Error("Invalid window.");
       }
 
     } catch (error) {

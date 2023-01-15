@@ -18,7 +18,7 @@ export interface Options extends BaseOptions {
 }
 
 export const command = "tail";
-export const desc = `Tail your telemetry data to your terminal`;
+export const desc = "Tail your telemetry data to your terminal";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
   return yargs

@@ -44,7 +44,7 @@ export type DiffResponse = {
 
 
 async function diffsCreate(params: DiffCreateRequest): Promise<DiffResponse> {
-  const res = (await client.post(`/diffs`, params, { timeout: 120000 })).data;
+  const res = (await client.post("/diffs", params, { timeout: 120000 })).data;
   return res.diff;
 }
 

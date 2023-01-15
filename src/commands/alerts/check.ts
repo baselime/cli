@@ -47,7 +47,7 @@ export async function handler(argv: Arguments<Options>) {
   service ??= (await promptServiceSelect())?.name || "";
   id ??= (await promptAlertSelect(service))?.id || "";
 
-  if(!service || !id) {
+  if(!(service && id)) {
     throw new Error("service and alert id are required");
   }
   await handlers.check(format!, { service, id, trigger });

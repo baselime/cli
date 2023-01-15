@@ -8,7 +8,7 @@ interface awsConnect {
 }
 
 async function awsConnect(params: awsConnect): Promise<{ url: string; }> {
-  const res = (await publicClient.put(`/environments/aws/connect`, params)).data;
+  const res = (await publicClient.put("/environments/aws/connect", params)).data;
   return res;
 }
 

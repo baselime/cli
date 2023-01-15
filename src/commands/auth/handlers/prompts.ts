@@ -61,7 +61,7 @@ export async function promptForEnvironment(
   workspaces: Workspace[],
 ): Promise<{ workspaceId: string; environmentId: string }> {
   const environments = workspaces
-    .map((workspace) => {
+    .flatMap((workspace) => {
       return workspace.environments?.map((env: Record<string, any>) => {
         return {
           workspace: workspace.name,
@@ -70,8 +70,7 @@ export async function promptForEnvironment(
           alias: env.alias,
         };
       });
-    })
-    .flat();
+    });
 
   if (environments.length === 0) {
     throw new Error("No environment found. Please create at least one Baselime environment.");
@@ -80,7 +79,7 @@ export async function promptForEnvironment(
   const { environmentId } = await prompt<{ environmentId: string }>({
     type: "select",
     name: "environmentId",
-    message: `Please select the environment`,
+    message: "Please select the environment",
     choices: environments.map((env) => {
       return {
         name: env.id,

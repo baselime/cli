@@ -7,7 +7,7 @@ import { getEnvironmentData } from "./environment";
 
 const TELEMETRY_KEY_ENABLED = "telemetry.enabled";
 const TELEMETRY_KEY_NOTIFY_DATE = "telemetry.notifiedAt";
-const TELEMETRY_KEY_ID = `telemetry.anonymousId`;
+const TELEMETRY_KEY_ID = "telemetry.anonymousId";
 
 interface EventContext {
   anonymousId: string;
@@ -22,11 +22,11 @@ const anonymousId = getAnonymousId();
 notify();
 
 export function enable(): void {
-  conf && conf.set(TELEMETRY_KEY_ENABLED, true);
+  conf?.set(TELEMETRY_KEY_ENABLED, true);
 }
 
 export function disable(): void {
-  conf && conf.set(TELEMETRY_KEY_ENABLED, false);
+  conf?.set(TELEMETRY_KEY_ENABLED, false);
 }
 
 export function isEnabled(): boolean {
@@ -50,7 +50,7 @@ function initializeConf() {
 }
 
 function notify() {
-  if (!conf || !isEnabled()) {
+  if (!(conf && isEnabled())) {
     return;
   }
 
@@ -66,7 +66,7 @@ function notify() {
     )}: Baselime now collects completely anonymous telemetry regarding usage. This is used to guide our roadmap.`
   );
   console.log(
-    `You can learn more, including how to opt-out of this anonymous program, by heading over to:`
+    "You can learn more, including how to opt-out of this anonymous program, by heading over to:"
   );
   console.log("https://docs.baselime.io/cli/anonymous-telemetry");
   console.log();
@@ -98,13 +98,13 @@ function record(command: string, properties: any): Promise<any> {
 }
 
 function getAnonymousId(): string {
-  const val = conf && conf.get(TELEMETRY_KEY_ID);
+  const val = conf?.get(TELEMETRY_KEY_ID);
   if (val) {
     return val as string;
   }
 
   const generated = randomBytes(32).toString("hex");
-  conf && conf.set(TELEMETRY_KEY_ID, generated);
+  conf?.set(TELEMETRY_KEY_ID, generated);
   return generated;
 }
 

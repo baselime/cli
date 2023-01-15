@@ -41,11 +41,11 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
     Object.keys(resources).forEach(key => {
       resources[key].id = key;
       if (toDeleteIds.includes(key)) {
-        console.log("Deleting " + key);
-        delete resources[key];
+        console.log(`Deleting ${key}`);
+        resources[key] = undefined;
       }
       if (toUpdateIds.includes(key)) {
-        console.log("Updating " + key);
+        console.log(`Updating ${key}`);
         const { resource } = toUpdate.find(resource => resource.resource.id === key)!;
         resources[key] = { ...resource, type: resources[key].type };
       }

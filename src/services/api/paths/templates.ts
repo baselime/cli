@@ -42,7 +42,7 @@ async function templateGet(workspaceId: string, templateName: string, isPublic: 
 }
 
 async function templateCreate(template: TemplateCreateParams): Promise<Template> {
-  const res = (await client.post(`/templates`, template, { timeout: 30000 })).data;
+  const res = (await client.post("/templates", template, { timeout: 30000 })).data;
   return res.template;
 }
 

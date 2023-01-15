@@ -17,7 +17,7 @@ async function connect(format: OutputFormat, provider: string, params: { account
   });
 
   s.succeed("Generated your CloudFormation template");
-  console.log(`Follow this url to complete connecting up your AWS Account`);
+  console.log("Follow this url to complete connecting up your AWS Account");
   console.log(url);
 }
 

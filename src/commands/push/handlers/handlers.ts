@@ -145,9 +145,9 @@ export async function displayDiff(service: string, diff: DiffResponse) {
     `Service: ${chalk.bold(serviceStatus)}
     
   Resources
-    ${chalk.greenBright(allResources.filter(r => r.status === statusType.VALUE_CREATED).length + " to add")}
-    ${chalk.yellowBright(allResources.filter(r => r.status === statusType.VALUE_UPDATED).length + " to change")}
-    ${chalk.redBright(allResources.filter(r => r.status === statusType.VALUE_DELETED).length + " to destroy")}`
+    ${chalk.greenBright(`${allResources.filter(r => r.status === statusType.VALUE_CREATED).length} to add`)}
+    ${chalk.yellowBright(`${allResources.filter(r => r.status === statusType.VALUE_UPDATED).length} to change`)}
+    ${chalk.redBright(`${allResources.filter(r => r.status === statusType.VALUE_DELETED).length} to destroy`)}`
   ));
 }
 

@@ -7,7 +7,7 @@ export async function getFileList(dirName: string, extensions: string[], omit?: 
   const items = await readdir(dirName, { withFileTypes: true });
 
   for (const item of items) {
-    if(omit && omit.includes(item.name)) {
+    if(omit?.includes(item.name)) {
       continue;
     }
     if (item.isDirectory()) {

@@ -64,7 +64,7 @@ export async function handler(argv: Arguments<Options>) {
     service
   } = argv;
 
-  if (!commit && !prNumber) {
+  if (!(commit || prNumber)) {
     throw new Error("Please specifiy either --commit or --pull-request");
   }
   let status = await commonHandler(profile, quiet, path, config, service);
@@ -74,7 +74,7 @@ export async function handler(argv: Arguments<Options>) {
 
   s.start("Posting a report to GitHub...");
   await api.reportGithubCreate({
-    repo: {name, owner},
+    repo: { name, owner },
     prNumber,
     commit,
     status,

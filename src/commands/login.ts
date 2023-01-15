@@ -64,7 +64,7 @@ export async function handler(argv: Arguments<Options>) {
     const otp = await promptForOneTimePassword(email);
     oathData.otp = otp;
   } else {
-    s.start(`Redirecting to the browser...`);
+    s.start("Redirecting to the browser...");
     const config = await api.getAuthConfig();
     const creds = await startServer(config, argv);
 

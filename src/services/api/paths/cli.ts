@@ -5,7 +5,7 @@ export interface Version {
 }
 
 export async function getLatestVersion(): Promise<Version> {
-  const res = (await publicClient.get(`/cli/version`)).data;
+  const res = (await publicClient.get("/cli/version")).data;
   return res;
 }
 
