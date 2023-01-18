@@ -1,11 +1,12 @@
 import api from "../../../services/api/api";
 import spinner from "../../../services/spinner";
 import { OutputFormat } from "../../../shared";
+import * as open from "open";
 
 async function connect(format: OutputFormat, provider: string, params: { account: string; region: string }, alias: string, otp: string) {
   const s = spinner.get();
   if (provider !== "aws") {
-    return console.log("Baselime currently only supports environments on AWS");
+    return console.log("We currently only supports connecting AWS accounts.");
   }
 
   s.start("Generating your CloudFormation template");
@@ -17,8 +18,8 @@ async function connect(format: OutputFormat, provider: string, params: { account
   });
 
   s.succeed("Generated your CloudFormation template");
-  console.log("Follow this url to complete connecting up your AWS Account");
-  console.log(url);
+  console.log("Please follow the steps in your web browser to complete connecting up your AWS Account");
+  open.default(url);
 }
 
 export default {

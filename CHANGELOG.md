@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added support for quiet alert checks
 - Added support for baselime report slack
 - Linting as part of CI/CD
+- Facilitate connecting an AWS Account from the CLI
 
 ### Removed
 

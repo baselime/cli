@@ -9,7 +9,7 @@ import namespaces from "./paths/namespaces";
 import events from "./paths/events";
 import cli from "./paths/cli";
 import iam from "./paths/iam";
-import environments from "./paths/environments";
+import aws from "./paths/aws";
 import templates from "./paths/templates";
 import diffs from "./paths/diffs";
 import infrastructure from "./paths/infrastructure";
@@ -27,7 +27,7 @@ export default {
   ...events,
   ...cli,
   ...iam,
-  ...environments,
+  ...aws,
   ...templates,
   ...diffs,
   ...infrastructure,
