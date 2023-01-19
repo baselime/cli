@@ -37,7 +37,7 @@ export function iam(profile: string, key: APIKey, workspace: Workspace, environm
     chars: tableChars,
     head: ["Workspace", "Environment", "userId", "apiKey"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  table.push([`${workspace.name} (id: ${workspace.id})`, `${environment.id} (alias: ${environment.alias})`, key.userId, apiKey]);
+  table.push([`${workspace.id}`, `${environment.id}`, key.userId, apiKey]);
 
   const permissionsTable = new Table({
     chars: tableChars,

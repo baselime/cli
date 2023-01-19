@@ -22,7 +22,6 @@ export interface Workspace {
 }
 
 export interface Environment {
-  alias: string;
   id: string;
   region: string;
   account: string;

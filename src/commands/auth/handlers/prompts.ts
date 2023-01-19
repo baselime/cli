@@ -62,7 +62,6 @@ export async function promptForEnvironment(workspaces: Workspace[]): Promise<{ w
         workspace: workspace.name,
         workspaceId: workspace.id,
         id: env.id,
-        alias: env.alias,
       };
     });
   });
@@ -78,7 +77,7 @@ export async function promptForEnvironment(workspaces: Workspace[]): Promise<{ w
     choices: environments.map((env) => {
       return {
         name: env.id,
-        message: `${chalk.cyan(chalk.bold(`${env.workspace} - ${env.alias}`))}`,
+        message: `${chalk.cyan(chalk.bold(`${env.workspace} - ${env.id}`))}`,
         value: env.id,
       };
     }),
