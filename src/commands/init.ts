@@ -78,14 +78,14 @@ export async function handler(argv: Arguments<Options>) {
   }
 
   await init(folder, service, description, provider, template);
-  s.succeed(`${folder} Generated`);
+  s.succeed(`Observability as Code folder generated: ${chalk.bold(folder)}`);
 
   console.log(`\n
 Next steps:
-  1. ${chalk.bold("Create a .yml")} file in the ${folder} folder and write observability resources
-  2. ${chalk.bold("baselime push")} to sync this service with the Baselime backend
-  3. ${chalk.bold("baselime query")} to run a query
-  4. ${chalk.bold("baselime snapshot")} to check all the alerts in this service
+  1. ${chalk.bold("Navigate")} to ${folder}
+  2. ${chalk.bold("Create a .yml")} file and write your observability resources
+  3. ${chalk.bold("Run baselime push")} to create your observability resources
+  4. ${chalk.bold("Run baselime query")} to query your telemetry data
   
 Learn how to write observability resources using the Observability Reference Language: https://docs.baselime.io/observability-reference-language/overview/
 `);
