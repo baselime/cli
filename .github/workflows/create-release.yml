@@ -257,7 +257,7 @@ jobs:
       - name: Post to the community Slack channel
         uses: slackapi/slack-github-action@v1.23.0
         with:
-          channel-id: 'C03EJ5F51M1'
+          channel-id: 'C04KT9JNRHS'
           payload: |
             {
               "text": "[Release] Baselime CLI v${{ steps.tag_name.outputs.current_version }}",
