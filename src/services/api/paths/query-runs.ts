@@ -48,6 +48,12 @@ export interface QueryRunCreateParams {
     from: number;
     to: number;
   };
+  datasets?: string[];
+  calculations?: {
+    key: string,
+    operator: string
+  }[]
+  workspace?: string
 }
 
 async function queryRunsList(service: string, queryId: string): Promise<QueryRun[]> {

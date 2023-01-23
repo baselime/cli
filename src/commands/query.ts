@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { Arguments, CommandBuilder } from "yargs";
 import { parseFilter } from "../regex";
 import spinner from "../services/spinner";
@@ -89,15 +88,27 @@ export async function handler(argv: Arguments<Options>) {
     throw new Error("service and query id are required");
   }
 
+  const fs = filters.map(parseFilter);
+
   if (!isSaved) {
-    spinner.get().info("Under cunstruction. Please run a saved query whilst we build the interactive query builder.");
-    return;
+    return await handlers.interactive({
+      // id,
+      // format,
+      // datasets,
+      // filters: fs,
+      // needle,
+      // matchCase,
+      // regex,
+      // follow,
+      queryId: id as string,
+      service: service as string,
+      format
+    });
   }
 
   from ??= await promptFrom();
   to ??= await promptTo();
 
-  const fs = filters.map(parseFilter);
   await handlers.createRun({
     id,
     format,

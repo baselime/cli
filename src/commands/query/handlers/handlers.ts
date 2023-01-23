@@ -6,6 +6,7 @@ import { getTimeframe } from "../../../services/timeframes/timeframes";
 import dayjs from "dayjs";
 import chalk from "chalk";
 import { QueryFilter } from "../../../services/api/paths/queries";
+import {promptCalculations, promptDatasets, promptFrom, promptTo} from "../prompts/query";
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
@@ -43,6 +44,58 @@ async function createRun(data: {
   outputs.getQueryRun({ queryRun, aggregates, series, events, format });
 }
 
+async function interactive(input: {queryId: string, service: string, format: any}) {
+  const s = spinner.get();
+
+  const {queryId, service, format} = input;
+
+  const from = await promptFrom();
+  const to = await promptTo();
+  const timeframe = getTimeframe(from, to);
+  const f = dayjs.utc(timeframe.from);
+  const t = dayjs.utc(timeframe.to);
+
+  const datasets = await promptDatasets();
+
+  s.start("Getting keys");
+  const keys = await api.getKeys({
+    environmentId: "prod",
+    workspaceId: "baselime",
+    params: {
+      timeframe,
+      service: "default"
+    }
+  });
+  s.succeed();
+  const applicableKeys = keys
+      .filter(set => datasets.includes(set.dataset))
+      .map(set => set.keys)
+      .flat();
+  if (!applicableKeys.length) {
+    s.info("no data exists");
+  }
+  const calculations = await promptCalculations(applicableKeys);
+
+  const timeFormat = f.isSame(t, "day") ? "HH:mm:ss" : "YYYY-MM-DDTHH:mm:ss";
+  s.start(`Running the query from ${chalk.bold(f.format(timeFormat))} to ${chalk.bold(t.format(timeFormat))} [UTC]`);
+
+  const {
+    queryRun,
+    calculations: { aggregates, series },
+    events: { events, count },
+  } = await api.queryRunCreate({
+    service,
+    calculations,
+    datasets,
+    queryId,
+    timeframe,
+    workspace: "baselime"
+  });
+  s.succeed();
+  outputs.getQueryRun({ queryRun, aggregates, series, events, format });
+}
+
 export default {
   createRun,
+  interactive
 };
