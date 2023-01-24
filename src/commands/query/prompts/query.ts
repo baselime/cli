@@ -5,6 +5,9 @@ import { Service } from "../../../services/api/paths/services";
 import { Query } from "../../../services/api/paths/queries";
 import spinner from "../../../services/spinner";
 import {Workspace} from "../../../services/api/paths/auth";
+import {getTimeframe} from "../../../services/timeframes/timeframes";
+import dayjs from "dayjs";
+import {KeySet} from "../../../services/api/paths/keys";
 
 export async function promptServiceSelect(): Promise<Service | undefined> {
   const s = spinner.get();
@@ -83,90 +86,111 @@ export async function promptTo(): Promise<string> {
 }
 
 export async function promptDatasets(): Promise<string[]> {
-  const s = spinner.get();
-  const choices = [
-    {name: "API Gateway logs", value: "apigateway-logs"},
-    {name: "CloudTrail", value: "cloudtrail"},
-    {name: "CloudWatch Metrics", value: "cloudwatch-metrics"},
-    {name: "Open Telemetry", value: "otel"},
-    {name: "X-Ray", value: "x-ray"},
-  ];
+  const choices: Record<string, string> = {
+  "API Gateway logs": "apigateway-logs",
+  "CloudTrail": "cloudtrail",
+  "CloudWatch Metrics": "cloudwatch-metrics",
+  "Open Telemetry": "otel",
+  "X-Ray": "x-ray",
+  }
+  // const choices = [
+  //   {name: "API Gateway logs", value: "apigateway-logs"},
+  //   {name: "CloudTrail", value: "cloudtrail"},
+  //   {name: "CloudWatch Metrics", value: "cloudwatch-metrics"},
+  //   {name: "Open Telemetry", value: "otel"},
+  //   {name: "X-Ray", value: "x-ray"},
+  // ];
 
-  let results: { name: string[] } = {name: []};
-  while (results.name.length < 1) {
-    results = await prompt<{ name: string[] }>({
+  let datasets: string[] = [];
+  while (!datasets.length) {
+    const result = await prompt<{datasets: string[]}>({
       type: "multiselect",
-      name: "name",
+      name: "datasets",
       min: 1,
       message: `${chalk.bold("Please select datasets")}`,
-      choices,
+      choices: Object.keys(choices),
     });
-    if (results.name.length == 0) {
-      s.info("Please select at least one dataset");
-    }
+    datasets = result.datasets;
   }
-  return choices.filter(choice => results.name.includes(choice.name)).map(choice => choice.value);
+  return datasets.map(name => choices[name]);
 }
 
-export async function promptCalculations(keys: string[]): Promise<{operator: string, key: string}[]> {
-  const terminationSymbol = "←";
-  const calculationsDict: any = {};
-  const choices = [
-    {name: terminationSymbol},
-    {name: "COUNT"},
-    {name: "AVG"},
-    {name: "MAX"},
-    {name: "MIN"},
-    {name: "P001"},
-    {name: "P05"},
-    {name: "P10"},
-    {name: "P25"},
-    {name: "P75"},
-    {name: "P90"},
-    {name: "P95"},
-    {name: "P99"},
-    {name: "P999"},
-    {name: "SUM"},
-  ];
+export async function promptCalculations(keySets: KeySet[]): Promise<{ operator: string; key: string }[]> {
+  const s = spinner.get();
+
+  const {name} = await prompt<{ name: string }>({
+    type: "select",
+    name: "name",
+    message: "Would you like to add any calculations?",
+    choices: [
+      {name: "Yes"},
+      {name: "No"},
+    ],
+  });
+  if(name != "Yes") {
+    return [];
+  }
+
+
+  const calculationsDict: Record<string, Record<string, boolean>> = {};
+  const terminationSymbol = "← RETURN";
+
+  const choices = keySets.length > 0
+      ? [
+          {name: terminationSymbol},
+          {name: "COUNT"},
+          {name: "AVG"},
+          {name: "MAX"},
+          {name: "MIN"},
+          {name: "P001"},
+          {name: "P05"},
+          {name: "P10"},
+          {name: "P25"},
+          {name: "P75"},
+          {name: "P90"},
+          {name: "P95"},
+          {name: "P99"},
+          {name: "P999"},
+          {name: "SUM"},
+      ] : [
+        {name: terminationSymbol},
+        {name: "COUNT"},
+      ];
   let operator = "";
   do {
     const calculationResult = await prompt<{ name: string }>({
       type: "select",
       name: "name",
-      message: `${chalk.bold("Please select calculations")}`,
+      message: () => {
+        let current = getCalculationsAsString(calculationsDict);
+        if (current) {
+          current = chalk.cyan(`Added calculations: ${current}`)
+        } else {
+
+        }
+        return `${chalk.bold("Which calculations to add?")}. ${current}`
+      },
       choices,
     });
     operator = calculationResult.name;
-    if (operator == "COUNT") {
-      calculationsDict[operator] = true;
-    } else if (operator != terminationSymbol) {
-      //@ts-ignore
-      const keyResult = await prompt<{ name: string }>({
-        type: "autocomplete",
-        name: "name",
-        //@ts-ignore
-        message: async (state: any): string  => {
-          const selected = state.choices[state.index];
-          let hint;
-          if (selected) {
-            hint = `${chalk.greenBright(`${operator}(${selected.name})`)}`;
-          } else {
-            hint = `${chalk.greenBright(`${operator}(${state.input})`)}`;
-          }
-          return `${chalk.bold(`Please select key for calculation: ${hint}`)}`;
-        },
-        choices: keys,
-        limit: 10,
-      });
-      if(calculationsDict[operator]) {
-        calculationsDict[operator][keyResult.name] = true;
-      } else {
-        calculationsDict[operator] = {
-          [keyResult.name]: true,
-        }
-      }
+    if (operator != terminationSymbol) {
+      await promptCompute(calculationsDict, operator, keySets)
     }
   } while (operator != terminationSymbol);
+  const calculations = convertCalculationTreeToArray(calculationsDict);
+  if (calculations.length) {
+    s.info(`Selected calculations: ${calculations.map(calc => (`${calc.operator}(${calc.key})`))}`);
+  }
+  return calculations;
+}
+
+export function getCalculationsAsString(calculationsDict: Record<string, Record<string, boolean>>): string {
+  return convertCalculationTreeToArray(calculationsDict)
+      .map(calc => `${calc.operator}(${calc.key})`)
+      .join(", ");
+}
+
+function convertCalculationTreeToArray(calculationsDict: Record<string, Record<string, boolean>>): {operator: string, key: string}[] {
   const calculations: {operator: string, key: string}[] = [];
   for (const [operator, keyObj] of Object.entries(calculationsDict)) {
     if (operator == "COUNT") {
@@ -184,4 +208,153 @@ export async function promptCalculations(keys: string[]): Promise<{operator: str
     }
   }
   return calculations;
+}
+
+export async function promptFilters(keySets: KeySet[]): Promise<{ key: string; operator: string; type: string; value: string }[]> {
+  const {name} = await prompt<{ name: string }>({
+    type: "select",
+    name: "name",
+    message: "Would you like to add a filter?",
+    choices: [
+      {name: "Yes"},
+      {name: "No"},
+    ],
+  });
+  if(name == "Yes") {
+    const {key} = await prompt<{ key: string }>({
+      type: "select",
+      name: "key",
+      message: "Please select the key to apply filter on",
+      choices: [
+        {name: "$baselime.namespace"},
+        ...keySets.map(keySet => keySet.keys.map(key =>({name: "", key}))).flat(),
+      ],
+    });
+    const {operator} = await prompt<{ operator: string }>({
+      type: "select",
+      name: "operator",
+      message: "Please select key conditional operator",
+      choices: [
+        "!=",
+        "<",
+        "<=",
+        "=",
+        ">",
+        ">=",
+        "DOES_NOT_EXIST",
+        "EXISTS",
+        "IN",
+        "INCLUDES",
+        "NOT_IN",
+        "STARTS_WITH",
+      ],
+    });
+    const {value} = await prompt<{value: string}>({
+      type: 'input',
+      name: `value`,
+      message: 'Insert value to check against'
+    });
+    return [
+      {
+        key,
+        operator,
+        value,
+        type: "string"
+      }
+    ];
+  }
+  return [];
+}
+
+async function promptCompute(calculationsDict: Record<string, Record<string, boolean>> = {}, operator: string, keySets: KeySet[]) {
+  if(operator == "COUNT") {
+    calculationsDict[operator] = {
+      [operator]: true
+    };
+    return
+  }
+
+  //@ts-ignore
+  const keyResult = await prompt<{ value: {type: string, name: string, dataset: string} }>({
+    type: "autocomplete",
+    name: "value",
+    //@ts-ignore
+    message: async (state: any): string  => {
+      const current = getCalculationsAsString(calculationsDict);
+      const selected = state.choices[state.index];
+      let hint;
+      if (selected) {
+        hint = `${chalk.greenBright(`${operator}(${selected.value.name})`)}`;
+      } else {
+        hint = `${chalk.greenBright(`${operator}(${state.input})`)}`;
+      }
+      return `${chalk.bold(`Please select key for calculation: ${hint}`)} \nCurrent: ${current}`;
+    },
+    choices: keySets.map(keySet => {
+      let shortType: string;
+      switch (keySet.type) {
+        case "number":
+          shortType = "N"
+          break;
+        case "string":
+          shortType = "S"
+          break;
+        case "boolean":
+          shortType = "B"
+          break;
+      }
+      return keySet.keys.map(key => ({
+        name: `(${shortType}) ${key}`,
+        value: {
+          type: keySet.type,
+          name: key,
+          dataset: keySet.dataset
+        }
+      }))
+    }).flat(),
+    limit: 10,
+  });
+  if(!calculationsDict[operator]) {
+    calculationsDict[operator] = {};
+  }
+  calculationsDict[operator][keyResult.value.name] = true;
+}
+
+
+export async function promptNeedle() {
+  const {name} = await prompt<{ name: string }>({
+    type: "select",
+    name: "name",
+    message: "Searching for particular value?",
+    choices: [
+      {name: "Yes"},
+      {name: "No"},
+    ],
+  });
+  if(name != "Yes") {
+    return;
+  }
+  const {value} = await prompt<{value: string}>({
+    type: 'input',
+    name: `value`,
+    message: 'Insert searched value.'
+  });
+
+  const regex = "Regular expression"
+  const matchCase = "Match case"
+
+  const {options} = await prompt<{options: string[]}>({
+    type: "multiselect",
+    name: "options",
+    message: `${chalk.bold("Please select options below")}`,
+    choices: [
+      matchCase,
+      regex
+    ]
+  });
+  return {
+    value,
+    isRegex: options.includes(regex),
+    matchCase: options.includes(matchCase),
+  }
 }

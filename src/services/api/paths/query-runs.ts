@@ -54,6 +54,17 @@ export interface QueryRunCreateParams {
     operator: string
   }[]
   workspace?: string
+  filters?: {
+    key: string
+    operation: string
+    type: string
+    value: string
+  }[]
+  needle?: {
+    value: string,
+    isRegex: boolean,
+    matchCase: boolean
+  }
 }
 
 async function queryRunsList(service: string, queryId: string): Promise<QueryRun[]> {

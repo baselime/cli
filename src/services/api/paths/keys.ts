@@ -12,7 +12,13 @@ interface KeysGetParams {
     }
 }
 
-async function getKeys(params: KeysGetParams): Promise<{keys: string[], dataset: string}[]> {
+export type KeySet = {
+    keys: string[];
+    dataset: string;
+    type: string;
+}
+
+async function getKeys(params: KeysGetParams): Promise<KeySet[]> {
     const res = (await client.get(`/keys/`, {params: {
         from: params.params.timeframe.from,
         to: params.params.timeframe.to

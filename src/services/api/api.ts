@@ -35,5 +35,5 @@ export default {
   ...reports,
   ...alertChecks,
   ...slack,
-  ...keys
+  ...keys,
 };
