@@ -7,6 +7,7 @@ interface KeysGetParams {
     workspaceId: string,
     environmentId: string,
     params: {
+        datasets: string[]
         timeframe: Timeframe,
         service: string
     }
@@ -19,10 +20,15 @@ export type KeySet = {
 }
 
 async function getKeys(params: KeysGetParams): Promise<KeySet[]> {
-    const res = (await client.get(`/keys/`, {params: {
-        from: params.params.timeframe.from,
-        to: params.params.timeframe.to
-    }})).data;
+    const res = (
+        await client.get(`/keys/`, {
+            params: {
+                from: params.params.timeframe.from,
+                to: params.params.timeframe.to,
+                datasets: params.params.datasets,
+            }
+        }
+    )).data;
     return res.keys;
 }
 

@@ -11,7 +11,7 @@ import {
   promptCalculations,
   promptDatasets,
   promptFilters,
-  promptFrom, promptNeedle,
+  promptFrom, promptGroupBy, promptNeedle,
   promptTo
 } from "../prompts/query";
 import {Prompt, prompt} from "enquirer";
@@ -61,6 +61,7 @@ async function getApplicableKeys(timeframe: Timeframe, datasets: string[]): Prom
     environmentId: "prod",
     workspaceId: "baselime",
     params: {
+      datasets,
       timeframe,
       service: "default"
     }
@@ -72,7 +73,6 @@ async function getApplicableKeys(timeframe: Timeframe, datasets: string[]): Prom
 async function interactive(input: {queryId: string, service: string, format: any}) {
   const s = spinner.get();
   const {queryId, service, format} = input;
-  console.log('queryId', {queryId, service})
 
   let from = await promptFrom();
 
@@ -115,6 +115,11 @@ async function interactive(input: {queryId: string, service: string, format: any
       // only numeric
       applicableKeys.filter(keySet => keySet.type == "number")
   );
+  let groupBy;
+  if (calculations.length) {
+    groupBy = await promptGroupBy(applicableKeys, calculations);
+  }
+
   const filters = await promptFilters(applicableKeys);
   const needle = await promptNeedle();
 
@@ -131,16 +136,18 @@ async function interactive(input: {queryId: string, service: string, format: any
     events: { events, count },
   } = await api.queryRunCreate({
     service,
-    calculations,
-    needle,
-    filters: filters.map(filter => ({
-      ...filter,
-      operation: filter.operator,
-    })),
-    datasets,
     queryId,
     timeframe,
-    workspace: "baselime"
+    parameters: {
+      datasets,
+      calculations,
+      needle,
+      filters: filters.map(filter => ({
+        ...filter,
+        operation: filter.operator,
+      })),
+      groupBy
+    }
   });
   s.succeed();
   outputs.getQueryRun({ queryRun, aggregates, series, events, format });

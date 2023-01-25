@@ -1,12 +1,9 @@
-import chalk from "chalk";
+import chalk, {underline} from "chalk";
 import { prompt } from "enquirer";
 import api from "../../../services/api/api";
 import { Service } from "../../../services/api/paths/services";
 import { Query } from "../../../services/api/paths/queries";
 import spinner from "../../../services/spinner";
-import {Workspace} from "../../../services/api/paths/auth";
-import {getTimeframe} from "../../../services/timeframes/timeframes";
-import dayjs from "dayjs";
 import {KeySet} from "../../../services/api/paths/keys";
 
 export async function promptServiceSelect(): Promise<Service | undefined> {
@@ -222,18 +219,24 @@ export async function promptFilters(keySets: KeySet[]): Promise<{ key: string; o
   });
   if(name == "Yes") {
     const {key} = await prompt<{ key: string }>({
-      type: "select",
+      type: "autocomplete",
       name: "key",
       message: "Please select the key to apply filter on",
       choices: [
-        {name: "$baselime.namespace"},
-        ...keySets.map(keySet => keySet.keys.map(key =>({name: "", key}))).flat(),
+        {name: "$baselime.namespace", value: "$baselime.namespace"},
+          ...keySetsToChoices(keySets),
+        // ...keySets.map(keySet => keySet.keys.map(key =>({name: "", key}))).flat(),
       ],
     });
+
     const {operator} = await prompt<{ operator: string }>({
       type: "select",
       name: "operator",
-      message: "Please select key conditional operator",
+      //@ts-ignore
+      message: (state: any): string => {
+        const selected = state.choices[state.index || 0];
+        return `Please select key conditional operator: ${key} ${selected.name}`
+      },
       choices: [
         "!=",
         "<",
@@ -252,7 +255,7 @@ export async function promptFilters(keySets: KeySet[]): Promise<{ key: string; o
     const {value} = await prompt<{value: string}>({
       type: 'input',
       name: `value`,
-      message: 'Insert value to check against'
+      message: `${key} ${operator} `
     });
     return [
       {
@@ -279,7 +282,7 @@ async function promptCompute(calculationsDict: Record<string, Record<string, boo
     type: "autocomplete",
     name: "value",
     //@ts-ignore
-    message: async (state: any): string  => {
+    message: (state: any): string  => {
       const current = getCalculationsAsString(calculationsDict);
       const selected = state.choices[state.index];
       let hint;
@@ -357,4 +360,110 @@ export async function promptNeedle() {
     isRegex: options.includes(regex),
     matchCase: options.includes(matchCase),
   }
+}
+
+interface GroupByProps {
+  limit: number;
+  order: string;
+  orderBy: string;
+  type: string;
+  value: string;
+}
+
+export async function promptGroupBy(keySets: KeySet[], calculations: { operator: string; key: string }[]): Promise<GroupByProps | undefined> {
+  const {name} = await prompt<{ name: string }>({
+    type: "select",
+    name: "name",
+    message: "Would you like to group results?",
+    choices: [
+      {name: "Yes"},
+      {name: "No"},
+    ],
+  });
+  if(name != "Yes") {
+    return;
+  }
+  const {value: groupByKey} = await prompt<{ value: string }>({
+    type: "autocomplete",
+    name: "value",
+    message: "Which key to group by?",
+    choices: keySetsToChoices(keySets),
+  });
+  const {props: {values: {limit, order}}} = await prompt<{props: {values: {limit: string, order: string}}}>({
+    type: "snippet",
+    name: "props",
+    message: `Complete group by parameters`,
+    //@ts-ignore
+    fields: [
+      {
+        name: "limit",
+        validate(value: any): string | undefined {
+          value = Math.floor(value)
+          if(!isNaN(value) && value > 0 && value < 10000) {
+            return undefined
+          }
+          return "Limit must be a natural, positive number below 10000"
+        }
+      },
+      {
+        name: "order",
+        validate(value: any): string | undefined {
+          if(value == "DESC" || value == "ASC") {
+            return undefined
+          }
+          return "Invalid order, must be: DESC or ASC"
+        }
+      }
+    ],
+    template: `grouped by ${groupByKey} up to \${limit} results ordered by COUNT in \${order} order`,
+  });
+  const {orderField} = await prompt<{ orderField: string }>({
+    type: "select",
+    name: "orderField",
+    message: "Which field to order by?",
+    choices: calculations.map(calculation => calculation.operator),
+  });
+  return {
+    value: groupByKey,
+    limit: Number(limit),
+    order: order,
+    orderBy: orderField,
+    type: "string"
+  };
+}
+
+interface KeySetOption {
+  name: string
+  value: string;
+  extra: {
+    type: string
+    name: string
+    dataset: string
+  }
+}
+
+function keySetsToChoices(keySets: KeySet[]): KeySetOption[] {
+  return keySets.map(keySet => {
+    let shortType: string;
+    switch (keySet.type) {
+      case "number":
+        shortType = "N"
+        break;
+      case "string":
+        shortType = "S"
+        break;
+      case "boolean":
+        shortType = "B"
+        break;
+    }
+    return keySet.keys.map(key => ({
+      name: `(${shortType}) ${key}`,
+      value: key,
+      extra: {
+        type: keySet.type,
+        name: key,
+        dataset: keySet.dataset
+      }
+    }))
+  }).flat();
 }

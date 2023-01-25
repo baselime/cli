@@ -48,22 +48,30 @@ export interface QueryRunCreateParams {
     from: number;
     to: number;
   };
-  datasets?: string[];
-  calculations?: {
-    key: string,
-    operator: string
-  }[]
-  workspace?: string
-  filters?: {
-    key: string
-    operation: string
-    type: string
-    value: string
-  }[]
-  needle?: {
-    value: string,
-    isRegex: boolean,
-    matchCase: boolean
+  parameters?: {
+    datasets?: string[];
+    calculations?: {
+      key: string,
+      operator: string
+    }[]
+    filters?: {
+      key: string
+      operation: string
+      type: string
+      value: string
+    }[]
+    needle?: {
+      value: string,
+      isRegex: boolean,
+      matchCase: boolean
+    }
+    groupBy?: {
+      limit: number;
+      order: string;
+      orderBy: string;
+      type: string;
+      value: string;
+    }
   }
 }
 
