@@ -102,7 +102,7 @@ export async function handler(argv: Arguments<Options>) {
       // follow,
       queryId: id as string,
       service: service as string,
-      format
+      format,
     });
   }
 

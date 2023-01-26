@@ -51,28 +51,28 @@ export interface QueryRunCreateParams {
   parameters?: {
     datasets?: string[];
     calculations?: {
-      key: string,
-      operator: string
-    }[]
+      key: string;
+      operator: string;
+    }[];
     filters?: {
-      key: string
-      operation: string
-      type: string
-      value: string
-    }[]
+      key: string;
+      operation: string;
+      type: string;
+      value: string;
+    }[];
     needle?: {
-      value: string,
-      isRegex: boolean,
-      matchCase: boolean
-    }
+      value: string;
+      isRegex: boolean;
+      matchCase: boolean;
+    };
     groupBy?: {
       limit: number;
       order: string;
       orderBy: string;
       type: string;
       value: string;
-    }
-  }
+    };
+  };
 }
 
 async function queryRunsList(service: string, queryId: string): Promise<QueryRun[]> {
