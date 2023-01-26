@@ -1,4 +1,4 @@
-import chalk, { underline } from "chalk";
+import chalk from "chalk";
 import { prompt } from "enquirer";
 import api from "../../../services/api/api";
 import { Service } from "../../../services/api/paths/services";
@@ -90,13 +90,6 @@ export async function promptDatasets(): Promise<string[]> {
     "Open Telemetry": "otel",
     "X-Ray": "x-ray",
   };
-  // const choices = [
-  //   {name: "API Gateway logs", value: "apigateway-logs"},
-  //   {name: "CloudTrail", value: "cloudtrail"},
-  //   {name: "CloudWatch Metrics", value: "cloudwatch-metrics"},
-  //   {name: "Open Telemetry", value: "otel"},
-  //   {name: "X-Ray", value: "x-ray"},
-  // ];
 
   let datasets: string[] = [];
   while (!datasets.length) {
