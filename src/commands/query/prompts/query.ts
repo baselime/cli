@@ -209,7 +209,6 @@ export async function promptFilters(keySets: KeySet[]): Promise<{ key: string; o
       choices: [
         { name: "$baselime.namespace", value: "$baselime.namespace" },
         ...keySetsToChoices(keySets),
-        // ...keySets.map(keySet => keySet.keys.map(key =>({name: "", key}))).flat(),
       ],
     });
 

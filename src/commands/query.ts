@@ -92,14 +92,6 @@ export async function handler(argv: Arguments<Options>) {
 
   if (!isSaved) {
     return await handlers.interactive({
-      // id,
-      // format,
-      // datasets,
-      // filters: fs,
-      // needle,
-      // matchCase,
-      // regex,
-      // follow,
       queryId: id as string,
       service: service as string,
       format,
