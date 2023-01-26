@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - The slack channel the updates are posted to
 
+### Removed
+
+- Removed the CF stack stage in the baselime init command
+
 ## [0.0.43] 2023-01-19
 
 ### Fixed

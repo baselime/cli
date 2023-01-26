@@ -4,13 +4,10 @@ import { stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../regex";
 import { DeploymentService } from "../push/handlers/validators";
-import { promptStacksSelect } from "./prompts";
 const packageJson = require("../../../package.json");
 
 export async function init(folder: string, service: string, description: string, provider: string, templateUrl?: string) {
   const s = spinner.get();
-
-  const stacks = await promptStacksSelect(provider);
 
   s.start("Generating your config folder");
 
@@ -26,9 +23,6 @@ export async function init(folder: string, service: string, description: string,
     service,
     description: description || undefined,
     provider,
-    infrastructure: {
-      stacks,
-    },
     templates: templates as any,
   };
 
