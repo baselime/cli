@@ -206,10 +206,7 @@ export async function promptFilters(keySets: KeySet[]): Promise<{ key: string; o
       type: "autocomplete",
       name: "key",
       message: "Please select the key to apply filter on",
-      choices: [
-        { name: "$baselime.namespace", value: "$baselime.namespace" },
-        ...keySetsToChoices(keySets),
-      ],
+      choices: [{ name: "$baselime.namespace", value: "$baselime.namespace" }, ...keySetsToChoices(keySets)],
     });
 
     const { operator } = await prompt<{ operator: string }>({
