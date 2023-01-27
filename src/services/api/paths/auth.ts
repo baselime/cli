@@ -36,11 +36,7 @@ export interface KeyPermissions {
   environments: boolean;
 }
 
-async function generateOneTimePassword(email: string) {
-  await publicClient.post("/auth/otp", { email });
-}
-
-async function getWorkspaces(accessToken?: string, otp?: string) {
+async function getWorkspaces(accessToken?: string, otp?: string): Promise<Workspace[]> {
   const { workspaces } = (
     await publicClient.get("/auth/workspaces", {
       headers: {
@@ -50,6 +46,33 @@ async function getWorkspaces(accessToken?: string, otp?: string) {
     })
   ).data;
   return workspaces;
+}
+
+async function createWorkspace(name: string, accessToken: string): Promise<Workspace> {
+  const { workspace } = (
+    await publicClient.post(
+      "/auth/workspaces",
+      { name, linkDomain: true, },
+      {
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      },
+    )
+  ).data;
+  return workspace;
+}
+
+async function getAuthIam(accessToken?: string, otp?: string) {
+  const { user } = (
+    await publicClient.get("/auth/iam", {
+      headers: {
+        authorization: `Bearer ${accessToken}`,
+      },
+      params: { otp },
+    })
+  ).data;
+  return user;
 }
 
 async function getApiKey(workspaceId: string, environmentId: string, idToken?: string, otp?: string): Promise<string> {
@@ -75,9 +98,10 @@ async function getAuthConfig(): Promise<{ url: string; pool: string; client: str
 }
 
 export default {
-  generateOneTimePassword,
   getWorkspaces,
   getApiKey,
   getApiKeyPermissions,
   getAuthConfig,
+  getAuthIam,
+  createWorkspace,
 };

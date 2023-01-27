@@ -3,6 +3,7 @@ import chalk from "chalk";
 import { hideBin } from "yargs/helpers";
 import spinner from "../../services/spinner/index";
 require("dotenv").config();
+import http from "http";
 const argv = hideBin(process.argv);
 
 function getBaseUrl(): string {
@@ -48,6 +49,7 @@ publicClient.interceptors.response.use(
     return response;
   },
   function (error) {
+    if((error.request as http.ClientRequest).path.includes("/auth/api-key")) return;
     const s = spinner.get();
     s.fail();
     console.log(`${chalk.red(chalk.bold(error))}`);

@@ -4,9 +4,18 @@ import { readUserAuth, writeUserAuth } from "../services/auth";
 import spinner from "../services/spinner";
 import { baseOptions, BaseOptions, printError } from "../shared";
 import { credentialsConfigured, userConfigFound, welcome } from "./auth/handlers/outputs";
-import { promptForEnvironment, promptForOneTimePassword, promptReplaceExistingProfile } from "./auth/handlers/prompts";
+import {
+  promptAWSAccountId,
+  promptAWSRegion,
+  promptEnvironmentAlias,
+  promptForEnvironment,
+  promptForOneTimePassword,
+  promptForWorkspaceName,
+  promptReplaceExistingProfile,
+} from "./auth/handlers/prompts";
 import * as open from "open";
 import { PORT, startServer } from "../services/auth/server";
+import { connect } from "./environments/handlers/handlers";
 
 export interface Options extends BaseOptions {
   email?: string;
@@ -66,22 +75,42 @@ export async function handler(argv: Arguments<Options>) {
   } else {
     s.start("Redirecting to the browser...");
     const config = await api.getAuthConfig();
-    const creds = await startServer(config, argv);
+    const creds = await startServer(config, oathData.otp, argv);
 
     const loginUrl = `${config.url}/oauth2/authorize?client_id=${config.client}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:${PORT}`;
     await open.default(loginUrl);
 
     oathData.id_token = (await creds.getCreds()).id_token;
-    s.succeed();
+    const user = await creds.getUser();
+    s.succeed(`Welcome ${user.forname || "baselimer"}!`);
   }
 
-  s.start("Checking your environments...");
+  s.start("Fetching your workspaces...");
   const workspaces = await api.getWorkspaces(oathData.id_token, oathData.otp);
-  s.succeed();
 
-  const { workspaceId, environmentId } = await promptForEnvironment(workspaces);
+  if (!workspaces.length) {
+    s.succeed();
+    const workspaceName = await promptForWorkspaceName();
+    s.start(`Creating workspace ${workspaceName}...`);
+    const workspace = await api.createWorkspace(workspaceName, oathData.id_token);
+    s.succeed();
+    workspaces.push(workspace);
+  } else {
+    s.succeed(`Welcome to ${workspaces[0].id}!`);
+  }
 
-  s.start("Setting up your workstation");
+  let { workspaceId, environmentId, isCreate } = await promptForEnvironment(workspaces);
+
+  if (isCreate) {
+    const provider = "aws";
+    const alias = await promptEnvironmentAlias();
+    const account = await promptAWSAccountId();
+    const region = await promptAWSRegion();
+    environmentId = alias;
+    await connect("table", workspaceId, provider, { account, region }, alias, oathData.id_token);
+  }
+
+  s.start("Fetching your API key...");
   const apiKey = await api.getApiKey(workspaceId, environmentId, oathData.id_token, oathData.otp);
   const path = await writeUserAuth(profile, {
     apiKey,

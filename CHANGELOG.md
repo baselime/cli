@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - A npm post-install script
+- Signup from CLI
+
+### Changed
+
+- baselime environments connect is now interactive
+- baselime is more interactive
+
 
 ## [0.0.44] 2023-01-26
 

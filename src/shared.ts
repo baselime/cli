@@ -26,8 +26,8 @@ export const baseOptions = {
 
 export function userConfigNotFound(profile: string) {
   console.log(
-    `${chalk.red(`You're not authenticated as ${chalk.bold(profile)}`)}\nRun the following to configure ${chalk.bold(chalk.red(profile))}:\n${chalk.bold(
-      `$ baselime login --profile ${chalk.cyan(`${profile}`)}`,
+    `${chalk.red(`You're not authenticated as ${chalk.bold(profile)}`)}
+Run ${chalk.greenBright(`baselime login --profile ${chalk.cyan(`${profile}`)} to create a new profile`,
     )}`,
   );
 }

@@ -1,16 +1,18 @@
 import { Arguments, CommandBuilder } from "yargs";
 import api from "../../services/api/api";
+import { startServer, PORT } from "../../services/auth/server";
 import spinner from "../../services/spinner";
 import { baseOptions, BaseOptions, printError } from "../../shared";
-import { promptForEmail, promptForOneTimePassword } from "../auth/handlers/prompts";
+import { promptAWSAccountId, promptAWSRegion, promptEnvironmentAlias, promptForEmail, promptForOneTimePassword } from "../auth/handlers/prompts";
 import handlers from "./handlers/handlers";
+import * as open from "open";
+import chalk from "chalk";
 
 export interface Options extends BaseOptions {
-  provider: string;
-  account: string;
-  region: string;
-  alias: string;
-  email?: string;
+  provider?: string;
+  account?: string;
+  region?: string;
+  alias?: string;
 }
 
 export const command = "connect";
@@ -24,17 +26,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       account: { type: "string", desc: "The account number" },
       region: { type: "string", desc: "The region" },
       alias: { type: "string", desc: "An alias for the environment (eg. 'prod')" },
-      email: { type: "string", desc: "Email of the user", alias: "e" },
     })
-    .demandOption("provider")
-    .demandOption("account")
-    .demandOption("region")
-    .demandOption("alias")
     .example([
       [
         `
       # Connect an AWS environment:
-      $0 environments connect --provider aws --account <account_numner> --region <region> --alias <alias>
+      $0 environments connect
       `,
       ],
     ])
@@ -46,16 +43,32 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
 
-  const { provider, account, region, alias, format } = argv;
-  let { email } = argv;
+  let { provider = "aws", account, region, alias, format } = argv;
 
-  email ??= await promptForEmail();
+  let oathData = { id_token: "", otp: "" };
+  s.start("Redirecting to the browser...");
+  const config = await api.getAuthConfig();
+  const creds = await startServer(config, oathData.otp, argv);
 
-  s.start("Sending email verification request");
-  await api.generateOneTimePassword(email);
+  const loginUrl = `${config.url}/oauth2/authorize?client_id=${config.client}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:${PORT}`;
+  await open.default(loginUrl);
+
+  oathData.id_token = (await creds.getCreds()).id_token;
+  const user = await creds.getUser();
+  s.succeed(`Welcome ${user.forname || "baselimer"}!`);
+
+  alias ??= await promptEnvironmentAlias();
+  account ??= await promptAWSAccountId();
+  region ??= await promptAWSRegion();
+
+  s.start("Fetching your workspaces");
+  const workspaces = await api.getWorkspaces(oathData.id_token, oathData.otp);
   s.succeed();
 
-  const otp = await promptForOneTimePassword(email);
+  if(!workspaces.length) {
+    console.log(`Use ${chalk.greenBright("baselime login")} to create a workspace before connecting your ${provider} account.`);
+    return process.exit(0);
+  }
 
-  await handlers.connect(format, provider, { account, region }, alias, otp);
+  await handlers.connect(format, workspaces[0].id, provider, { account, region }, alias, oathData.id_token);
 }

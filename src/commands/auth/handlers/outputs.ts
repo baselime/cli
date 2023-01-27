@@ -7,23 +7,21 @@ import { getAuthProfilePath } from "../../../services/auth";
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
 export function welcome() {
-  console.log(`${chalk.bold(chalk.greenBright("Welcome to Baselime"))}\n`);
+  console.log(`${chalk.greenBright("Welcome to Baselime")}\n`);
+  console.log(`${chalk.grey("By using the Baselime terminal you agree with our terms (https://baselime.io/terms) and our privacy policy (https://baselime.io/privacy)")}\n`);
 }
 
 export function userConfigFound(profile: string) {
   console.log(
-    `You're already authenticated as ${chalk.cyan(profile)}.\n\nIf you would like to configure a new profile, run the following:\n${chalk.bold(
-      `$ baselime auth --profile ${chalk.cyan("<new_baselime_profile_name>")}`,
-    )}\n`,
-  );
+    `You're already authenticated as ${chalk.cyan(profile)}
+Run ${chalk.greenBright('baselime login --profile <new_baselime_profile_name>')} to create a new profile`);
 }
 
 export function credentialsConfigured(path: string) {
-  console.log(`✨ API Key written to ${chalk.cyan(path)}`);
+  console.log(`✨ You're now logged in! Your API Key is written to ${chalk.cyan(path)}`);
   console.log(`
 Next steps:
-  1. Navigate to one of your services folders
-  2. Run ${chalk.bold("baselime init")} to initialise Observability as Code in the service`);
+Run ${chalk.greenBright("baselime query")} to query your telemetry data`);
   process.exit(0);
 }
 
