@@ -82,11 +82,10 @@ export async function handler(argv: Arguments<Options>) {
 
   console.log(`\n
 Next steps:
-  1. ${chalk.bold("Navigate")} to ${folder}
-  2. ${chalk.bold("Create a .yml")} file and write your observability resources
-  3. ${chalk.bold("Run baselime push")} to create your observability resources
-  4. ${chalk.bold("Run baselime query")} to query your telemetry data
+  1. Create a .yml file in ${folder} and write your observability resources
+  2. Run ${chalk.greenBright("baselime push")} to create your observability resources
+  3. Run ${chalk.greenBright("baselime query")} to query your telemetry data
   
-Learn how to write observability resources using the Observability Reference Language: https://docs.baselime.io/observability-reference-language/overview/
+${chalk.grey("Learn how to write observability resources using the Observability Reference Language (ORL):")}\nhttps://docs.baselime.io/observability-reference-language/overview/
 `);
 }

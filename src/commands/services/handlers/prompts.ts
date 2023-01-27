@@ -1,11 +1,12 @@
-import { prompt } from "enquirer";
+import chalk from "chalk";
+const { BooleanPrompt } = require("enquirer");
 
 export async function promptReplaceExistingConfig(filename: string): Promise<boolean> {
-  const { confirm } = await prompt<{ confirm: boolean }>({
-    type: "confirm",
-    name: "confirm",
-    message: `Replace config folder ${filename}?`,
+  const prompt = new BooleanPrompt({
+    message: `Replace existing config folder ${filename}?`,
+    footer: `\n${chalk.grey("We want to make sure you don't delete anything by mistake.")}`,
   });
 
+  const confirm = await prompt.run();
   return confirm;
 }
