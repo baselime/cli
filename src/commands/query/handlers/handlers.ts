@@ -49,7 +49,7 @@ async function createRun(data: {
 
 async function getApplicableKeys(timeframe: Timeframe, datasets: string[]): Promise<KeySet[]> {
   const s = spinner.get();
-  s.start("Getting keys");
+  s.start("Fetching keys...");
   const keys = await api.getKeys({
     environmentId: "prod",
     workspaceId: "baselime",
@@ -63,13 +63,11 @@ async function getApplicableKeys(timeframe: Timeframe, datasets: string[]): Prom
   return keys.filter((set) => datasets.includes(set.dataset));
 }
 
-async function interactive(input: { queryId: string; service: string; format: any }) {
+async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string }) {
   const s = spinner.get();
   const { queryId, service, format } = input;
+  let { from, to } = input;
 
-  let from = await promptFrom();
-
-  let to = await promptTo();
   let timeframe = getTimeframe(from, to);
   let datasets = await promptDatasets();
   let applicableKeys = await getApplicableKeys(timeframe, datasets);
@@ -84,7 +82,7 @@ async function interactive(input: { queryId: string; service: string; format: an
       type: "select",
       name: "toChange",
       min: 1,
-      message: "No indexed data has been found for given dataset in the time bracket. Would you like to change the following?",
+      message: "No indexed data has been found for given datasets in the time bracket. Select different parameters.",
       choices: Object.keys(choices),
       result: (value: string): string => choices[value],
     });

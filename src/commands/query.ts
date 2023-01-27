@@ -5,7 +5,7 @@ import spinner from "../services/spinner";
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import { randomString } from "../utils";
 import handlers from "./query/handlers/handlers";
-import { promptServiceSelect as promptServiceSelect, promptFrom, promptQuerySelect, promptTo, promptRunSavedQuery } from "./query/prompts/query";
+import { promptServiceSelect as promptServiceSelect, promptFrom, promptQuerySelect, promptTo } from "./query/prompts/query";
 
 export interface Options extends BaseOptions {
   service?: string;
@@ -77,29 +77,32 @@ export async function handler(argv: Arguments<Options>) {
 
   service ??= (await promptServiceSelect())?.name || "";
 
-  const isSaved = id ? true : await promptRunSavedQuery();
-  if (isSaved) {
-    id ??= (await promptQuerySelect(service))?.id || "";
-  } else {
-    id ??= `new-query-${randomString(6)}`;
+  id ??= (await promptQuerySelect(service))?.id;
+
+  let isSaved = true;
+  if (!id) {
+    isSaved = false;
+    id = `baselime-new-query-${randomString(6)}`;
   }
 
   if (!(service && id)) {
-    throw new Error("service and query id are required");
+    throw new Error("Service and query id are required");
   }
 
   const fs = filters.map(parseFilter);
+
+  from ??= await promptFrom();
+  to ??= await promptTo();
 
   if (!isSaved) {
     return await handlers.interactive({
       queryId: id as string,
       service: service as string,
       format,
+      from,
+      to,
     });
   }
-
-  from ??= await promptFrom();
-  to ??= await promptTo();
 
   await handlers.createRun({
     id,

@@ -28,33 +28,23 @@ export async function promptServiceSelect(): Promise<Service | undefined> {
   return services.find((service) => service.name === name);
 }
 
-export async function promptRunSavedQuery(): Promise<boolean> {
-  const { message } = await prompt<{ message: string }>({
-    type: "select",
-    name: "message",
-    message: "Run a saved query?",
-    choices: ["Saved query", "Interactive query builder"],
-  });
-  return message === "Saved query";
-}
-
 export async function promptQuerySelect(service?: string): Promise<Query | undefined> {
   const s = spinner.get();
-  s.start("Fetching your queries");
+  s.start("Fetching your queries...");
   const queries = await api.queriesList(service);
   s.succeed();
 
-  if (queries.length === 0) {
-    throw new Error("No query found. Please create at least one Baselime query.");
-  }
-
+  const choices = [
+    { name: "Create new query", value: "" },
+    ...queries.map((query) => {
+      return { name: query.id, value: query.id };
+    }),
+  ];
   const { id } = await prompt<{ id: string }>({
     type: "select",
     name: "id",
-    message: `${chalk.bold("Please select a query")}`,
-    choices: queries.map((query) => {
-      return { name: query.id, value: query.id };
-    }),
+    message: `${chalk.bold("Select a query")}`,
+    choices,
   });
 
   return queries.find((q) => q.id === id);
@@ -89,6 +79,7 @@ export async function promptDatasets(): Promise<string[]> {
     "CloudWatch Metrics": "cloudwatch-metrics",
     "Open Telemetry": "otel",
     "X-Ray": "x-ray",
+    "Lambda Logs": "lambda-logs",
   };
 
   let datasets: string[] = [];
@@ -97,8 +88,8 @@ export async function promptDatasets(): Promise<string[]> {
       type: "multiselect",
       name: "datasets",
       min: 1,
-      message: `${chalk.bold("Please select datasets")}`,
-      choices: Object.keys(choices),
+      message: `${chalk.bold("Select datasets (using [Space])")}`,
+      choices: Object.keys(choices).sort(),
     });
     datasets = result.datasets;
   }

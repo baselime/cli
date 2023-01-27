@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - baselime environments connect is now interactive
 - baselime login is more interactive
 - Improved flow in baselime init
+- Improved flow in baselime query
 
 
 ## [0.0.44] 2023-01-26
