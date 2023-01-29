@@ -25,7 +25,7 @@ const template = (name: string, logout?: string) => /*html*/ `<!DOCTYPE html>
       <div class="overflow-hidden rounded-lg">
         <div class="px-4 py-5 sm:p-6 space-y-6 flex flex-col items-center">
           <div>
-            <img src="https://cli-assets.baselime.cc/baselime_celebrations@2x.png" class="h-40 w-40 mb-6"/>
+            <img src="https://cli-assets.baselime.io/baselime_celebrations@2x.png" class="h-40 w-40 mb-6" alt="Baselime illustration"/>
           </div>
           <h1 class="text-white text-4xl" style="font-family: 'Poppins', sans-serif;">Welcome ${name || 'baselimer'}!</h1>
           <p class="text-white text-center" style="font-family: 'Poppins', sans-serif;">Return to your terminal to setup your environment and start with Continuous Observability.</p>
