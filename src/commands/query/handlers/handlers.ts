@@ -4,8 +4,6 @@ import outputs from "./outputs";
 import { OutputFormat } from "../../../shared";
 import { getTimeframe } from "../../../services/timeframes/timeframes";
 import dayjs from "dayjs";
-import chalk from "chalk";
-import { QueryFilter } from "../../../services/api/paths/queries";
 import { promptCalculations, promptDatasets, promptFilters, promptFrom, promptGroupBy, promptNeedle, promptTo } from "../prompts/query";
 import { prompt } from "enquirer";
 import { Timeframe } from "../../../services/api/paths/alerts";
@@ -15,24 +13,15 @@ dayjs.extend(utc);
 
 async function createRun(data: {
   format: OutputFormat;
-  datasets: string[];
-  filters: QueryFilter[];
-  needle?: string;
   from: string;
   to: string;
   id: string;
-  follow: boolean;
   service: string;
-  matchCase: boolean;
-  regex?: string;
 }) {
-  const { format, datasets, filters, needle, from, to, follow, matchCase, regex, service, id } = data;
+  const { format, from, to, service, id } = data;
   const s = spinner.get();
   const timeframe = getTimeframe(from, to);
-  const f = dayjs.utc(timeframe.from);
-  const t = dayjs.utc(timeframe.to);
-  const timeFormat = f.isSame(t, "day") ? "HH:mm:ss" : "YYYY-MM-DDTHH:mm:ss";
-  s.start(`Running the query from ${chalk.bold(f.format(timeFormat))} to ${chalk.bold(t.format(timeFormat))} [UTC]`);
+  s.start("Running the query ");
 
   const {
     queryRun,
@@ -114,11 +103,7 @@ async function interactive(input: { queryId: string; service: string; format: Ou
   const filters = await promptFilters(applicableKeys);
   const needle = await promptNeedle();
 
-  const f = dayjs.utc(timeframe.from);
-  const t = dayjs.utc(timeframe.to);
-  const timeFormat = f.isSame(t, "day") ? "HH:mm:ss" : "YYYY-MM-DDTHH:mm:ss";
-
-  s.start(`Running the query from ${chalk.bold(f.format(timeFormat))} to ${chalk.bold(t.format(timeFormat))} [UTC]`);
+  s.start("Running the query");
 
   const {
     queryRun,

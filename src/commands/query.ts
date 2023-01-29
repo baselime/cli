@@ -12,13 +12,6 @@ export interface Options extends BaseOptions {
   id?: string;
   from?: string;
   to?: string;
-  datasets: string[];
-  follow: boolean;
-  filters: string[];
-  calculations: string[];
-  needle?: string;
-  regex?: string;
-  "match-case": boolean;
 }
 export const command = "query";
 export const desc = `Run a query
@@ -30,20 +23,6 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       ...baseOptions,
       service: { type: "string", desc: "Name of the service" },
       id: { type: "string", desc: "Query id, if running a saved query" },
-
-      datasets: {
-        type: "array",
-        desc: "The datasets to query",
-        default: [],
-      },
-      filters: { type: "array", desc: "A set of filters to apply when running the query; multiple filters can be passed", default: [] },
-      calculations: { type: "array", desc: "A set of calculations to claculations to compute; multiple calculations can be added", default: [] },
-      needle: { type: "string", desc: "A string to search in the fields and values of every event" },
-      regex: {
-        type: "string",
-        desc: "A regular expression to search in the fields and valies of every event. If there is both a needle and a regex, the regex is considered in priority",
-      },
-      "match-case": { type: "boolean", desc: "Match case if a needle is specified", default: false },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now" },
     })
@@ -55,12 +34,6 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
         # Run a saved query passing the service name and the queryId:
         $0 query --service <service_name> --id <query_id> --from 2days --to 1day
-
-        # Run a query inline with filters and searching for a field or value (needle)
-        $0 query --filters "<key> <operation> <value>" --needle <needle> --follow
-        
-        # Run a query inline with a calculation on events matching a regular expression
-        $0 query --calculations <operator>(<key>) --regex <regex>
     `,
       ],
     ])
@@ -70,7 +43,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  let { profile, id, datasets, filters, from, to, format, follow, needle, "match-case": matchCase, regex, service } = argv;
+  let { profile, id,  from, to, format, service } = argv;
 
   spinner.init(!!argv.quiet);
   await authenticate(profile);
@@ -89,8 +62,6 @@ export async function handler(argv: Arguments<Options>) {
     throw new Error("Service and query id are required");
   }
 
-  const fs = filters.map(parseFilter);
-
   from ??= await promptFrom();
   to ??= await promptTo();
 
@@ -107,14 +78,8 @@ export async function handler(argv: Arguments<Options>) {
   await handlers.createRun({
     id,
     format,
-    datasets,
-    filters: fs,
     from,
     to,
-    needle,
-    matchCase,
-    regex,
-    follow,
     service: service,
   });
 }
