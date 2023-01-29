@@ -117,7 +117,7 @@ export async function promptForEnvironment(workspaces: Workspace[]): Promise<{ i
   const choices = environments.map((env) => {
     return {
       name: env.id,
-      message: `${chalk.cyan(chalk.bold(`${env.workspace} - ${env.id}`))}`,
+      message: `${env.workspace} - ${env.id}`,
       value: env.id,
     };
   });
