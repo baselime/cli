@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+## [0.0.45] 2023-01-30
 
-## [Unreleased]
+### Changed
+
+- Simplified error report command
+- Added --recurse to baselime templates publish
 
 ### Added
 
