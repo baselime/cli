@@ -25,17 +25,17 @@ async function publish(path?: string, url?: string, recurse = false) {
 
   let templateDirs = [path];
 
-  if(recurse) {
+  if (recurse) {
     templateDirs = await findIndexYamlDirs(path);
   }
-  
+
   const promises = templateDirs.map(async (templateDir) => {
     const template = await createTemplateFromFile(templateDir);
     await uploadExtraAssets(templateDir!, template.workspaceId, template.name);
-    return template
-  })
+    return template;
+  });
   const templates = await Promise.all(promises);
-  outputs.list(templates, "json")
+  outputs.list(templates, "json");
 }
 
 async function findIndexYamlDirs(dir: string): Promise<string[]> {

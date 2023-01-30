@@ -52,7 +52,7 @@ async function createWorkspace(name: string, accessToken: string): Promise<Works
   const { workspace } = (
     await publicClient.post(
       "/auth/workspaces",
-      { name, linkDomain: true, },
+      { name, linkDomain: true },
       {
         headers: {
           authorization: `Bearer ${accessToken}`,

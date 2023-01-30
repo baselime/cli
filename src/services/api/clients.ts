@@ -49,7 +49,7 @@ publicClient.interceptors.response.use(
     return response;
   },
   function (error) {
-    if((error.request as http.ClientRequest).path.includes("/auth/api-key")) return;
+    if ((error.request as http.ClientRequest).path.includes("/auth/api-key")) return;
     const s = spinner.get();
     s.fail();
     console.log(`${chalk.red(chalk.bold(error))}`);

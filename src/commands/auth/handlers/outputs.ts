@@ -14,7 +14,8 @@ export function welcome() {
 export function userConfigFound(profile: string) {
   console.log(
     `You're already authenticated as ${chalk.cyan(profile)}
-Run ${chalk.greenBright('baselime login --profile <new_baselime_profile_name>')} to create a new profile`);
+Run ${chalk.greenBright("baselime login --profile <new_baselime_profile_name>")} to create a new profile`,
+  );
 }
 
 export function credentialsConfigured(path: string) {

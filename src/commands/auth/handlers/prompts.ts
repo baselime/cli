@@ -42,7 +42,7 @@ export async function promptAWSAccountId(): Promise<string> {
     name: "accountId",
     message: "Provide your AWS account ID",
     required: true,
-    initial: "012345678912"
+    initial: "012345678912",
   });
 
   return accountId.replace(/[^\w\s]/gi, "-");
@@ -104,15 +104,17 @@ export async function promptRedirectToCloudFormation(): Promise<boolean> {
 }
 
 export async function promptForEnvironment(workspaces: Workspace[]): Promise<{ isCreate: boolean; workspaceId: string; environmentId: string }> {
-  const environments = workspaces.filter(w => w.environments).flatMap((workspace) => {
-    return workspace.environments?.map((env: Record<string, any>) => {
-      return {
-        workspace: workspace.name,
-        workspaceId: workspace.id,
-        id: env.id,
-      };
+  const environments = workspaces
+    .filter((w) => w.environments)
+    .flatMap((workspace) => {
+      return workspace.environments?.map((env: Record<string, any>) => {
+        return {
+          workspace: workspace.name,
+          workspaceId: workspace.id,
+          id: env.id,
+        };
+      });
     });
-  });
 
   const choices = environments.map((env) => {
     return {

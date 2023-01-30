@@ -1,7 +1,7 @@
 import { publicClient } from "../clients";
 
 interface awsConnect {
-  workspaceId: string,
+  workspaceId: string;
   token: string;
   account: string;
   region: string;

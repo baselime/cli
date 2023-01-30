@@ -65,7 +65,7 @@ export async function handler(argv: Arguments<Options>) {
   const workspaces = await api.getWorkspaces(oathData.id_token, oathData.otp);
   s.succeed();
 
-  if(!workspaces.length) {
+  if (!workspaces.length) {
     console.log(`Use ${chalk.greenBright("baselime login")} to create a workspace before connecting your ${provider} account.`);
     return process.exit(0);
   }

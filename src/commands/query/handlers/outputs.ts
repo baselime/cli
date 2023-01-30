@@ -53,7 +53,9 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Record<string, num
   console.log(aggregatesTable.toString());
   console.log();
   console.log(
-    `${chalk.grey("Explore the query results:")} https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`,
+    `${chalk.grey("Explore the query results:")} https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${
+      queryRun.query.id
+    }/${queryRun.id}`,
   );
 }
 

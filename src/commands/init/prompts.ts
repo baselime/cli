@@ -22,7 +22,9 @@ export async function promptTemplateSelect(): Promise<string | undefined> {
     name: "template",
     message: "Select a template",
     choices,
-    footer: `\n${chalk.grey("The Baselime community created a few cool observability templates to help you getting started and get insights on your service.\nView the full list of templates here:")} https://baselime.io/templates`
+    footer: `\n${chalk.grey(
+      "The Baselime community created a few cool observability templates to help you getting started and get insights on your service.\nView the full list of templates here:",
+    )} https://baselime.io/templates`,
   });
 
   const template = await prompt.run();

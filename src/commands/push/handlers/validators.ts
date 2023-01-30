@@ -156,7 +156,7 @@ async function validate(
   if (!filenames.includes(`${folder}/index.yml`)) {
     const m = `Please include a index.yml file in the config folder (${folder}). This file is necessary to define the service and its metadata.`;
     const error = new Error(m);
-    error.name = 'Validation error'
+    error.name = "Validation error";
     throw error;
   }
 
@@ -168,7 +168,7 @@ async function validate(
   if (!isObject(resources)) {
     const m = "Invalid file format - must be an object";
     const error = new Error(m);
-    error.name = 'Validation error'
+    error.name = "Validation error";
     throw error;
   }
 
@@ -186,7 +186,7 @@ async function validate(
     if (!isObject(resource)) {
       const m = `${id}: invalid object format`;
       const error = new Error(m);
-      error.name = 'Validation error'
+      error.name = "Validation error";
       throw error;
     }
     const { type } = resource;
@@ -200,12 +200,12 @@ async function validate(
       default:
         const m = `${id}: unknown resource type, ${type}`;
         const error = new Error(m);
-        error.name = 'Validation error'
+        error.name = "Validation error";
         throw error;
     }
   });
   const { queries, alerts } = allResources;
-  
+
   await Promise.all([...validateAlerts(alerts, queries), ...validateQueries(queries)]);
 
   s.succeed(`Valid configuration folder ${folder}/`);

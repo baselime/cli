@@ -27,7 +27,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       recurse: {
         type: "boolean",
         desc: "Recurse directory to find any baselime templates",
-        default: false
+        default: false,
       },
       yes: {
         type: "boolean",
@@ -48,7 +48,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { path, url, profile, recurse} = argv;
+  const { path, url, profile, recurse } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
   await handlers.publish(path, url, !!recurse);

@@ -43,7 +43,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  let { profile, id,  from, to, format, service } = argv;
+  let { profile, id, from, to, format, service } = argv;
 
   spinner.init(!!argv.quiet);
   await authenticate(profile);
