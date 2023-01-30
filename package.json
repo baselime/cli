@@ -1,6 +1,6 @@
 {
   "name": "@baselime/cli",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "",
   "main": "./build/cli.js",
   "bin": {
@@ -30,8 +30,7 @@
     "package:linux": "cp ./node_modules/open/xdg-open ./build/xdg-open && pkg . --no-bytecode --targets node14-linux-x64 --output bin/linux/baselime",
     "package:alpine": "cp ./node_modules/open/xdg-open ./build/xdg-open && pkg . --no-bytecode --targets node14-alpine-x64 --output bin/linux/baselime",
     "package:macos": "pkg . --no-bytecode --targets node14-macos-x64 --output bin/macos/baselime",
-    "release:patch": "npm version patch | xargs -i sh -c \"git push && git push && git push origin {}\"",
-    "postinstall": "./scripts/postinstall.sh"
+    "release:patch": "npm version patch | xargs -i sh -c \"git push && git push && git push origin {}\""
   },
   "dependencies": {
     "aws-cron-parser": "^1.1.12",

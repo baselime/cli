@@ -4,12 +4,17 @@ All notable changes to this project will be documented in this file.
 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-## [0.0.47] 2023-01-30
+## [0.0.48] 2023-01-30
 
+### Removed
+
+- removed postinstall script
+- 
 ### Changed
 
 - Simplified error report command
 - Added --recurse to baselime templates publish
+
 
 ### Added
 
