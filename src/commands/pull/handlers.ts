@@ -23,7 +23,7 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
 
   const {
     resources: { queries, alerts },
-    service: appDiff,
+    service: serviceDiff,
   } = diff;
   const allResources = [...queries, ...alerts];
   const toDelete = allResources.filter((r) => r.status === statusType.VALUE_DELETED);
@@ -80,7 +80,7 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
   })();
 
   const servicePromise = (async () => {
-    const { status, service } = appDiff;
+    const { status, service } = serviceDiff;
     if (status === statusType.VALUE_UNCHANGED || status === statusType.VALUE_DELETED) return;
     const dd = stringify({ version: getVersion(), ...service });
     writeFileSync(`${config}/index.yml`, dd);
