@@ -1,0 +1,29 @@
+api-latency:
+  type: query
+  name: API latency stats
+  description: Average, P90, P95, P99 Latency for your api
+  properties:
+    parameters:
+      datasets:
+        - apigateway-logs
+      calculations:
+        - AVG(responseLatency)
+        - P90(responseLatency)
+        - P95(responseLatency)
+        - P99(responseLatency)
+  
+api-performance-alarm:
+  type: alert
+  name: API latency alarm
+  description: If the AVG reponse latency is over {{ threshold }} seconds trigger an alarm
+  properties:
+    enabled: true
+    parameters:
+      query: !ref api-latency
+      frequency: 60mins
+      window: 60mins0
+      threshold: "> 4000"
+    channels:
+      - type: slack
+        targets:
+          - baselime-alerts

@@ -4,8 +4,10 @@ import outputs from "./outputs";
 import pushHandlers from "../../push/handlers/handlers";
 import { cloneRepo, uploadExtraAssets } from "./fsHelper";
 import { Template } from "../../../services/api/paths/templates";
+import fs from "fs/promises";
+import path from "path";
 
-async function publish(path?: string, url?: string) {
+async function publish(path?: string, url?: string, recurse = false) {
   const s = spinner.get();
   if (!(path || url)) {
     s.fail("must provide either --path or --url");
@@ -21,13 +23,41 @@ async function publish(path?: string, url?: string) {
     return;
   }
 
-  template = await createTemplateFromFile(path);
-  await uploadExtraAssets(path!, template.workspaceId, template.name);
+  let templateDirs = [path];
+
+  if(recurse) {
+    templateDirs = await findIndexYamlDirs(path);
+  }
+  
+  const promises = templateDirs.map(async (templateDir) => {
+    const template = await createTemplateFromFile(templateDir);
+    await uploadExtraAssets(templateDir!, template.workspaceId, template.name);
+    return template
+  })
+  const templates = await Promise.all(promises);
+  outputs.list(templates, "json")
 }
 
+async function findIndexYamlDirs(dir: string): Promise<string[]> {
+  let paths = [];
+  const dirContents = await fs.readdir(dir);
+  for (let content of dirContents) {
+    const thingy = path.join(dir, content);
+    const stat = await fs.lstat(thingy);
+    if (stat.isDirectory()) {
+      const indexFiles = await findIndexYamlDirs(thingy);
+      paths.push(...indexFiles);
+    } else {
+      const file = path.parse(thingy);
+      if (file.base === "index.yml") {
+        paths.push(file.dir);
+      }
+    }
+  }
+  return paths;
+}
 async function createTemplateFromFile(path: string): Promise<Template> {
   const s = spinner.get();
-  s.start("Creating a template");
   const { metadata, template: t } = await pushHandlers.validate(path);
 
   const template = await api.templateCreate({
@@ -37,8 +67,6 @@ async function createTemplateFromFile(path: string): Promise<Template> {
     template: t,
     public: true,
   });
-  s.succeed();
-  outputs.create(template, "json");
   return template;
 }
 

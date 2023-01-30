@@ -27,37 +27,33 @@ export const baseOptions = {
 export function userConfigNotFound(profile: string) {
   console.log(
     `${chalk.red(`You're not authenticated as ${chalk.bold(profile)}`)}
-Run ${chalk.greenBright(`baselime login --profile ${chalk.cyan(`${profile}`)} to create a new profile`,
-    )}`,
+Run ${chalk.greenBright(`baselime login --profile ${chalk.cyan(`${profile}`)} to create a new profile`)}`,
   );
 }
 
 export function printError(message: string, err: Error, yargs: any) {
   if (message || err.message) {
-    console.error(chalk.redBright(chalk.bold(message || err.message)));
+    console.error(chalk.redBright(chalk.bold(`✖ ${err?.name ? `${err.name} -` : ""} ${message || err.message}`)));
   }
-  console.log(
-    chalk.grey(`
-Version: ${getVersion()}
-Environment: ${os.platform()}, node ${process.version} 
-Backend: ${client.defaults.baseURL}
-Docs: docs.baselime.io
-Support: forum.baselime.io
-Bugs: github.com/baselime/cli/issues
-  `),
-  );
+
   const argv = hideBin(process.argv);
 
-  console.log(`${yargs.help()}`);
-  if (message || err.message) {
-    console.log("\n\n");
-    console.error(chalk.redBright(chalk.bold(message || err.message)));
+  if (!err) {
+    console.log(`${yargs.help()}`);
   }
 
   if (err instanceof Error && (argv.includes("-d") || argv.includes("--debug"))) {
+    console.log(`
+  Version: ${getVersion()}
+  Environment: ${os.platform()}, node ${process.version} 
+  Backend: ${client.defaults.baseURL}
+  Docs: docs.baselime.io
+  Support: forum.baselime.io
+  Bugs: github.com/baselime/cli/issues
+    `);
     console.error(err);
-  } else {
-    console.log(chalk.bold("Use the --debug flag to view the complete stack trace."));
+  } else if (err) {
+    console.log("Use the --debug flag to view the complete stack trace.");
   }
   process.exit(1);
 }

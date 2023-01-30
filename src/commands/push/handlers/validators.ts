@@ -150,13 +150,14 @@ async function validate(
   inputVariables?: UserVariableInputs,
 ): Promise<{ metadata: DeploymentService; resources: DeploymentResources; filenames: string[]; template: string }> {
   const s = spinner.get();
-  s.start("Checking the configuration files...");
+  s.info(`Checking the configuration files in ${folder}`);
   let filenames = await getFileList(folder, [".yaml", ".yml"], [".templates"]);
 
   if (!filenames.includes(`${folder}/index.yml`)) {
-    const m = "Please include a index.yml file in the config folder. This file is necessary to define the service and its metadata.";
-    s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
-    throw new Error(m);
+    const m = `Please include a index.yml file in the config folder (${folder}). This file is necessary to define the service and its metadata.`;
+    const error = new Error(m);
+    error.name = 'Validation error'
+    throw error;
   }
 
   const metadata = await validateMetadata(folder, stage, inputVariables);
@@ -165,9 +166,10 @@ async function validate(
 
   const { resources, template } = (await readResourcesFromFiles(resourceFilenames, metadata.variables)) || {};
   if (!isObject(resources)) {
-    const m = "invalid file format - must be an object";
-    s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
-    throw new Error(m);
+    const m = "Invalid file format - must be an object";
+    const error = new Error(m);
+    error.name = 'Validation error'
+    throw error;
   }
 
   if (metadata.templates) {
@@ -183,8 +185,9 @@ async function validate(
     const resource = resources[id];
     if (!isObject(resource)) {
       const m = `${id}: invalid object format`;
-      s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
-      throw new Error(m);
+      const error = new Error(m);
+      error.name = 'Validation error'
+      throw error;
     }
     const { type } = resource;
     switch (type) {
@@ -196,16 +199,16 @@ async function validate(
         break;
       default:
         const m = `${id}: unknown resource type, ${type}`;
-        s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
-        throw new Error(m);
+        const error = new Error(m);
+        error.name = 'Validation error'
+        throw error;
     }
   });
-
   const { queries, alerts } = allResources;
-
+  
   await Promise.all([...validateAlerts(alerts, queries), ...validateQueries(queries)]);
 
-  s.succeed("Valid configuration folder");
+  s.succeed(`Valid configuration folder ${folder}/`);
   return { metadata, resources: allResources, filenames: resourceFilenames, template };
 }
 
