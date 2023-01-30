@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+[[ ${TERM}=="" ]] && TPUTTERM='-T xterm-256color' || TPUTTERM=''
+
 set -e
 
 green=`tput setaf 2`
