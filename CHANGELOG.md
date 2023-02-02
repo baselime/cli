@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+## [0.0.51] 2023-02-02
+
+### Added
+
+- Add ca-central-1 to the supported regions
+
 ## [0.0.50] 2023-02-02
 
 - Nicely format templates when calling `baselime templates get`
