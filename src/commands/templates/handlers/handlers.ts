@@ -83,7 +83,8 @@ async function get(workspaceId: string, name: string) {
   s.start("Fetching the template");
   const template = await api.templateGet(workspaceId, name);
   s.succeed();
-  outputs.get(template, "json");
+  
+  console.log(template.template)
 }
 
 export default {
