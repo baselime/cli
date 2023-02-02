@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [0.0.49] 2023-02-02
+
+- Nicely format templates when calling `baselime templates get`
+
 ## [0.0.48] 2023-01-30
 
 ### Removed
