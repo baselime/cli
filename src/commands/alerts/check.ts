@@ -24,13 +24,13 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       [
         `
-      # Check all the alerts in an service:
+      # Check all the alerts in a service:
       $0 alerts check --service <service_name>
 
       # Check a specific alert:
       $0 alerts check --service <service_name> --id <alert_id>
 
-      # Check and trigger all the alerts in an service:
+      # Check and trigger all the alerts in a service:
       $0 alerts check --service <service_name> --trigger
       `,
       ],

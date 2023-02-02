@@ -22,7 +22,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       # List all the queries:
       $0 queries list
 
-      # List all the queries for an service:
+      # List all the queries for a service:
       $0 queries list --service <service_name>
       `,
       ],

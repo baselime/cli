@@ -19,7 +19,7 @@ export async function promptServiceSelect(): Promise<Service | undefined> {
   const { name } = await prompt<{ name: string }>({
     type: "select",
     name: "name",
-    message: `${chalk.bold("Please select an service")}`,
+    message: `${chalk.bold("Please select a service")}`,
     choices: services.map((service) => {
       return { name: service.name, value: service.name };
     }),

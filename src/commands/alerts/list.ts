@@ -22,7 +22,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       # List all the alerts:
       $0 alerts list
 
-      # List all the alerts for an service:
+      # List all the alerts for a service:
       $0 alerts list --service <service_name>
       `,
       ],

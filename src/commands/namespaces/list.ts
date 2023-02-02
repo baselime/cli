@@ -26,7 +26,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       # List all the namespaces ingested across all datasets for the past hour:
       $0 namespaces list
 
-      # List all the namespaces ingested for an service in the past 3 hours:
+      # List all the namespaces ingested for a service in the past 3 hours:
       $0 namespaces list --service <service_name> --from 3hours --to now
       `,
       ],
