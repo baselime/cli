@@ -84,7 +84,6 @@ export async function handler(argv: Arguments<Options>) {
     await open.default(loginUrl);
 
     oathData.id_token = (await creds.getCreds()).id_token;
-    console.log(oathData)
     const user = await creds.getUser();
     onboardingStatus = await api.getOnboardingStatus(oathData.id_token);
 
@@ -103,7 +102,6 @@ export async function handler(argv: Arguments<Options>) {
 
   s.start("Fetching your workspaces...");
   const workspaces = await api.getWorkspaces(oathData.id_token, oathData.otp);
-  console.log('workspaces!!!!!!', workspaces)
   if (!workspaces.length) {
     s.succeed();
     const workspaceName = await promptForWorkspaceName();
@@ -123,7 +121,6 @@ export async function handler(argv: Arguments<Options>) {
   }
 
   let { workspaceId, environmentId, isCreate } = await promptForEnvironment(workspaces);
-  console.log(workspaceId, environmentId, isCreate)
   if (isCreate) {
     const provider = "aws";
     const alias = await promptEnvironmentAlias();
