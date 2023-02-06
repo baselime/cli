@@ -129,9 +129,9 @@ export function writeOutFile(folder: string, metadata: Record<string, any>, reso
 
 export async function retryAfterSeconds(func: Function, mili: number) {
   try {
-    return await func()
-  } catch(e) {
-    await promisify(setTimeout)(mili)
-    return await func()
+    return await func();
+  } catch (e) {
+    await promisify(setTimeout)(mili);
+    return await func();
   }
 }

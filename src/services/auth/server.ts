@@ -84,9 +84,9 @@ export async function startServer(
           code: req.query.code?.toString(),
         }),
       );
-        
-      user = await retryAfterSeconds(() => api.getAuthIam(response.data.id_token, otp), 1500)
-      
+
+      user = await retryAfterSeconds(() => api.getAuthIam(response.data.id_token, otp), 1500);
+
       credentialStore.creds = response.data;
       credentialStore.user = user;
       res.send(template(user.forname, `${config.url}/logout?client_id=${config.client}&logout_uri=http://localhost:${PORT}/logout`));

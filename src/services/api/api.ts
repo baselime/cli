@@ -36,5 +36,5 @@ export default {
   ...alertChecks,
   ...slack,
   ...keys,
-  ...onboarding
+  ...onboarding,
 };

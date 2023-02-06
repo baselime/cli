@@ -24,7 +24,6 @@ export interface Options extends BaseOptions {
   profile: string;
 }
 
-
 export const command = "login";
 export const desc = "Obtain and save credentials for an environment";
 
@@ -70,7 +69,7 @@ export async function handler(argv: Arguments<Options>) {
   } catch (_) {}
 
   let oathData = { id_token: "", otp: "" };
-  let onboardingStatus
+  let onboardingStatus;
   if (demo) {
     const email = "demo@baselime.io";
     const otp = await promptForOneTimePassword(email);
@@ -90,15 +89,13 @@ export async function handler(argv: Arguments<Options>) {
     s.succeed(`Welcome ${user.forname || "baselimer"}!`);
   }
 
-  if(!onboardingStatus?.stages.find(el => el.id === 'ACTIVATE')?.completed) {
+  if (!onboardingStatus?.stages.find((el) => el.id === "ACTIVATE")?.completed) {
     await api.editOnboardingStatus({
       token: oathData.id_token,
       stage: Stage.ACTIVATE,
-      completed: true
-    })
+      completed: true,
+    });
   }
-
-  
 
   s.start("Fetching your workspaces...");
   const workspaces = await api.getWorkspaces(oathData.id_token, oathData.otp);
@@ -110,11 +107,11 @@ export async function handler(argv: Arguments<Options>) {
     await api.editOnboardingStatus({
       token: oathData.id_token,
       stage: Stage.CREATE_WORKSPACE,
-      completed: true
-    })
+      completed: true,
+    });
 
     s.succeed();
-    
+
     workspaces.push(workspace);
   } else {
     s.succeed(`Welcome to ${workspaces[0].id}!`);
@@ -132,8 +129,8 @@ export async function handler(argv: Arguments<Options>) {
     await api.editOnboardingStatus({
       token: oathData.id_token,
       stage: Stage.CONNECT_ENVIRONMENT,
-      completed: true
-    })
+      completed: true,
+    });
   }
 
   s.start("Fetching your API key...");
