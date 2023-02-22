@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Add service to get keys and tidy up query runs create
 - Add the ability to have filter keys with parantheses
 
 ## [0.0.52] 2023-02-02
