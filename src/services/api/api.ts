@@ -16,7 +16,7 @@ import infrastructure from "./paths/infrastructure";
 import reports from "./paths/reports";
 import slack from "./paths/slack";
 import keys from "./paths/keys";
-
+import onboarding from "./paths/onboarding";
 export default {
   ...auth,
   ...queries,
@@ -36,4 +36,5 @@ export default {
   ...alertChecks,
   ...slack,
   ...keys,
+  ...onboarding,
 };

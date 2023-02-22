@@ -6,6 +6,7 @@ import * as os from "os";
 import { hideBin } from "yargs/helpers";
 import spinner from "./services/spinner";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { promisify } from "util";
 export interface BaseOptions {
   profile: string;
   quiet: boolean;
@@ -123,5 +124,14 @@ export function writeOutFile(folder: string, metadata: Record<string, any>, reso
     s.fail(chalk.bold(chalk.red("Validation error")));
     console.log(m);
     throw new Error(m);
+  }
+}
+
+export async function retryAfterSeconds(func: Function, mili: number) {
+  try {
+    return await func();
+  } catch (e) {
+    await promisify(setTimeout)(mili);
+    return await func();
   }
 }
