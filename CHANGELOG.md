@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.0.53] 2023-02-02
+## [Unreleased]
+
+### Added
+
+- Add the ability to have filter keys with parantheses
+
+## [0.0.52] 2023-02-02
 
 ### Added
 
