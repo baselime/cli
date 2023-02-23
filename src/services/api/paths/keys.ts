@@ -4,9 +4,9 @@ import { QueryRun, QueryRunCreateParams, Series } from "./query-runs";
 import { Timeframe } from "./alerts";
 
 interface KeysGetParams {
-    datasets: string[];
-    timeframe: Timeframe;
-    service: string;
+  datasets: string[];
+  timeframe: Timeframe;
+  service: string;
 }
 
 export type KeySet = {
@@ -22,7 +22,7 @@ async function getKeys(params: KeysGetParams): Promise<KeySet[]> {
         from: params.timeframe.from,
         to: params.timeframe.to,
         datasets: params.datasets,
-        service: params.service
+        service: params.service,
       },
     })
   ).data;

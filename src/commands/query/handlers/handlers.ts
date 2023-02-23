@@ -40,9 +40,9 @@ async function getApplicableKeys(timeframe: Timeframe, datasets: string[], servi
   const s = spinner.get();
   s.start("Fetching keys...");
   const keys = await api.getKeys({
-      datasets,
-      timeframe,
-      service
+    datasets,
+    timeframe,
+    service,
   });
   s.succeed();
   return keys.filter((set) => datasets.includes(set.dataset));
