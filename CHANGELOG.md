@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 - Add calculation alias to queries
+- Add support for dashboards Observability as Code
 
 ## [0.0.54] 2023-02-23
 

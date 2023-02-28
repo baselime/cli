@@ -6,7 +6,7 @@ import { parseFileContent, stringify, stringifyResources } from "../../services/
 import spinner from "../../services/spinner";
 import { getVersion } from "../../shared";
 import { verifyPlan } from "../push/handlers/handlers";
-import checks, { DeploymentAlert, DeploymentQuery, UserVariableInputs } from "../push/handlers/validators";
+import checks, { DeploymentAlert, DeploymentDashboard, DeploymentQuery, UserVariableInputs } from "../push/handlers/validators";
 import { promptRefresh } from "./prompts";
 
 async function pull(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
@@ -22,10 +22,10 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
   }
 
   const {
-    resources: { queries, alerts },
+    resources: { queries, alerts, dashboards },
     service: serviceDiff,
   } = diff;
-  const allResources = [...queries, ...alerts];
+  const allResources = [...queries, ...alerts, ...dashboards];
   const toDelete = allResources.filter((r) => r.status === statusType.VALUE_DELETED);
   const toUpdate = allResources.filter((r) => r.status === statusType.VALUE_UPDATED);
 
@@ -37,6 +37,7 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
     const resources = parseFileContent(s, metadata.variables) || {};
     const updatedQueries: DeploymentQuery[] = [];
     const updatedAlerts: DeploymentAlert[] = [];
+    const updatedDashboards: DeploymentDashboard[] = [];
     Object.keys(resources).forEach((key) => {
       resources[key].id = key;
       if (toDeleteIds.includes(key)) {
@@ -58,6 +59,9 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
         case "alert":
           updatedAlerts.push(resources[key] as DeploymentAlert);
           break;
+        case "dashboard":
+          updatedDashboards.push(resources[key] as DeploymentDashboard);
+          break;
         default:
           break;
       }
@@ -70,8 +74,9 @@ async function pull(config: string, stage: string, userVariableInputs: UserVaria
   const createPromise = (async () => {
     const newQueries = queries.filter((q) => q.status === statusType.VALUE_CREATED).map((q) => q.resource);
     const newAlerts = alerts.filter((a) => a.status === statusType.VALUE_CREATED).map((q) => q.resource);
+    const newDashboards = dashboards.filter((a) => a.status === statusType.VALUE_CREATED).map((q) => q.resource);
     // @ts-ignore
-    const dd = stringifyResources({ queries: newQueries, alerts: newAlerts });
+    const dd = stringifyResources({ queries: newQueries, alerts: newAlerts, dashboards: newDashboards });
     if (!dd) return;
     const now = new Date().toISOString();
     const path = `${config}/imported/${now}.yml`;

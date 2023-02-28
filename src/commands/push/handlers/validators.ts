@@ -57,6 +57,36 @@ const webhookSchema = object({
   webhook: string().url().required().typeError("Webhook must be valid URL"),
 });
 
+
+const dashboardSchema = object({
+  type: string().equals(["dashboard"]),
+  id: string().required().matches(idRegex),
+  properties: object({
+    name: string().optional(),
+    description: string().optional(),
+    parameters: object({
+      widgets: array().min(0).of(object({
+        query: string().required(),
+        view: string().oneOf(["calculations", "events", "traces"]).required(),
+        name: string().strict().optional(),
+        description: string().strict().optional(),
+      })
+        .optional()
+        .noUnknown(true)
+        .strict()),
+    })
+      .optional()
+      .noUnknown(true)
+      .strict(),
+  })
+    .required()
+    .noUnknown(true)
+    .strict(),
+})
+  .noUnknown(true)
+  .strict();
+
+
 const querySchema = object({
   type: string().equals(["query"]),
   id: string().required().matches(idRegex),
@@ -134,6 +164,7 @@ const metadataSchema = object({
 
 export type DeploymentQuery = InferType<typeof querySchema>;
 export type DeploymentAlert = InferType<typeof alertSchema>;
+export type DeploymentDashboard = InferType<typeof dashboardSchema>;
 export type DeploymentService = InferType<typeof metadataSchema>;
 export type DeploymentVariable = InferType<typeof variableSchema>;
 
@@ -144,6 +175,7 @@ export interface UserVariableInputs {
 export interface DeploymentResources {
   queries?: DeploymentQuery[];
   alerts?: DeploymentAlert[];
+  dashboards?: DeploymentDashboard[];
 }
 
 async function validate(
@@ -181,6 +213,7 @@ async function validate(
   const allResources = {
     queries: [] as any[],
     alerts: [] as any[],
+    dashboards: [] as any[],
   };
 
   Object.keys(resources).forEach((id) => {
@@ -199,6 +232,9 @@ async function validate(
       case "alert":
         allResources.alerts.push({ ...resource, id, type: undefined });
         break;
+      case "dashboard":
+        allResources.dashboards.push({ ...resource, id, type: undefined });
+        break;
       default:
         const m = `${id}: unknown resource type, ${type}`;
         const error = new Error(m);
@@ -206,9 +242,9 @@ async function validate(
         throw error;
     }
   });
-  const { queries, alerts } = allResources;
+  const { queries, alerts, dashboards } = allResources;
 
-  await Promise.all([...validateAlerts(alerts, queries), ...validateQueries(queries)]);
+  await Promise.all([...validateAlerts(alerts, queries), ...validateDashboards(dashboards, queries), ...validateQueries(queries)]);
 
   s.succeed(`Valid configuration folder ${folder}/`);
   return { metadata, resources: allResources, filenames: resourceFilenames, template };
@@ -302,11 +338,11 @@ function validateQueries(queries: any[]) {
       const calcs = calculations?.map(calculation => {
         return extractCalculation(calculation);
       });
-  
+
       if (calcs?.length && hasDuplicates(calcs?.filter(c => c.alias).map(c => c.alias))) {
         throw new Error("Aliases must me unique across all calculation / visualisation .");
       }
-  
+
       if (groupBy?.orderBy && !calcs?.some(c => getCalculationAlias(c) === groupBy?.orderBy)) {
         throw new Error("The orderBy field of the groupBy must be present in the calculations / visualisations.");
       }
@@ -360,6 +396,31 @@ function validateAlerts(alerts: any[], queries: any[]) {
       throw new Error(message);
     }
   });
+
+  return promises;
+}
+
+function validateDashboards(dashboards: any[], queries: any[]) {
+  const s = spinner.get();
+
+  const promises = dashboards.map(async item => {
+    try {
+      const res = await dashboardSchema.validate(item);
+
+      res.properties.parameters?.widgets?.forEach(widget => {
+        if (!widget) return;
+        const query = queries.find((query) => query.id === widget.query);
+        if (!query) {
+          throw new Error(`The following query was not found in this service: ${widget.query}`);
+        }
+      });
+    } catch (error) {
+      const message = `dashboard: ${item.id}: ${error}`;
+      s.fail(chalk.bold(chalk.redBright("Dashboard validation error")));
+      console.log(message);
+      throw new Error(message);
+    }
+  })
 
   return promises;
 }

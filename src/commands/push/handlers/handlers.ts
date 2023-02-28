@@ -14,6 +14,7 @@ import { promisify } from "util";
 import { statusType, DiffResponse } from "../../../services/api/paths/diffs";
 
 const wait = promisify(setTimeout);
+const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
 async function push(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false, dryRun: boolean = false) {
   const s = spinner.get();
@@ -51,7 +52,11 @@ async function push(config: string, stage: string, userVariableInputs: UserVaria
     count += 1;
   }
   if (deployment?.status === DeploymentStatus.SUCCESS) {
-    s.succeed(`Successfully applied an observability plan: ${chalk.bold(chalk.greenBright(id))}`);
+    s.succeed(`Successfully pushed an observability plan: ${chalk.bold(chalk.greenBright(id))}`);
+    console.log();
+    console.log(
+      `Check it out in the console: https://console.${BASELIME_DOMAIN}/${deployment.workspaceId}/${deployment.environmentId}/${deployment.service}/home`,
+    );
     return;
   }
   if (deployment?.status === DeploymentStatus.IN_PROGRESS) {
@@ -94,7 +99,7 @@ export async function verifyPlan(metadata: DeploymentService, resources: Deploym
 export async function displayDiff(service: string, diff: DiffResponse) {
   const s = spinner.get();
   const {
-    resources: { queries, alerts },
+    resources: { queries, alerts, dashboards },
     service: appDiff,
   } = diff;
 
@@ -128,11 +133,34 @@ export async function displayDiff(service: string, diff: DiffResponse) {
     table.push(getYamlString({ status, value }));
   });
 
+  dashboards.forEach((d) => {
+    const { status, resource } = d;
+    if (status === statusType.VALUE_UNCHANGED) return;
+
+    const value: Record<string, any> = {};
+    value[resource.id!] = {
+      type: "dashboard",
+      properties: {
+        ...resource.properties,
+        parameters: {
+          widgets: resource.properties.parameters?.widgets?.filter((w: any) => w).map((widget: any) => {
+            return {
+              ...widget,
+              query: new Ref(widget!.query),
+              queryId: undefined,
+            }
+          })
+        },
+      },
+    };
+    table.push(getYamlString({ status, value }));
+  });
+
   console.log("\n\n" + chalk.bold(chalk.cyanBright(`Services: ${service}`)));
   console.log("\n\n" + serviceTable.toString() + "\n\n");
   console.log("\n\n" + table.toString() + "\n\n");
 
-  const allResources = [...queries, ...alerts];
+  const allResources = [...queries, ...alerts, ...dashboards];
   const serviceStatus = (() => {
     switch (appDiff.status) {
       case statusType.VALUE_CREATED:

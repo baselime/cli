@@ -27,6 +27,7 @@ export interface TemplateMetadata {
 enum ResourceTypes {
   queries = "queries",
   alerts = "alerts",
+  dashboards = "dashboards",
 }
 
 export enum statusType {
