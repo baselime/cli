@@ -10,7 +10,7 @@ export const alertThresholdRegex = new RegExp(
 
 const arrayFilterRegex = new RegExp(`^(.+) (${["IN", "NOT_IN"].join("|")}) \\((.+)\\)$`);
 
-export const calculationsRegex = new RegExp(`(${operatiors.filter((c) => c !== "COUNT").join("|")})\\(([^)]*)\\)|(COUNT)$`);
+export const calculationsRegex = new RegExp(`(${operatiors.filter(c => c !== "COUNT").join("|")})\\(([^)]*)\\)(?: as (\\w+))?|(COUNT)(?: as (\\w+))?$`);
 
 export function extractCalculation(input: string): QueryCalculation {
   if (input === "COUNT") {
@@ -23,8 +23,9 @@ export function extractCalculation(input: string): QueryCalculation {
     throw new Error(`Calculation '${input}' must match ${calculationsRegex}`);
   }
   return {
-    operator: res[1] as QueryOperator,
+    operator: (res[1] || res[4]) as QueryOperator ,
     key: res[2],
+    alias: res[3] || res[5],
   };
 }
 

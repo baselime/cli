@@ -27,6 +27,7 @@ export interface QueryGroupBy {
 export interface QueryCalculation {
   key?: string;
   operator: QueryOperator;
+  alias?: string;
 }
 
 export enum QueryOperator {

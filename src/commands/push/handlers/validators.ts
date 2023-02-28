@@ -8,6 +8,8 @@ import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
 import { mapValues } from "lodash";
 import { stepTemplates, templateSchema } from "../../../controllers/templates";
+import { hasDuplicates } from "../../../utils";
+import { getCalculationAlias } from "../../../builder";
 
 const filterCombinations = ["AND", "OR"];
 const channelTypes = ["slack", "webhook"];
@@ -79,7 +81,7 @@ const querySchema = object({
       groupBy: object({
         type: string().oneOf(groupByTypes).min(1).required(),
         value: string().min(1).required(),
-        orderBy: string().min(1).matches(calculationsRegex).optional(),
+        orderBy: string().min(1).optional(),
         limit: number().min(1).optional(),
         order: string().oneOf(["ASC", "DESC"]).optional(),
       })
@@ -297,12 +299,16 @@ function validateQueries(queries: any[]) {
         parseFilter(filter);
       });
 
-      calculations?.forEach((calculation) => {
-        extractCalculation(calculation);
+      const calcs = calculations?.map(calculation => {
+        return extractCalculation(calculation);
       });
-
-      if (groupBy?.orderBy && !calculations?.includes(groupBy?.orderBy)) {
-        throw new Error("The orderBy field of the groupBy must be present in the calculations.");
+  
+      if (calcs?.length && hasDuplicates(calcs?.filter(c => c.alias).map(c => c.alias))) {
+        throw new Error("Aliases must me unique across all calculation / visualisation .");
+      }
+  
+      if (groupBy?.orderBy && !calcs?.some(c => getCalculationAlias(c) === groupBy?.orderBy)) {
+        throw new Error("The orderBy field of the groupBy must be present in the calculations / visualisations.");
       }
     } catch (error) {
       const message = `query: ${item.id}: ${error}`;

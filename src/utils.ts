@@ -14,3 +14,7 @@ export function isUrl(s: string): boolean {
 export function randomString(size: number) {
   return crypto.randomBytes(size).toString("base64").slice(0, size);
 }
+
+export function hasDuplicates<T>(array: T[]) {
+  return (new Set(array)).size !== array.length;
+}
