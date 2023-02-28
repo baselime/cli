@@ -54,9 +54,7 @@ async function push(config: string, stage: string, userVariableInputs: UserVaria
   if (deployment?.status === DeploymentStatus.SUCCESS) {
     s.succeed(`Successfully pushed an observability plan: ${chalk.bold(chalk.greenBright(id))}`);
     console.log();
-    console.log(
-      `Check it out in the console: https://console.${BASELIME_DOMAIN}/${deployment.workspaceId}/${deployment.environmentId}/${deployment.service}/home`,
-    );
+    console.log(`Check it out in the console: https://console.${BASELIME_DOMAIN}/${deployment.workspaceId}/${deployment.environmentId}/${deployment.service}/home`);
     return;
   }
   if (deployment?.status === DeploymentStatus.IN_PROGRESS) {
@@ -143,13 +141,15 @@ export async function displayDiff(service: string, diff: DiffResponse) {
       properties: {
         ...resource.properties,
         parameters: {
-          widgets: resource.properties.parameters?.widgets?.filter((w: any) => w).map((widget: any) => {
-            return {
-              ...widget,
-              query: new Ref(widget!.query),
-              queryId: undefined,
-            }
-          })
+          widgets: resource.properties.parameters?.widgets
+            ?.filter((w: any) => w)
+            .map((widget: any) => {
+              return {
+                ...widget,
+                query: new Ref(widget!.query),
+                queryId: undefined,
+              };
+            }),
         },
       },
     };

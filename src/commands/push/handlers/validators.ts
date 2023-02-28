@@ -57,7 +57,6 @@ const webhookSchema = object({
   webhook: string().url().required().typeError("Webhook must be valid URL"),
 });
 
-
 const dashboardSchema = object({
   type: string().equals(["dashboard"]),
   id: string().required().matches(idRegex),
@@ -65,15 +64,19 @@ const dashboardSchema = object({
     name: string().optional(),
     description: string().optional(),
     parameters: object({
-      widgets: array().min(0).of(object({
-        query: string().required(),
-        view: string().oneOf(["calculations", "events", "traces"]).required(),
-        name: string().strict().optional(),
-        description: string().strict().optional(),
-      })
-        .optional()
-        .noUnknown(true)
-        .strict()),
+      widgets: array()
+        .min(0)
+        .of(
+          object({
+            query: string().required(),
+            view: string().oneOf(["calculations", "events", "traces"]).required(),
+            name: string().strict().optional(),
+            description: string().strict().optional(),
+          })
+            .optional()
+            .noUnknown(true)
+            .strict(),
+        ),
     })
       .optional()
       .noUnknown(true)
@@ -85,7 +88,6 @@ const dashboardSchema = object({
 })
   .noUnknown(true)
   .strict();
-
 
 const querySchema = object({
   type: string().equals(["query"]),
@@ -335,15 +337,15 @@ function validateQueries(queries: any[]) {
         parseFilter(filter);
       });
 
-      const calcs = calculations?.map(calculation => {
+      const calcs = calculations?.map((calculation) => {
         return extractCalculation(calculation);
       });
 
-      if (calcs?.length && hasDuplicates(calcs?.filter(c => c.alias).map(c => c.alias))) {
+      if (calcs?.length && hasDuplicates(calcs?.filter((c) => c.alias).map((c) => c.alias))) {
         throw new Error("Aliases must me unique across all calculation / visualisation .");
       }
 
-      if (groupBy?.orderBy && !calcs?.some(c => getCalculationAlias(c) === groupBy?.orderBy)) {
+      if (groupBy?.orderBy && !calcs?.some((c) => getCalculationAlias(c) === groupBy?.orderBy)) {
         throw new Error("The orderBy field of the groupBy must be present in the calculations / visualisations.");
       }
     } catch (error) {
@@ -403,11 +405,11 @@ function validateAlerts(alerts: any[], queries: any[]) {
 function validateDashboards(dashboards: any[], queries: any[]) {
   const s = spinner.get();
 
-  const promises = dashboards.map(async item => {
+  const promises = dashboards.map(async (item) => {
     try {
       const res = await dashboardSchema.validate(item);
 
-      res.properties.parameters?.widgets?.forEach(widget => {
+      res.properties.parameters?.widgets?.forEach((widget) => {
         if (!widget) return;
         const query = queries.find((query) => query.id === widget.query);
         if (!query) {
@@ -420,7 +422,7 @@ function validateDashboards(dashboards: any[], queries: any[]) {
       console.log(message);
       throw new Error(message);
     }
-  })
+  });
 
   return promises;
 }

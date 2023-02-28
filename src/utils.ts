@@ -16,5 +16,5 @@ export function randomString(size: number) {
 }
 
 export function hasDuplicates<T>(array: T[]) {
-  return (new Set(array)).size !== array.length;
+  return new Set(array).size !== array.length;
 }

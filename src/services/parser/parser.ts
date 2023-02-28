@@ -135,13 +135,15 @@ export function stringifyResources(resources: DeploymentResources) {
       properties: {
         ...elt.properties,
         parameters: {
-          widgets: elt.properties.parameters?.widgets?.filter(w => w).map(widget => {
-            return {
-              ...widget,
-              query: new Ref(widget!.query),
-              queryId: undefined,
-            }
-          })
+          widgets: elt.properties.parameters?.widgets
+            ?.filter((w) => w)
+            .map((widget) => {
+              return {
+                ...widget,
+                query: new Ref(widget!.query),
+                queryId: undefined,
+              };
+            }),
         },
         id: undefined,
       },
