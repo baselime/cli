@@ -87,15 +87,15 @@ export async function handler(argv: Arguments<Options>) {
     onboardingStatus = await api.getOnboardingStatus(oathData.id_token);
 
     s.succeed(`Welcome ${user.forname || "baselimer"}!`);
+    if (!onboardingStatus?.stages.find((el) => el.id === "ACTIVATE")?.completed) {
+      await api.editOnboardingStatus({
+        token: oathData.id_token,
+        stage: Stage.ACTIVATE,
+        completed: true,
+      });
+    }
   }
 
-  if (!onboardingStatus?.stages.find((el) => el.id === "ACTIVATE")?.completed) {
-    await api.editOnboardingStatus({
-      token: oathData.id_token,
-      stage: Stage.ACTIVATE,
-      completed: true,
-    });
-  }
 
   s.start("Fetching your workspaces...");
   const workspaces = await api.getWorkspaces(oathData.id_token, oathData.otp);
