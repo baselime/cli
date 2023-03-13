@@ -96,7 +96,6 @@ export async function handler(argv: Arguments<Options>) {
     }
   }
 
-
   s.start("Fetching your workspaces...");
   const workspaces = await api.getWorkspaces(oathData.id_token, oathData.otp);
   if (!workspaces.length) {
