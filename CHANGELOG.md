@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.56]
+
+### Fixed
+
+- Do not attempt to update the onboarding for the demo user
+
 ## [0.0.55]
 
 - Add calculation alias to queries
