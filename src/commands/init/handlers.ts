@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs";
+import fs, { writeFileSync } from "fs";
 import api from "../../services/api/api";
 import { stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
@@ -6,16 +6,22 @@ import { parseTemplateName } from "../../regex";
 import { DeploymentService } from "../push/handlers/validators";
 const packageJson = require("../../../package.json");
 
-export async function init(folder: string, service: string, description: string, provider: string, templateUrl?: string) {
+export async function init(folder: string, service: string, description: string, provider: string, templateUrls?: string[]) {
   const s = spinner.get();
+
+  await fs.mkdirSync(".baselime/.templates", {recursive: true});
 
   s.start("Generating your config folder");
 
-  let templates;
-  if (templateUrl) {
-    const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
-    const { variables } = await api.templateGet(workspaceId, templateName, true);
-    templates = [{ name: `${workspaceId}/${templateName}`, variables }];
+
+  let templates: any[] = [];
+  if (templateUrls) {
+    for await (const templateUrl of templateUrls) {
+      const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
+      const { variables, template } = await api.templateGet(workspaceId, templateName, true);
+      console.log('got template', template)
+      templates.push({ name: `${workspaceId}/${templateName}`, variables });
+    }
   }
 
   const metadata: DeploymentService = {

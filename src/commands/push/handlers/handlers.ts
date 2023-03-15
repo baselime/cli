@@ -69,8 +69,8 @@ async function validate(
   folder: string,
   stage?: string,
   userVariableInputs?: UserVariableInputs,
-): Promise<{ metadata: DeploymentService; resources: DeploymentResources; template: string }> {
-  return await checks.validate(folder, stage, userVariableInputs);
+): Promise<{ metadata: DeploymentService; resources: DeploymentResources; raw: string }> {
+  return await checks.readResources(folder, stage, userVariableInputs);
 }
 
 export async function verifyPlan(metadata: DeploymentService, resources: DeploymentResources, reverse: boolean) {

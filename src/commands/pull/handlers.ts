@@ -1,97 +1,120 @@
 import { writeFileSync } from "fs";
 import { outputFileSync } from "fs-extra";
 import { readFile } from "fs/promises";
-import { statusType } from "../../services/api/paths/diffs";
-import { parseFileContent, stringify, stringifyResources } from "../../services/parser/parser";
+import {DiffResponse, statusType} from "../../services/api/paths/diffs";
+import {parseFileContent, ResourceMap, stringify, stringifyResources} from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import { getVersion } from "../../shared";
+import {authenticate, getVersion} from "../../shared";
 import { verifyPlan } from "../push/handlers/handlers";
-import checks, { DeploymentAlert, DeploymentDashboard, DeploymentQuery, UserVariableInputs } from "../push/handlers/validators";
-import { promptRefresh } from "./prompts";
+import checks, {
+  DeploymentAlert,
+  DeploymentDashboard,
+  DeploymentQuery, DeploymentResources,
+  DeploymentService,
+  UserVariableInputs
+} from "../push/handlers/validators";
+import {promptRefresh, promptService} from "./prompts";
+import fs from "fs";
+import {prompt} from "enquirer";
+import api from "../../services/api/api";
+import yaml from "yaml";
+import {Query} from "../../services/api/paths/queries";
+import {query, raw} from "express";
 
-async function pull(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
+async function pull(directory: string, stage: string, userVariableInputs: UserVariableInputs, noAsk: boolean = false) {
+  await checkIfDirectoryIsRaw(directory);
   const s = spinner.get();
-  const { metadata, resources, filenames } = await checks.validate(config, stage, userVariableInputs);
   s.start("Checking resources to import...");
-  const diff = await verifyPlan(metadata, resources, true);
+  let localResources = await checks.readResources(directory, stage, userVariableInputs);
+  // write
+  await downloadQueries(directory, localResources.metadata.service, localResources.resources.queries);
 
-  const res = skip ? true : await promptRefresh();
+  // here we reload stuff again
+  localResources = await checks.readResources(directory, stage, userVariableInputs, false);
+  await verifyPlan(localResources.metadata, localResources.resources, false);
+}
 
-  if (!res) {
+async function checkIfDirectoryIsRaw(directory: string): Promise<void> {
+  try {
+    await fs.accessSync(".baselime");
+  } catch(err: any) {
+    if (err && err.code === 'ENOENT') {
+      const { name } = await prompt<{ name: string }>({
+        type: "select",
+        name: "name",
+        message: `The configuration directory ${directory} does not exist. Would you like to initialise?`,
+        choices: [{ name: "Yes" }, { name: "No" }],
+      });
+      if (name === "Yes") {
+        await tryInitialiseForService(directory);
+      }
+    }
+  }
+}
+
+async function tryInitialiseForService(directory: string): Promise<string> {
+  const service = await promptService();
+  if (!service) {
     process.exit(0);
   }
+  const serviceData = await api.serviceGet(service);
+  await fs.mkdirSync(directory, {recursive: true});
+  const indexYamlData = {
+    ...serviceData.metadata,
+    service: service,
+    templates: convertTemplates((serviceData.metadata as any).templates)
+  }
+  await fs.writeFileSync(`${directory}/index.yml`, yaml.stringify(indexYamlData));
+  return service;
+  // await writeTemplates(directory, (serviceData.metadata as any).templates)
+  // await init(directory, service, description, "aws", undefined);
+}
 
-  const {
-    resources: { queries, alerts, dashboards },
-    service: serviceDiff,
-  } = diff;
-  const allResources = [...queries, ...alerts, ...dashboards];
-  const toDelete = allResources.filter((r) => r.status === statusType.VALUE_DELETED);
-  const toUpdate = allResources.filter((r) => r.status === statusType.VALUE_UPDATED);
+interface Template {
+  name: string;
+  applyOnSave: boolean;
+  workspaceId: string
+}
 
-  const toDeleteIds = toDelete.map((resource) => resource.resource.id);
-  const toUpdateIds = toUpdate.map((resource) => resource.resource.id);
+function convertTemplates(templates: Template[]) {
+  if(!templates) return [];
+  return templates.map(template => ({
+    name: `${template.workspaceId}/${template.name}`,
+  }));
+}
 
-  const deleteAndUpdatePromises = filenames.map(async (filename) => {
-    const s = (await readFile(filename)).toString();
-    const resources = parseFileContent(s, metadata.variables) || {};
-    const updatedQueries: DeploymentQuery[] = [];
-    const updatedAlerts: DeploymentAlert[] = [];
-    const updatedDashboards: DeploymentDashboard[] = [];
-    Object.keys(resources).forEach((key) => {
-      resources[key].id = key;
-      if (toDeleteIds.includes(key)) {
-        console.log(`Deleting ${key}`);
-        (resources[key] as any) = undefined;
+async function downloadQueries(directory: string, service: string, localQueries: DeploymentQuery[] | undefined): Promise<ResourceMap> {
+  spinner.get().info("Downloading queries");
+  const queries = await api.queriesList(service);
+  const queriesDict: Record<string, any> = {};
+  for (const query of queries) {
+    if(!localQueries?.some(localQuery=> localQuery.id == query.id)) {
+      queriesDict[query.id] = convertQuery(query);
+    }
+  }
+  if (Object.keys(queriesDict).length > 0) {
+    await fs.appendFileSync(`${directory}/queries.yaml`, "\n" + yaml.stringify(queriesDict));
+  }
+  spinner.get().succeed("Queries downloaded");
+  return queriesDict;
+}
+
+function convertQuery(query: Query) {
+  return {
+    type: "query",
+    properties: {
+      description: query.description,
+      parameters: {
+        ...query.parameters,
+        filters: query.parameters.filters?.map(filter => (`${filter.key} ${filter.operation} ${filter.value}`)),
+        calculations: query.parameters.calculations?.map(calculation => {
+          return calculation.operator === "COUNT" ?
+              "COUNT" :
+              `${calculation.operator}(${calculation.key})`
+        })
       }
-      if (toUpdateIds.includes(key)) {
-        console.log(`Updating ${key}`);
-        const { resource } = toUpdate.find((resource) => resource.resource.id === key)!;
-        resources[key] = { ...resource, type: resources[key].type };
-      }
-
-      if (!resources[key]) return;
-
-      switch (resources[key]?.type) {
-        case "query":
-          updatedQueries.push(resources[key] as DeploymentQuery);
-          break;
-        case "alert":
-          updatedAlerts.push(resources[key] as DeploymentAlert);
-          break;
-        case "dashboard":
-          updatedDashboards.push(resources[key] as DeploymentDashboard);
-          break;
-        default:
-          break;
-      }
-    });
-
-    const dd = stringifyResources({ queries: updatedQueries, alerts: updatedAlerts });
-    writeFileSync(`${filename}`, dd);
-  });
-
-  const createPromise = (async () => {
-    const newQueries = queries.filter((q) => q.status === statusType.VALUE_CREATED).map((q) => q.resource);
-    const newAlerts = alerts.filter((a) => a.status === statusType.VALUE_CREATED).map((q) => q.resource);
-    const newDashboards = dashboards.filter((a) => a.status === statusType.VALUE_CREATED).map((q) => q.resource);
-    // @ts-ignore
-    const dd = stringifyResources({ queries: newQueries, alerts: newAlerts, dashboards: newDashboards });
-    if (!dd) return;
-    const now = new Date().toISOString();
-    const path = `${config}/imported/${now}.yml`;
-    outputFileSync(path, dd);
-    console.log(`Imported resources stored in ${path}. Please do not delete this file.`);
-  })();
-
-  const servicePromise = (async () => {
-    const { status, service } = serviceDiff;
-    if (status === statusType.VALUE_UNCHANGED || status === statusType.VALUE_DELETED) return;
-    const dd = stringify({ version: getVersion(), ...service });
-    writeFileSync(`${config}/index.yml`, dd);
-  })();
-
-  await Promise.all([...deleteAndUpdatePromises, createPromise, servicePromise]);
+    }
+  }
 }
 
 export default {

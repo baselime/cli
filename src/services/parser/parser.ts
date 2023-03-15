@@ -4,70 +4,89 @@ import chalk from "chalk";
 import spinner from "../spinner/index";
 import { DeploymentResources, DeploymentVariable } from "../../commands/push/handlers/validators";
 import mustache from "mustache";
+import {getLogger} from "../../utils";
+
+export interface ResourceDescriptor {
+  file: string;
+  resource: Record<string, any>;
+}
+export interface Resource {
+  id: string;
+  type: string;
+  stacks?: any[];
+}
+export type ResourceMap = Record<string, ResourceDescriptor>;
+export type ResourceDictionary = Record<string, Resource>;
+export type VariableDictionary = Record<string, DeploymentVariable>;
 
 export async function readResourcesFromFiles(
   filenames: string[],
-  variables?: { [name: string]: DeploymentVariable },
-): Promise<{ resources: Record<string, Record<string, any>>; template: string }> {
-  const resources: Record<string, Record<string, any>> = {};
+  variables?: VariableDictionary,
+): Promise<{ resources: ResourceMap; raw: string }> {
+  const allResources: ResourceMap = {};
   // First read all the files
-  const files = await Promise.all(filenames.map(async (filename) => readResourcesFromFile(filename)));
-  // Then parse it, and append to resources
-  files.forEach((file, index) => parseAndAppendFileToResources(file, resources, variables));
-  return { resources, template: files.join("\n") };
-}
-
-export function parseAndAppendFileToResources(fileContents: string, resources: Record<string, Record<string, any>>, variables?: { [name: string]: DeploymentVariable }) {
-  try {
-    const data = parseFileContent(fileContents, variables);
-    appendToResourcesSafely(resources, data);
-  } catch (error) {
-    const message = `Error parsing a file\n${(error as any).code || ""}\n${(error as any).message || ""}`;
-    spinner.get().fail(chalk.bold(chalk.redBright(`Validation error: ${fileContents}`)));
-    console.error(message);
-    throw new Error(message);
+  // const files = await Promise.all(filenames.map(async (filename) => readResourcesFromFile(filename)));
+  let rawCombined: string = "";
+  for await (const filename of filenames) {
+    const {resourceMap, raw} = await readResourcesFromFile(filename, variables);
+    appendToResourcesSafely(allResources, resourceMap);
+    rawCombined = rawCombined.concat("\n", raw);
   }
+  return { resources: allResources, raw: rawCombined };
 }
 
-function appendToResourcesSafely(resources: Record<string, any>, data: Record<string, Record<string, any>>) {
-  for (const key in data) {
-    if (Object.keys(resources).includes(key)) {
-      throw { code: "DUPLICATE_KEY", message: `Map keys must be unique across all config files: ${key}` };
+export function appendToResourcesSafely(existingResources: ResourceMap, newResources: ResourceMap) {
+  for (const key in newResources) {
+    const alreadyIn = existingResources[key]
+    if (!!alreadyIn) {
+      throw {
+        code: "DUPLICATE_KEY",
+        message: `Duplicate key ${key} in files ${alreadyIn.file} and ${newResources[key].file}. Keys must be unique.`,
+      };
     }
-    resources[key] = data[key];
+    existingResources[key] = newResources[key];
   }
 }
 
-export async function readResourcesFromFile(path: string): Promise<string> {
+export async function readResourcesFromFile(filePath: string, variables?: VariableDictionary): Promise<{ resourceMap: ResourceMap, raw: string }> {
   const s = spinner.get();
   try {
-    return (await readFile(path)).toString();
+    const contents = (await readFile(filePath)).toString();
+    const resources = parseFileContent(contents, variables);
+    const resourceMap: ResourceMap = {};
+    // populates the file path, since parseFileContent knows nothing about source file
+    for (const key of Object.keys(resources)) {
+      resourceMap[key] = {
+        file: filePath,
+        resource: resources[key],
+      }
+    }
+    return {resourceMap, raw: contents};
   } catch (error) {
-    const message = `Error reading a file: ${path}\n${(error as any).message || ""}`;
-    s.fail(chalk.bold(chalk.redBright(`Validation error: ${path}`)));
+    const message = `Error reading a file: ${filePath}\n${(error as any).message || ""}`;
+    s.fail(chalk.bold(chalk.redBright(`Validation error: ${filePath}`)));
     console.error(message);
     throw new Error(message);
   }
 }
 
-export async function readVariables(path: string): Promise<Record<string, any> | undefined> {
+export async function readMetaVariables(rawMeta: string): Promise<Record<string, any> | undefined> {
   try {
-    const file = (await readFile(path)).toString();
-    const metadata = yaml.parse(file);
+    const metadata = yaml.parse(rawMeta);
     return metadata.variables;
   } catch (error) {
     const s = spinner.get();
-    const message = `${(error as any).message || `Error parsing variables from ${path}`}`;
+    const message = `${(error as any).message || `Error parsing variables from index file`}`;
     s.fail(chalk.bold(chalk.redBright("Validation error")));
     console.log(message);
     throw new Error(message);
   }
 }
 
-export async function readMetadata(folder: string, variables?: { [name: string]: DeploymentVariable }): Promise<Record<string, Record<string, any>>> {
+export async function readMetadata(rawMeta: string, variables?: { [name: string]: DeploymentVariable }): Promise<Record<string, Record<string, any>>> {
   try {
-    const file = (await readFile(`${folder}/index.yml`)).toString();
-    const metadata = parseFileContent(file, variables);
+    getLogger().debug("parsing metadata");
+    const metadata = parseFileContent(rawMeta, variables);
     if (metadata.infrastructure && !metadata.infrastructure.stacks?.length) {
       metadata.infrastructure.stacks = undefined;
     }
@@ -79,9 +98,14 @@ export async function readMetadata(folder: string, variables?: { [name: string]:
     console.log(message);
     throw new Error(message);
   }
+
 }
 
-export function parseFileContent(contents: string, variables?: { [name: string]: DeploymentVariable }): Record<string, Record<string, any>> {
+export function parseFileContent(contents: string, variables?: VariableDictionary): ResourceDictionary {
+  if (!contents) {
+    getLogger().debug("file empty - skipping");
+    return {}
+  }
   const variableNames = Object.keys(variables || {});
   if (!variables || variableNames?.length === 0) {
     // @ts-ignore

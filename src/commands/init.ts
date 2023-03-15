@@ -77,7 +77,7 @@ export async function handler(argv: Arguments<Options>) {
     return;
   }
 
-  await init(folder, service, description, provider, template);
+  await init(folder, service, description, provider, template ? [template] : []);
   s.succeed(`Observability as Code folder generated: ${chalk.bold(folder)}`);
 
   console.log(`\n
