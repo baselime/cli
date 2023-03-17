@@ -8,7 +8,7 @@ import {getLogger} from "../../utils";
 
 export interface ResourceDescriptor {
   file: string;
-  resource: Record<string, any>;
+  resource: Resource
 }
 export interface Resource {
   id: string;
@@ -23,6 +23,7 @@ export async function readResourcesFromFiles(
   filenames: string[],
   variables?: VariableDictionary,
 ): Promise<{ resources: ResourceMap; raw: string }> {
+  getLogger().debug(`reading resources from files ${filenames}`);
   const allResources: ResourceMap = {};
   // First read all the files
   // const files = await Promise.all(filenames.map(async (filename) => readResourcesFromFile(filename)));

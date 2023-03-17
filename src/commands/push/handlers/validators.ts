@@ -2,7 +2,12 @@ import chalk from "chalk";
 import { object, string, number, array, boolean, InferType, lazy, mixed } from "yup";
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
-import { readMetadata, readResourcesFromFiles, readMetaVariables } from "../../../services/parser/parser";
+import {
+  readMetadata,
+  readResourcesFromFiles,
+  readMetaVariables,
+  ResourceMap
+} from "../../../services/parser/parser";
 import awsCronParser from "aws-cron-parser";
 import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
@@ -176,9 +181,32 @@ export interface UserVariableInputs {
 }
 
 export interface DeploymentResources {
-  queries?: DeploymentQuery[];
-  alerts?: DeploymentAlert[];
-  dashboards?: DeploymentDashboard[];
+  queries: DeploymentQuery[];
+  alerts: DeploymentAlert[];
+  dashboards: DeploymentDashboard[];
+}
+
+async function readAndValidateLocalResources(
+    folder: string,
+    stage?: string,
+    inputVariables?: UserVariableInputs,
+    shouldDownloadTemplates: boolean = true,
+): Promise<{ metadata: DeploymentService; resources: DeploymentResources; filenames: string[]; raw: string }> {
+  const s = spinner.get();
+  const { metadata, resourcesByKind, filenames, raw } = await readResources(folder, stage, inputVariables, shouldDownloadTemplates)
+  await validateDeploymentResources(resourcesByKind);
+  s.succeed(`Valid configuration folder ${folder}/`);
+  return { metadata, resources: resourcesByKind, filenames, raw };
+}
+
+async function validateDeploymentResources(resourcesByKind: DeploymentResources): Promise<boolean> {
+  const { queries, alerts, dashboards } = resourcesByKind;
+  await Promise.all([
+    ...validateAlerts(alerts, queries),
+    ...validateDashboards(dashboards, queries),
+    ...validateQueries(queries)
+  ]);
+  return true;
 }
 
 async function readResources(
@@ -186,14 +214,13 @@ async function readResources(
   stage?: string,
   inputVariables?: UserVariableInputs,
   shouldDownloadTemplates: boolean = true,
-): Promise<{ metadata: DeploymentService; resources: DeploymentResources; filenames: string[]; raw: string }> {
+): Promise<{ metadata: DeploymentService; resourcesByKind: DeploymentResources; filenames: string[]; raw: string }> {
   const s = spinner.get();
   s.info(`Checking the configuration files in ${folder}`);
   let filenames = await getFileList(folder, [".yaml", ".yml"], [".templates"]);
   const metadata = await validateMetadata(folder, stage, inputVariables);
 
   const resourceFilenames = filenames.filter((a) => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
-
   const { resources, raw } = await readResourcesFromFiles(resourceFilenames, metadata.variables);
   if (!isObject(resources)) {
     const m = "Invalid file format - must be an object";
@@ -206,12 +233,18 @@ async function readResources(
     await stepTemplates(folder, resources, metadata.templates, metadata.service, shouldDownloadTemplates);
   }
 
+  const resourcesByKind = groupResourcesByKind(resources);
+  return { metadata, resourcesByKind, filenames: resourceFilenames, raw };
+}
+
+function groupResourcesByKind(resources: ResourceMap) {
   const allResources = {
     queries: [] as any[],
     alerts: [] as any[],
     dashboards: [] as any[],
   };
 
+  // group resources by type
   Object.keys(resources).forEach((id) => {
     const resourceDescriptor = resources[id];
     const resource = resourceDescriptor.resource;
@@ -221,8 +254,7 @@ async function readResources(
       error.name = "Validation error";
       throw error;
     }
-    const { type } = resource;
-    switch (type) {
+    switch (resource.type) {
       case "query":
         allResources.queries.push({ ...resource, id, type: undefined });
         break;
@@ -233,18 +265,13 @@ async function readResources(
         allResources.dashboards.push({ ...resource, id, type: undefined });
         break;
       default:
-        const m = `${id}: unknown resource type: ${type} - ${JSON.stringify(resource)}`;
+        const m = `${id}: unknown resource type: ${resource.type} - ${JSON.stringify(resource)}`;
         const error = new Error(m);
         error.name = "Validation error";
         throw error;
     }
   });
-  const { queries, alerts, dashboards } = allResources;
-
-  await Promise.all([...validateAlerts(alerts, queries), ...validateDashboards(dashboards, queries), ...validateQueries(queries)]);
-
-  s.succeed(`Valid configuration folder ${folder}/`);
-  return { metadata, resources: allResources, filenames: resourceFilenames, raw };
+  return allResources;
 }
 
 function isObject(val: any): boolean {
@@ -329,7 +356,7 @@ async function validateEachVariable(variables: Record<string, any> | undefined, 
   return variables;
 }
 
-function validateQueries(queries: any[]) {
+function validateQueries(queries: any[] = []) {
   const s = spinner.get();
 
   const promises = queries.map(async (item) => {
@@ -365,7 +392,7 @@ function validateQueries(queries: any[]) {
   return promises;
 }
 
-function validateAlerts(alerts: any[], queries: any[]) {
+function validateAlerts(alerts: any[] = [], queries: any[] = []) {
   const s = spinner.get();
 
   const promises = alerts.map(async (item) => {
@@ -408,7 +435,7 @@ function validateAlerts(alerts: any[], queries: any[]) {
   return promises;
 }
 
-function validateDashboards(dashboards: any[], queries: any[]) {
+function validateDashboards(dashboards: any[] = [], queries: any[] = []) {
   const s = spinner.get();
 
   const promises = dashboards.map(async (item) => {
@@ -435,4 +462,5 @@ function validateDashboards(dashboards: any[], queries: any[]) {
 
 export default {
   readResources,
+  readAndValidateLocalResources
 };

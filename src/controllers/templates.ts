@@ -1,10 +1,12 @@
 import api from "../services/api/api";
-import {mkdirSync, rmdirSync, rmSync, writeFileSync} from "fs";
+import fs from "fs";
 import spinner from "../services/spinner";
 import { InferType, lazy, object, string } from "yup";
-import { mapValues } from "lodash";
+import {mapValues, template} from "lodash";
 import { variableSchema } from "../commands/push/handlers/validators";
 import {appendToResourcesSafely, readResourcesFromFile} from "../services/parser/parser";
+import {getLogger} from "../utils";
+import path from "path";
 
 export const templateSchema = object({
   name: string().required(),
@@ -50,7 +52,8 @@ export async function stepTemplates(
 
 async function downloadTemplate(templateFilePath: string, workspaceId: string, templateName: string, serviceId: string): Promise<string> {
   try {
-    await rmSync(templateFilePath);
+    getLogger().debug(`deleting ${templateFilePath}`)
+    await fs.rmSync(templateFilePath);
   } catch(e) {
     // this is ok
   }
@@ -58,7 +61,9 @@ async function downloadTemplate(templateFilePath: string, workspaceId: string, t
   s.info(`Downloading template ${workspaceId}/${templateName}`);
   const templateData = await api.templateDownload(workspaceId, templateName, serviceId);
   const buf = Buffer.from(templateData.template);
-  writeFileSync(templateFilePath, buf);
+  getLogger().debug(`writing template to ${templateFilePath}, size ${buf.length}`);
+  await fs.mkdirSync(path.dirname(templateFilePath), {recursive: true});
+  await fs.writeFileSync(templateFilePath, buf);
   s.succeed("Done!");
   return templateFilePath;
 }
