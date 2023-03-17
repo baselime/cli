@@ -71,7 +71,7 @@ export async function handler(argv: Arguments<Options>) {
   if (!service) {
     const serv = await promptForService();
     if (serv.isCreate) {
-      service = await promptForNewService()
+      service = await promptForNewService();
     } else {
       service = serv.name;
     }
