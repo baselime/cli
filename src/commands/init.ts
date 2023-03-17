@@ -7,7 +7,7 @@ import * as prompts from "./services/handlers/prompts";
 import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
 import { init } from "./init/handlers";
-import { promptForService, promptTemplateSelect } from "./init/prompts";
+import { promptForNewService, promptForService, promptTemplateSelect } from "./init/prompts";
 import chalk from "chalk";
 
 export interface Options extends BaseOptions {
@@ -68,7 +68,15 @@ export async function handler(argv: Arguments<Options>) {
   mkdirSync(folder);
   await authenticate(profile);
 
-  service ??= await promptForService();
+  if (!service) {
+    const serv = await promptForService();
+    if (serv.isCreate) {
+      service = await promptForNewService()
+    } else {
+      service = serv.name;
+    }
+  }
+
   description ??= "";
   template ??= await promptTemplateSelect();
 

@@ -3,6 +3,7 @@ import { prompt } from "enquirer";
 const { StringPrompt, AutoComplete } = require("enquirer");
 import { basename, resolve } from "path";
 import api from "../../services/api/api";
+import { Service } from "../../services/api/paths/services";
 import spinner from "../../services/spinner";
 
 export async function promptTemplateSelect(): Promise<string | undefined> {
@@ -33,17 +34,49 @@ export async function promptTemplateSelect(): Promise<string | undefined> {
   return template;
 }
 
-export async function promptForService(): Promise<string> {
+export async function promptForNewService(): Promise<string> {
   const prompt = new StringPrompt({
     message: "Name the new service",
     required: true,
     initial: basename(resolve()),
     footer: `\n${chalk.gray(
-      "A service is a group of observability resources (queries, alerts, etc.) that belong to the same domain. A service typically maps to a code repo or a folder in mono-repos.",
+      "A service is a single component of a software application that provides a specific functionality (typically a microservice). A service typically maps to a set of CloudFormation templates or a code repository.",
     )}`,
   });
 
   const service = await prompt.run();
 
   return service.replace(/[^\w\s]/gi, "-");
+}
+
+export async function promptForService(): Promise<{ isCreate: boolean; name: string }> {
+  const s = spinner.get();
+  s.start("Fetching your services");
+  const services = await api.servicesList();
+  s.succeed();
+
+  const choices = services.map((service) => {
+    return {
+      name: service.name,
+      message: service.name,
+      value: service.name,
+    };
+  });
+  const create = { name: "baselime-create-a-service", message: "Create a service", value: "baselime-create-an-environment" };
+
+  const { name } = await prompt<{ name: string }>({
+    type: "select",
+    name: "name",
+    message: `${chalk.bold("Select a service")}`,
+    choices: [create, ...choices],
+    result(value) {
+      return value;
+    },
+  });
+
+  if (name === create.value) {
+    return { isCreate: true, name };
+  }
+
+  return { isCreate: false, name };
 }
