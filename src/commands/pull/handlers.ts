@@ -15,7 +15,7 @@ async function pull(directory: string, stage: string, userVariableInputs: UserVa
   await checkIfDirectoryIsRaw(directory);
   const s = spinner.get();
   s.start("Checking resources to import...");
-  let localResources = await checks.readResources(directory, stage, userVariableInputs);
+  let localResources = await checks.readResources(directory, stage, userVariableInputs, true);
   // write
   const remoteQueries = await getRemoteQueries(directory, localResources.metadata.service, localResources.resourcesByKind.queries);
   const remoteAlerts = await getRemoteAlerts(directory, localResources.metadata.service, localResources.resourcesByKind.alerts);

@@ -9,6 +9,7 @@ import { isUrl } from "../utils";
 import { init } from "./init/handlers";
 import { promptForNewService, promptForService, promptTemplateSelect } from "./init/prompts";
 import chalk from "chalk";
+import {prompt} from "enquirer";
 
 export interface Options extends BaseOptions {
   service?: string;
@@ -78,7 +79,18 @@ export async function handler(argv: Arguments<Options>) {
   }
 
   description ??= "";
-  template ??= await promptTemplateSelect();
+  if (!template) {
+    const { name } = await prompt<{ name: string }>({
+      type: "select",
+      name: "name",
+      message: `Would you like to initialse with a template?`,
+      choices: [{ name: "Yes" }, { name: "No" }],
+    });
+    if (name === "Yes") {
+      template ??= await promptTemplateSelect();
+    }
+  }
+
 
   if (template && isUrl(template)) {
     s.fail("Support for public URL as templates is coming soon.");
