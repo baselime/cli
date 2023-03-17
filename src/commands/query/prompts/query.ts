@@ -347,7 +347,7 @@ export async function promptGroupBy(keySets: KeySet[], calculations: { operator:
     fields: [
       {
         name: "limit",
-        validate(value: any): string | undefined {
+        readResources(value: any): string | undefined {
           value = Math.floor(value);
           if (!isNaN(value) && value > 0 && value < 10000) {
             return undefined;
@@ -357,7 +357,7 @@ export async function promptGroupBy(keySets: KeySet[], calculations: { operator:
       },
       {
         name: "order",
-        validate(value: any): string | undefined {
+        readResources(value: any): string | undefined {
           if (value === "DESC" || value === "ASC") {
             return undefined;
           }

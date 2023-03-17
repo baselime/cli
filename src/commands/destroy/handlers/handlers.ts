@@ -7,7 +7,7 @@ import { verifyPlan } from "../../push/handlers/handlers";
 async function destroy(config: string, stage?: string) {
   const s = spinner.get();
   const metadata = await validateMetadata(config, stage);
-  const resources = { queries: [], alerts: [] };
+  const resources = { queries: [], alerts: [], dashboards: [] };
   s.start("Checking resources to destroy...");
   // Remove the provider to signal to the API that we're deleting the service
   metadata.provider = "";

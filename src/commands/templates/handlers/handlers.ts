@@ -58,13 +58,13 @@ async function findIndexYamlDirs(dir: string): Promise<string[]> {
 }
 async function createTemplateFromFile(path: string): Promise<Template> {
   const s = spinner.get();
-  const { metadata, template: t } = await pushHandlers.validate(path);
+  const { metadata, raw } = await pushHandlers.validate(path);
 
   const template = await api.templateCreate({
     name: metadata.service,
     description: metadata.description,
     variables: metadata.variables as any,
-    template: t,
+    template: raw,
     public: true,
   });
   return template;
