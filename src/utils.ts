@@ -1,6 +1,6 @@
 import { QueryFilter, QueryOperation } from "./services/api/paths/queries";
 import crypto from "crypto";
-import {log} from "util";
+import { log } from "util";
 
 export function isUrl(s: string): boolean {
   try {

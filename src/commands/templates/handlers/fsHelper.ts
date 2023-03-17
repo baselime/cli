@@ -5,7 +5,7 @@ import { publicClient } from "../../../services/api/clients";
 import { mkdirSync, rmdirSync } from "fs";
 import { simpleGit } from "simple-git";
 import yaml from "yaml";
-import {getLogger} from "../../../utils";
+import { getLogger } from "../../../utils";
 
 // Finds metadata/index location
 export async function readMetadataFile(directory: string): Promise<string> {
@@ -13,8 +13,8 @@ export async function readMetadataFile(directory: string): Promise<string> {
   try {
     getLogger().debug(`trying ${directory}/index.yaml`);
     raw = fs.readFileSync(`${directory}/index.yaml`).toString();
-  } catch(err: any) {
-    if (err.code == "ENOENT") {
+  } catch (err: any) {
+    if (err.code === "ENOENT") {
       getLogger().debug(`index.yaml not found. Trying ${directory}/index.yml`);
       raw = fs.readFileSync(`${directory}/index.yml`).toString();
     } else {
@@ -22,7 +22,7 @@ export async function readMetadataFile(directory: string): Promise<string> {
     }
   }
   if (!raw) {
-    getLogger().debug(`index file empty`);
+    getLogger().debug("index file empty");
     throw new Error("index file empty!");
   }
   return raw;

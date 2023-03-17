@@ -21,8 +21,8 @@ export async function promptService(): Promise<string> {
   const { name } = await prompt<{ name: string }>({
     type: "select",
     name: "name",
-    message: `Which service would you like to pull configuration for?`,
-    choices: services.map(service => ({name: service.name})),
+    message: "Which service would you like to pull configuration for?",
+    choices: services.map((service) => ({ name: service.name })),
   });
   return name;
 }

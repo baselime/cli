@@ -9,17 +9,16 @@ const packageJson = require("../../../package.json");
 export async function init(folder: string, service: string, description: string, provider: string, templateUrls?: string[]) {
   const s = spinner.get();
 
-  await fs.mkdirSync(".baselime/.templates", {recursive: true});
+  await fs.mkdirSync(".baselime/.templates", { recursive: true });
 
   s.start("Generating your config folder");
-
 
   let templates: any[] = [];
   if (templateUrls) {
     for await (const templateUrl of templateUrls) {
       const { workspaceId, template: templateName } = parseTemplateName(templateUrl);
       const { variables, template } = await api.templateGet(workspaceId, templateName, true);
-      console.log('got template', template)
+      console.log("got template", template);
       templates.push({ name: `${workspaceId}/${templateName}`, variables });
     }
   }

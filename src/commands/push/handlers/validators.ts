@@ -2,20 +2,15 @@ import chalk from "chalk";
 import { object, string, number, array, boolean, InferType, lazy, mixed } from "yup";
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
-import {
-  readMetadata,
-  readResourcesFromFiles,
-  readMetaVariables,
-  ResourceMap
-} from "../../../services/parser/parser";
+import { readMetadata, readResourcesFromFiles, readMetaVariables, ResourceMap } from "../../../services/parser/parser";
 import awsCronParser from "aws-cron-parser";
 import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
 import { mapValues } from "lodash";
 import { stepTemplates, templateSchema } from "../../../controllers/templates";
-import {getLogger, hasDuplicates} from "../../../utils";
+import { getLogger, hasDuplicates } from "../../../utils";
 import { getCalculationAlias } from "../../../builder";
-import {readMetadataFile} from "../../templates/handlers/fsHelper";
+import { readMetadataFile } from "../../templates/handlers/fsHelper";
 
 const filterCombinations = ["AND", "OR"];
 const channelTypes = ["slack", "webhook"];
@@ -187,13 +182,13 @@ export interface DeploymentResources {
 }
 
 async function readAndValidateLocalResources(
-    folder: string,
-    stage?: string,
-    inputVariables?: UserVariableInputs,
-    shouldDownloadTemplates: boolean = true,
+  folder: string,
+  stage?: string,
+  inputVariables?: UserVariableInputs,
+  shouldDownloadTemplates: boolean = true,
 ): Promise<{ metadata: DeploymentService; resources: DeploymentResources; filenames: string[]; raw: string }> {
   const s = spinner.get();
-  const { metadata, resourcesByKind, filenames, raw } = await readResources(folder, stage, inputVariables, shouldDownloadTemplates)
+  const { metadata, resourcesByKind, filenames, raw } = await readResources(folder, stage, inputVariables, shouldDownloadTemplates);
   await validateDeploymentResources(resourcesByKind);
   s.succeed(`Valid configuration folder ${folder}/`);
   return { metadata, resources: resourcesByKind, filenames, raw };
@@ -201,11 +196,7 @@ async function readAndValidateLocalResources(
 
 async function validateDeploymentResources(resourcesByKind: DeploymentResources): Promise<boolean> {
   const { queries, alerts, dashboards } = resourcesByKind;
-  await Promise.all([
-    ...validateAlerts(alerts, queries),
-    ...validateDashboards(dashboards, queries),
-    ...validateQueries(queries)
-  ]);
+  await Promise.all([...validateAlerts(alerts, queries), ...validateDashboards(dashboards, queries), ...validateQueries(queries)]);
   return true;
 }
 
@@ -462,5 +453,5 @@ function validateDashboards(dashboards: any[] = [], queries: any[] = []) {
 
 export default {
   readResources,
-  readAndValidateLocalResources
+  readAndValidateLocalResources,
 };
