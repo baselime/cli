@@ -2,14 +2,15 @@ import chalk from "chalk";
 import { object, string, number, array, boolean, InferType, lazy, mixed } from "yup";
 import { getFileList } from "../../../services/config";
 import spinner from "../../../services/spinner/index";
-import { readMetadata, readResourcesFromFiles, readVariables } from "../../../services/parser/parser";
+import { readMetadata, readResourcesFromFiles, readMetaVariables, ResourceMap } from "../../../services/parser/parser";
 import awsCronParser from "aws-cron-parser";
 import ms from "ms";
 import { alertThresholdRegex, calculationsRegex, extractCalculation, parseFilter, parseThreshold, queryFilterRegex } from "../../../regex";
 import { mapValues } from "lodash";
 import { stepTemplates, templateSchema } from "../../../controllers/templates";
-import { hasDuplicates } from "../../../utils";
+import { getLogger, hasDuplicates } from "../../../utils";
 import { getCalculationAlias } from "../../../builder";
+import { readMetadataFile } from "../../templates/handlers/fsHelper";
 
 const filterCombinations = ["AND", "OR"];
 const channelTypes = ["slack", "webhook"];
@@ -175,32 +176,43 @@ export interface UserVariableInputs {
 }
 
 export interface DeploymentResources {
-  queries?: DeploymentQuery[];
-  alerts?: DeploymentAlert[];
-  dashboards?: DeploymentDashboard[];
+  queries: DeploymentQuery[];
+  alerts: DeploymentAlert[];
+  dashboards: DeploymentDashboard[];
 }
 
-async function validate(
+async function readAndValidateLocalResources(
   folder: string,
   stage?: string,
   inputVariables?: UserVariableInputs,
-): Promise<{ metadata: DeploymentService; resources: DeploymentResources; filenames: string[]; template: string }> {
+  shouldDownloadTemplates: boolean = true,
+): Promise<{ metadata: DeploymentService; resources: DeploymentResources; filenames: string[]; raw: string }> {
+  const s = spinner.get();
+  const { metadata, resourcesByKind, filenames, raw } = await readResources(folder, stage, inputVariables, shouldDownloadTemplates);
+  await validateDeploymentResources(resourcesByKind);
+  s.succeed(`Valid configuration folder ${folder}/`);
+  return { metadata, resources: resourcesByKind, filenames, raw };
+}
+
+async function validateDeploymentResources(resourcesByKind: DeploymentResources): Promise<boolean> {
+  const { queries, alerts, dashboards } = resourcesByKind;
+  await Promise.all([...validateAlerts(alerts, queries), ...validateDashboards(dashboards, queries), ...validateQueries(queries)]);
+  return true;
+}
+
+async function readResources(
+  folder: string,
+  stage?: string,
+  inputVariables?: UserVariableInputs,
+  shouldDownloadTemplates: boolean = true,
+): Promise<{ metadata: DeploymentService; resourcesByKind: DeploymentResources; filenames: string[]; raw: string }> {
   const s = spinner.get();
   s.info(`Checking the configuration files in ${folder}`);
   let filenames = await getFileList(folder, [".yaml", ".yml"], [".templates"]);
-
-  if (!filenames.includes(`${folder}/index.yml`)) {
-    const m = `Please include a index.yml file in the config folder (${folder}). This file is necessary to define the service and its metadata.`;
-    const error = new Error(m);
-    error.name = "Validation error";
-    throw error;
-  }
-
   const metadata = await validateMetadata(folder, stage, inputVariables);
 
   const resourceFilenames = filenames.filter((a) => a !== `${folder}/index.yml` && !a.startsWith(`${folder}/.out`));
-
-  const { resources, template } = (await readResourcesFromFiles(resourceFilenames, metadata.variables)) || {};
+  const { resources, raw } = await readResourcesFromFiles(resourceFilenames, metadata.variables);
   if (!isObject(resources)) {
     const m = "Invalid file format - must be an object";
     const error = new Error(m);
@@ -209,25 +221,31 @@ async function validate(
   }
 
   if (metadata.templates) {
-    await stepTemplates(folder, resources, metadata.templates, metadata.service);
+    await stepTemplates(folder, resources, metadata.templates, metadata.service, shouldDownloadTemplates);
   }
 
+  const resourcesByKind = groupResourcesByKind(resources);
+  return { metadata, resourcesByKind, filenames: resourceFilenames, raw };
+}
+
+function groupResourcesByKind(resources: ResourceMap) {
   const allResources = {
     queries: [] as any[],
     alerts: [] as any[],
     dashboards: [] as any[],
   };
 
+  // group resources by type
   Object.keys(resources).forEach((id) => {
-    const resource = resources[id];
+    const resourceDescriptor = resources[id];
+    const resource = resourceDescriptor.resource;
     if (!isObject(resource)) {
       const m = `${id}: invalid object format`;
       const error = new Error(m);
       error.name = "Validation error";
       throw error;
     }
-    const { type } = resource;
-    switch (type) {
+    switch (resource.type) {
       case "query":
         allResources.queries.push({ ...resource, id, type: undefined });
         break;
@@ -238,18 +256,13 @@ async function validate(
         allResources.dashboards.push({ ...resource, id, type: undefined });
         break;
       default:
-        const m = `${id}: unknown resource type, ${type}`;
+        const m = `${id}: unknown resource type: ${resource.type} - ${JSON.stringify(resource)}`;
         const error = new Error(m);
         error.name = "Validation error";
         throw error;
     }
   });
-  const { queries, alerts, dashboards } = allResources;
-
-  await Promise.all([...validateAlerts(alerts, queries), ...validateDashboards(dashboards, queries), ...validateQueries(queries)]);
-
-  s.succeed(`Valid configuration folder ${folder}/`);
-  return { metadata, resources: allResources, filenames: resourceFilenames, template };
+  return allResources;
 }
 
 function isObject(val: any): boolean {
@@ -258,11 +271,21 @@ function isObject(val: any): boolean {
 
 export async function validateMetadata(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<DeploymentService> {
   const s = spinner.get();
-  const variables = await validateMetadataVariables(folder, stage, inputVariables);
-  const metadata = await readMetadata(folder, variables);
+  let rawMeta: string;
+  try {
+    rawMeta = await readMetadataFile(folder);
+  } catch (err) {
+    const m = `Please include a index.yml or index.yaml file in the config folder (${folder}). This file is necessary to define the service and its metadata.`;
+    const error = new Error(m);
+    error.name = "Validation error";
+    throw error;
+  }
+  const variables = await validateMetadataVariables(rawMeta, stage, inputVariables);
+  const metadata = await readMetadata(rawMeta, variables);
   try {
     const m = await metadataSchema.validate(metadata);
     m.variables = variables;
+    getLogger().debug("metadata valid");
     return m;
   } catch (error) {
     s.fail(chalk.bold(chalk.redBright("Failed to validate the index.yml file")));
@@ -272,20 +295,21 @@ export async function validateMetadata(folder: string, stage?: string, inputVari
   }
 }
 
-async function validateMetadataVariables(folder: string, stage?: string, inputVariables?: UserVariableInputs): Promise<{ [name: string]: DeploymentVariable } | undefined> {
+async function validateMetadataVariables(rawMeta: string, stage?: string, inputVariables?: UserVariableInputs): Promise<{ [name: string]: DeploymentVariable } | undefined> {
+  getLogger().debug("validating metadata variables");
   const s = spinner.get();
-
   if (stage && ["description", "value"].includes(stage)) {
     const m = `Please use another value for the stage. ${stage} is forbidden.`;
     s.fail(chalk.bold(chalk.redBright(`Validation error - ${m}`)));
     throw new Error(m);
   }
 
-  const variables = await readVariables(`${folder}/index.yml`);
+  const variables = await readMetaVariables(rawMeta);
   return validateEachVariable(variables, inputVariables);
 }
 
 async function validateEachVariable(variables: Record<string, any> | undefined, inputVariables?: UserVariableInputs, stage?: string) {
+  getLogger().debug("validating each metadata variable");
   const s = spinner.get();
   if (variables && !isObject(variables)) {
     const m = "invalid metadata file format - variables must be an object";
@@ -323,7 +347,7 @@ async function validateEachVariable(variables: Record<string, any> | undefined, 
   return variables;
 }
 
-function validateQueries(queries: any[]) {
+function validateQueries(queries: any[] = []) {
   const s = spinner.get();
 
   const promises = queries.map(async (item) => {
@@ -359,7 +383,7 @@ function validateQueries(queries: any[]) {
   return promises;
 }
 
-function validateAlerts(alerts: any[], queries: any[]) {
+function validateAlerts(alerts: any[] = [], queries: any[] = []) {
   const s = spinner.get();
 
   const promises = alerts.map(async (item) => {
@@ -402,7 +426,7 @@ function validateAlerts(alerts: any[], queries: any[]) {
   return promises;
 }
 
-function validateDashboards(dashboards: any[], queries: any[]) {
+function validateDashboards(dashboards: any[] = [], queries: any[] = []) {
   const s = spinner.get();
 
   const promises = dashboards.map(async (item) => {
@@ -428,5 +452,6 @@ function validateDashboards(dashboards: any[], queries: any[]) {
 }
 
 export default {
-  validate,
+  readResources,
+  readAndValidateLocalResources,
 };

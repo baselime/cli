@@ -4,6 +4,29 @@ import spinner from "../../../services/spinner";
 import { publicClient } from "../../../services/api/clients";
 import { mkdirSync, rmdirSync } from "fs";
 import { simpleGit } from "simple-git";
+import yaml from "yaml";
+import { getLogger } from "../../../utils";
+
+// Finds metadata/index location
+export async function readMetadataFile(directory: string): Promise<string> {
+  let raw: string;
+  try {
+    getLogger().debug(`trying ${directory}/index.yaml`);
+    raw = fs.readFileSync(`${directory}/index.yaml`).toString();
+  } catch (err: any) {
+    if (err.code === "ENOENT") {
+      getLogger().debug(`index.yaml not found. Trying ${directory}/index.yml`);
+      raw = fs.readFileSync(`${directory}/index.yml`).toString();
+    } else {
+      throw err;
+    }
+  }
+  if (!raw) {
+    getLogger().debug("index file empty");
+    throw new Error("index file empty!");
+  }
+  return raw;
+}
 
 export async function uploadExtraAssets(directory: string, workspaceId: string, templateName: string) {
   const s = spinner.get();

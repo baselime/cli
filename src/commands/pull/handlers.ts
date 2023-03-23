@@ -1,97 +1,215 @@
-import { writeFileSync } from "fs";
-import { outputFileSync } from "fs-extra";
-import { readFile } from "fs/promises";
-import { statusType } from "../../services/api/paths/diffs";
-import { parseFileContent, stringify, stringifyResources } from "../../services/parser/parser";
+import { ResourceMap } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import { getVersion } from "../../shared";
 import { verifyPlan } from "../push/handlers/handlers";
-import checks, { DeploymentAlert, DeploymentDashboard, DeploymentQuery, UserVariableInputs } from "../push/handlers/validators";
-import { promptRefresh } from "./prompts";
+import checks, { DeploymentAlert, DeploymentQuery, DeploymentResources, UserVariableInputs } from "../push/handlers/validators";
+import { promptService } from "./prompts";
+import fs from "fs";
+import { prompt } from "enquirer";
+import api from "../../services/api/api";
+import yaml from "yaml";
+import { Query } from "../../services/api/paths/queries";
+import { Alert } from "../../services/api/paths/alerts";
+import { query } from "express";
 
-async function pull(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false) {
+async function pull(directory: string, stage: string, userVariableInputs: UserVariableInputs, noAsk: boolean = false) {
+  await checkIfDirectoryIsRaw(directory);
   const s = spinner.get();
-  const { metadata, resources, filenames } = await checks.validate(config, stage, userVariableInputs);
   s.start("Checking resources to import...");
-  const diff = await verifyPlan(metadata, resources, true);
+  let localResources = await checks.readResources(directory, stage, userVariableInputs, true);
+  // write
+  const remoteQueries = await getRemoteQueries(directory, localResources.metadata.service, localResources.resourcesByKind.queries);
+  const remoteAlerts = await getRemoteAlerts(directory, localResources.metadata.service, localResources.resourcesByKind.alerts);
+  const { onlyRemote, combinedResources } = combineResources(localResources.resourcesByKind, {
+    alerts: remoteAlerts,
+    queries: remoteQueries,
+  });
+  await writeRemoteResourcesLocally(directory, onlyRemote);
+  await verifyPlan(localResources.metadata, combinedResources, false);
+}
 
-  const res = skip ? true : await promptRefresh();
+type CombineResourcesResult = {
+  combinedResources: DeploymentResources;
+  onlyRemote: {
+    queries: DeploymentQueryDictionary;
+    alerts: DeploymentAlertDictionary;
+  };
+};
 
-  if (!res) {
+function combineResources(
+  localResources: DeploymentResources,
+  remoteResources: {
+    queries: DeploymentQueryDictionary;
+    alerts: DeploymentAlertDictionary;
+  },
+): CombineResourcesResult {
+  const onlyRemote: {
+    queries: DeploymentQueryDictionary;
+    alerts: DeploymentAlertDictionary;
+  } = {
+    queries: {},
+    alerts: {},
+  };
+  for (const queryId of Object.keys(remoteResources.queries)) {
+    let remoteQuery = remoteResources.queries[queryId];
+    if (!localResources.queries.some((localQuery) => localQuery.id === remoteQuery.id)) {
+      localResources.queries.push(remoteQuery);
+      onlyRemote.queries[queryId] = remoteQuery;
+    }
+  }
+  for (const alertId of Object.keys(remoteResources.alerts)) {
+    let remoteAlert = remoteResources.alerts[alertId];
+    if (!localResources.alerts.some((localAlert) => localAlert.id === remoteAlert.id)) {
+      localResources.alerts.push(remoteAlert);
+      onlyRemote.alerts[alertId] = remoteAlert;
+    }
+  }
+  return {
+    combinedResources: localResources,
+    onlyRemote,
+  };
+}
+
+async function checkIfDirectoryIsRaw(directory: string): Promise<void> {
+  try {
+    await fs.accessSync(".baselime");
+  } catch (err: any) {
+    if (err && err.code === "ENOENT") {
+      const { name } = await prompt<{ name: string }>({
+        type: "select",
+        name: "name",
+        message: `The configuration directory ${directory} does not exist. Would you like to initialise?`,
+        choices: [{ name: "Yes" }, { name: "No" }],
+      });
+      if (name === "Yes") {
+        await tryInitialiseForService(directory);
+      }
+    }
+  }
+}
+
+async function tryInitialiseForService(directory: string): Promise<string> {
+  const service = await promptService();
+  if (!service) {
     process.exit(0);
   }
+  const serviceData = await api.serviceGet(service);
+  await fs.mkdirSync(directory, { recursive: true });
+  const indexYamlData = {
+    ...serviceData.metadata,
+    service: service,
+    templates: convertTemplates((serviceData.metadata as any).templates),
+  };
+  await fs.writeFileSync(`${directory}/index.yml`, yaml.stringify(indexYamlData));
+  return service;
+  // await writeTemplates(directory, (serviceData.metadata as any).templates)
+  // await init(directory, service, description, "aws", undefined);
+}
 
-  const {
-    resources: { queries, alerts, dashboards },
-    service: serviceDiff,
-  } = diff;
-  const allResources = [...queries, ...alerts, ...dashboards];
-  const toDelete = allResources.filter((r) => r.status === statusType.VALUE_DELETED);
-  const toUpdate = allResources.filter((r) => r.status === statusType.VALUE_UPDATED);
+interface Template {
+  name: string;
+  applyOnSave: boolean;
+  workspaceId: string;
+}
 
-  const toDeleteIds = toDelete.map((resource) => resource.resource.id);
-  const toUpdateIds = toUpdate.map((resource) => resource.resource.id);
+function convertTemplates(templates: Template[]) {
+  if (!templates) return [];
+  return templates.map((template) => ({
+    name: `${template.workspaceId}/${template.name}`,
+  }));
+}
 
-  const deleteAndUpdatePromises = filenames.map(async (filename) => {
-    const s = (await readFile(filename)).toString();
-    const resources = parseFileContent(s, metadata.variables) || {};
-    const updatedQueries: DeploymentQuery[] = [];
-    const updatedAlerts: DeploymentAlert[] = [];
-    const updatedDashboards: DeploymentDashboard[] = [];
-    Object.keys(resources).forEach((key) => {
-      resources[key].id = key;
-      if (toDeleteIds.includes(key)) {
-        console.log(`Deleting ${key}`);
-        (resources[key] as any) = undefined;
-      }
-      if (toUpdateIds.includes(key)) {
-        console.log(`Updating ${key}`);
-        const { resource } = toUpdate.find((resource) => resource.resource.id === key)!;
-        resources[key] = { ...resource, type: resources[key].type };
-      }
+type DeploymentQueryDictionary = Record<string, DeploymentQuery>;
+type DeploymentAlertDictionary = Record<string, DeploymentAlert>;
 
-      if (!resources[key]) return;
+async function getRemoteQueries(directory: string, service: string, localQueries: DeploymentQuery[] | undefined): Promise<DeploymentQueryDictionary> {
+  spinner.get().info("Downloading queries");
+  const queries = await api.queriesList(service);
+  const queriesDict: DeploymentQueryDictionary = {};
+  for (const query of queries) {
+    if (!localQueries?.some((localQuery) => localQuery.id === query.id)) {
+      queriesDict[query.id] = convertQuery(query);
+    }
+  }
+  // if (Object.keys(queriesDict).length > 0) {
+  //   await fs.appendFileSync(`${directory}/queries.yaml`, "\n" + yaml.stringify(queriesDict));
+  // }
+  spinner.get().succeed("Queries downloaded");
+  return queriesDict;
+}
 
-      switch (resources[key]?.type) {
-        case "query":
-          updatedQueries.push(resources[key] as DeploymentQuery);
-          break;
-        case "alert":
-          updatedAlerts.push(resources[key] as DeploymentAlert);
-          break;
-        case "dashboard":
-          updatedDashboards.push(resources[key] as DeploymentDashboard);
-          break;
-        default:
-          break;
-      }
-    });
+function convertQuery(query: Query): DeploymentQuery {
+  return {
+    type: "query",
+    id: query.id,
+    properties: {
+      name: query.name,
+      description: query.description,
+      parameters: {
+        datasets: query.parameters.datasets,
+        needle: query.parameters.needle
+          ? {
+              isRegex: query.parameters.needle?.isRegex,
+              value: query.parameters.needle?.item || "",
+              matchCase: query.parameters.needle.matchCase,
+            }
+          : undefined,
+        groupBy: query.parameters.groupBy,
+        filterCombination: query.parameters.filterCombination,
+        filters: query.parameters.filters?.map((filter) => `${filter.key} ${filter.operation} ${filter.value}`),
+        calculations: query.parameters.calculations?.map((calculation) => {
+          return calculation.operator === "COUNT" ? "COUNT" : `${calculation.operator}(${calculation.key})`;
+        }),
+      },
+    },
+  };
+}
 
-    const dd = stringifyResources({ queries: updatedQueries, alerts: updatedAlerts });
-    writeFileSync(`${filename}`, dd);
-  });
+async function getRemoteAlerts(directory: string, service: string, localAlerts?: DeploymentAlert[]): Promise<DeploymentAlertDictionary> {
+  spinner.get().info("Downloading alerts");
+  const alerts = await api.alertsList(service);
+  const alertsDict: DeploymentAlertDictionary = {};
+  for (const alert of alerts) {
+    if (!localAlerts?.some((localQuery) => localQuery.id === alert.id)) {
+      alertsDict[alert.id] = convertAlert(alert);
+    }
+  }
+  // if (Object.keys(alertsDict).length > 0) {
+  //   await fs.appendFileSync(`${directory}/alerts.yaml`, "\n" + yaml.stringify(alertsDict));
+  // }
+  spinner.get().succeed("Queries downloaded");
+  return alertsDict;
+}
 
-  const createPromise = (async () => {
-    const newQueries = queries.filter((q) => q.status === statusType.VALUE_CREATED).map((q) => q.resource);
-    const newAlerts = alerts.filter((a) => a.status === statusType.VALUE_CREATED).map((q) => q.resource);
-    const newDashboards = dashboards.filter((a) => a.status === statusType.VALUE_CREATED).map((q) => q.resource);
-    // @ts-ignore
-    const dd = stringifyResources({ queries: newQueries, alerts: newAlerts, dashboards: newDashboards });
-    if (!dd) return;
-    const now = new Date().toISOString();
-    const path = `${config}/imported/${now}.yml`;
-    outputFileSync(path, dd);
-    console.log(`Imported resources stored in ${path}. Please do not delete this file.`);
-  })();
+function convertAlert(alert: Alert): DeploymentAlert {
+  return {
+    type: "alert",
+    id: alert.id,
+    properties: {
+      description: alert.description,
+      parameters: {
+        frequency: alert.parameters.frequency,
+        window: alert.parameters.window,
+        query: alert.parameters.queryId,
+        threshold: `${alert.parameters.threshold.operation} ${alert.parameters.threshold.value}`,
+      },
+      name: alert.name,
+      enabled: alert.enabled,
+      channels: alert.channels,
+    },
+  };
+}
 
-  const servicePromise = (async () => {
-    const { status, service } = serviceDiff;
-    if (status === statusType.VALUE_UNCHANGED || status === statusType.VALUE_DELETED) return;
-    const dd = stringify({ version: getVersion(), ...service });
-    writeFileSync(`${config}/index.yml`, dd);
-  })();
-
-  await Promise.all([...deleteAndUpdatePromises, createPromise, servicePromise]);
+type DeploymentResourcesGroup = {
+  queries: DeploymentQueryDictionary;
+  alerts: DeploymentAlertDictionary;
+};
+async function writeRemoteResourcesLocally(directory: string, remoteResources: DeploymentResourcesGroup) {
+  for (const kind of Object.keys(remoteResources)) {
+    const resourcesOfAKind = remoteResources[kind as keyof DeploymentResourcesGroup];
+    if (Object.keys(resourcesOfAKind).length > 0) {
+      await fs.appendFileSync(`${directory}/${kind}.yaml`, "\n" + yaml.stringify(resourcesOfAKind));
+    }
+  }
 }
 
 export default {
