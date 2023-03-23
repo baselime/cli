@@ -131,6 +131,7 @@ export async function promptCalculations(keySets: KeySet[]): Promise<{ operator:
           { name: "P999" },
           { name: "SUM" },
           { name: "STDDEV" },
+          { name: "VARIANCE" },
         ]
       : [{ name: terminationSymbol }, { name: "COUNT" }];
   let operator = "";

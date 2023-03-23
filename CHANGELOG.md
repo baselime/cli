@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Enable baselime pull pull to clone existing and discovered services 
+- Add filters and calculations 
+  - STDDEV
+  - VARIANCE
+  - LIKE
+  - NOT_LIKE
+  - DOES_NOT_INCLUDE
+  - MATCH_REGEX
+
 ## [0.0.57]
 
 ### Added

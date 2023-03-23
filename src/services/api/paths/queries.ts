@@ -48,6 +48,7 @@ export enum QueryOperator {
   P99 = "P99",
   P999 = "P999",
   STDDEV = "STDDEV",
+  VARIANCE = "VARIANCE",
 }
 
 export enum QueryOperation {
