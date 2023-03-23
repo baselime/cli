@@ -47,6 +47,7 @@ export enum QueryOperator {
   P95 = "P95",
   P99 = "P99",
   P999 = "P999",
+  STDDEV = "STDDEV",
 }
 
 export enum QueryOperation {
@@ -56,8 +57,12 @@ export enum QueryOperation {
   GREATER_THAN_EQUAL = ">=",
   LOWER_THAN = "<",
   LOWER_THAN_EQUAL = "<=",
+  LIKE = "LIKE",
+  NOT_LIKE = "NOT_LIKE",
   INCLUDES = "INCLUDES",
+  DOES_NOT_INCLUDE = "DOES_NOT_INCLUDE",
   EXISTS = "EXISTS",
+  MATCH_REGEX = "MATCH_REGEX",
   DOES_NOT_EXIST = "DOES_NOT_EXIST",
   IN = "IN",
   NOT_IN = "NOT_IN",

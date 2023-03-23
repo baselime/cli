@@ -130,6 +130,7 @@ export async function promptCalculations(keySets: KeySet[]): Promise<{ operator:
           { name: "P99" },
           { name: "P999" },
           { name: "SUM" },
+          { name: "STDDEV" },
         ]
       : [{ name: terminationSymbol }, { name: "COUNT" }];
   let operator = "";
@@ -208,7 +209,7 @@ export async function promptFilters(keySets: KeySet[]): Promise<{ key: string; o
         const selected = state.choices[state.index || 0];
         return `Please select key conditional operator: ${key} ${selected.name}`;
       },
-      choices: ["!=", "<", "<=", "=", ">", ">=", "DOES_NOT_EXIST", "EXISTS", "IN", "INCLUDES", "NOT_IN", "STARTS_WITH"],
+      choices: ["!=", "<", "<=", "=", ">", ">=", "MATCH_REGEX", "DOES_NOT_EXIST", "EXISTS", "IN", "DOES_NOT_INCLUDE", "INCLUDES", "LIKE", "NOT_LIKE", "NOT_IN", "STARTS_WITH"],
     });
     const { value } = await prompt<{ value: string }>({
       type: "input",
