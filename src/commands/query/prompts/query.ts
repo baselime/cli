@@ -117,6 +117,7 @@ export async function promptCalculations(keySets: KeySet[]): Promise<{ operator:
       ? [
           { name: terminationSymbol },
           { name: "COUNT" },
+          { name: "COUNT_DISTINCT" },
           { name: "AVG" },
           { name: "MAX" },
           { name: "MIN" },
