@@ -1,6 +1,6 @@
 # Baselime CLI
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Documentation][docs_badge]][docs]
@@ -127,6 +127,7 @@ bugfixes and improvements, and submitting pull requests to the project.
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://boristane.com/"><img src="https://avatars.githubusercontent.com/u/10452259?v=4?s=100" width="100px;" alt="Boris Tane"/><br /><sub><b>Boris Tane</b></sub></a><br /><a href="https://github.com/Baselime/cli/commits?author=boristane" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://ankcorn.dev"><img src="https://avatars.githubusercontent.com/u/7361428?v=4?s=100" width="100px;" alt="Thomas Ankcorn"/><br /><sub><b>Thomas Ankcorn</b></sub></a><br /><a href="https://github.com/Baselime/cli/commits?author=Ankcorn" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
