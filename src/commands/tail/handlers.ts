@@ -19,10 +19,11 @@ async function tail(data: {
   to: string;
   follow: boolean;
   service?: string;
+  field?: string;
   matchCase: boolean;
   regex?: string;
 }) {
-  const { format, datasets, filters, needle, from, to, follow, matchCase, regex, service } = data;
+  const { format, datasets, filters, needle, from, to, follow, matchCase, regex, service, field } = data;
   const s = spinner.get();
 
   const n: SearchNeedle = {
@@ -47,8 +48,8 @@ async function tail(data: {
 
     f = events.events[0] ? dayjs.utc(events.events[0]._timestamp).valueOf() : f;
     t = now.valueOf();
-    outputs.tail(events.events, format);
-    await wait(2000);
+    outputs.tail(events.events, format, field);
+    await wait(200);
   }
 }
 
