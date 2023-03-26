@@ -6,7 +6,7 @@
   "commit": false,
   "commitConvention": "angular",
   "contributors": [
-    {  
+    {
       "login": "boristane",
       "name": "Boris Tane",
       "avatar_url": "https://avatars.githubusercontent.com/u/10452259?v=4",
@@ -29,6 +29,15 @@
       "name": "Thomas Ankcorn",
       "avatar_url": "https://avatars.githubusercontent.com/u/7361428?v=4",
       "profile": "http://ankcorn.dev",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dmdboi",
+      "name": "Max Diamond",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23747483?v=4",
+      "profile": "https://maxdiamond.co.uk",
       "contributions": [
         "code"
       ]
