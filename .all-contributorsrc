@@ -6,11 +6,20 @@
   "commit": false,
   "commitConvention": "angular",
   "contributors": [
-    {
+    {  
       "login": "boristane",
       "name": "Boris Tane",
       "avatar_url": "https://avatars.githubusercontent.com/u/10452259?v=4",
       "profile": "https://boristane.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Lastin",
+      "name": "Maksym Makuch",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5638394?v=4",
+      "profile": "https://github.com/Lastin",
       "contributions": [
         "code"
       ]
