@@ -1,18 +1,19 @@
 # Baselime CLI
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 [![Documentation][docs_badge]][docs]
 [![Latest Release][release_badge]][release]
-[![License][license_badge]][license]
-[![All Contributors](https://img.shields.io/github/all-contributors/Baselime/cli?color=ee8449&style=flat-square)](#contributors)
+[![License][license_badge]][license]<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 
 [![Observability for serverless](./images/baselime.gif)](https://baselime.io?utm_campaign=baselime-baselime-cli-github-repo&utm_source=github.com&utm_medium=top-banner)
 
-**The [Baselime](https://baselime.io) command-line application is a fast and
-straightforward tool for interacting with [Baselime](https://baselime.io).**
+
+🛠️ The Developer Toolset for the Serverless World
+
+- 📊 Observability in your terminal: tail your logs and view your traces in your terminal (and finally close your CloudWatch browser tabs)
+- 🪄 Observability as Code: manage your queries, alerts, slos, and more all as code
+- 🧭 Works with any IaC, from the Serverless Framework to SST
 
 ---
 
