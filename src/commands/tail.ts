@@ -12,6 +12,7 @@ export interface Options extends BaseOptions {
   follow: boolean;
   filters: string[];
   needle?: string;
+  field?: string;
   regex?: string;
   "match-case": boolean;
   service?: string;
@@ -32,6 +33,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       service: { type: "string", desc: "The service to tail. When specified, additional filters are combined with the filters of the service" },
       filters: { type: "array", desc: "A set of filters to apply to the tail; multiple filters can be passed", default: [] },
       needle: { type: "string", desc: "A string to search in the telemetry data to tail" },
+      field: { type: "string", desc: "The field to display from the events.", default: undefined },
       regex: { type: "string", desc: "A regular expression to search in the telemetry data to tail. If there is both a needle and a regex, the regex takes priority" },
       "match-case": { type: "boolean", desc: "Match case if a needle is specified", default: false },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins", default: "1hour" },
@@ -57,7 +59,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, datasets, filters, from, to, format, follow, needle, "match-case": matchCase, regex, service } = argv;
+  const { profile, datasets, filters, from, to, format, follow, needle, "match-case": matchCase, regex, service, field } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
@@ -71,6 +73,7 @@ export async function handler(argv: Arguments<Options>) {
     needle,
     matchCase,
     regex,
+    field,
     follow,
     service: service,
   });

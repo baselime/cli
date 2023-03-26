@@ -6,7 +6,7 @@
 [![All Contributors](https://img.shields.io/github/all-contributors/Baselime/cli?color=ee8449&style=flat-square)](#contributors)
 
 
-[![Baselime - Developer-First Observability for Serverless](./images/cli-demo.svg)](https://baselime.io?utm_campaign=baselime-baselime-cli-github-repo&utm_source=github.com&utm_medium=top-banner)
+[![Observability for serverless](./images/baselime.gif)](https://baselime.io?utm_campaign=baselime-baselime-cli-github-repo&utm_source=github.com&utm_medium=top-banner)
 
 **The [Baselime](https://baselime.io) command-line application is a fast and
 straightforward tool for interacting with [Baselime](https://baselime.io).**
