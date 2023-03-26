@@ -9,20 +9,20 @@ function tail(events: Event[], format: OutputFormat, field?: string) {
     let display = event._parsed;
     if (field) {
       display = findNestedKey(event._parsed, field);
-    };
+    }
     console.log(chalk.cyan(event._timestamp), chalk.magenta(event._dataset), chalk.yellow(event._service), chalk.green(event._namespace), JSON.stringify(display, undefined, 2));
   });
 }
 
 function findNestedKey(obj: any, keyString: string) {
-  if (typeof obj === 'string') {
+  if (typeof obj === "string") {
     try {
       obj = JSON.parse(obj);
     } catch (error) {
       return undefined;
     }
   }
-  const keys = keyString.split('.');
+  const keys = keyString.split(".");
   let val = obj;
   for (let i = 0; i < keys.length; i++) {
     val = val[keys[i]];
@@ -32,8 +32,6 @@ function findNestedKey(obj: any, keyString: string) {
   }
   return val;
 }
-
-
 
 export default {
   tail,

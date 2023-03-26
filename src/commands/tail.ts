@@ -59,7 +59,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, datasets, filters, from, to, format, follow, needle, "match-case": matchCase, regex, service, field, } = argv;
+  const { profile, datasets, filters, from, to, format, follow, needle, "match-case": matchCase, regex, service, field } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile);
 
