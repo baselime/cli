@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.58]
+
+### Added
+
 - Enable baselime pull pull to clone existing and discovered services 
 - Add filters and calculations 
   - COUNT_DISTINCT
