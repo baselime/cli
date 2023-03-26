@@ -3,6 +3,8 @@
 [![Documentation][docs_badge]][docs]
 [![Latest Release][release_badge]][release]
 [![License][license_badge]][license]
+[![All Contributors](https://img.shields.io/github/all-contributors/Baselime/cli?color=ee8449&style=flat-square)](#contributors)
+
 
 [![Baselime - Developer-First Observability for Serverless](./images/cli-demo.svg)](https://baselime.io?utm_campaign=baselime-baselime-cli-github-repo&utm_source=github.com&utm_medium=top-banner)
 
@@ -112,6 +114,19 @@ Feel free to submit PRs or to fill issues. Every kind of help is appreciated.
 
 Kindly check our [Contributing](Contributing.md) guide on how to propose
 bugfixes and improvements, and submitting pull requests to the project.
+
+## Contributors ✨
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
 ## License
 
