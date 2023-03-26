@@ -9,7 +9,7 @@
 [![All Contributors](https://img.shields.io/github/all-contributors/Baselime/cli?color=ee8449&style=flat-square)](#contributors)
 
 
-[![Baselime - Developer-First Observability for Serverless](./images/cli-demo.svg)](https://baselime.io?utm_campaign=baselime-baselime-cli-github-repo&utm_source=github.com&utm_medium=top-banner)
+[![Observability for serverless](./images/baselime.gif)](https://baselime.io?utm_campaign=baselime-baselime-cli-github-repo&utm_source=github.com&utm_medium=top-banner)
 
 **The [Baselime](https://baselime.io) command-line application is a fast and
 straightforward tool for interacting with [Baselime](https://baselime.io).**
@@ -127,6 +127,7 @@ bugfixes and improvements, and submitting pull requests to the project.
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Lastin"><img src="https://avatars.githubusercontent.com/u/5638394?v=4?s=100" width="100px;" alt="Maksym Makuch"/><br /><sub><b>Maksym Makuch</b></sub></a><br /><a href="https://github.com/Baselime/cli/commits?author=Lastin" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://boristane.com/"><img src="https://avatars.githubusercontent.com/u/10452259?v=4?s=100" width="100px;" alt="Boris Tane"/><br /><sub><b>Boris Tane</b></sub></a><br /><a href="https://github.com/Baselime/cli/commits?author=boristane" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

@@ -3,23 +3,34 @@ import Table from "cli-table3";
 import { OutputFormat } from "../../shared";
 import chalk from "chalk";
 import { Event } from "../../services/api/paths/events";
-import { flatten } from "flat";
 
-function tail(events: Event[], format: OutputFormat) {
+function tail(events: Event[], format: OutputFormat, field?: string) {
   events.reverse().forEach((event) => {
-    transformEvent(event);
-    console.log(chalk.cyan(event._timestamp), chalk.magenta(event._dataset), chalk.yellow(event._namespace), JSON.stringify(event._parsed, undefined, 2));
+    let display = event._parsed;
+    if (field) {
+      display = findNestedKey(event._parsed, field);
+    }
+    console.log(chalk.cyan(event._timestamp), chalk.magenta(event._dataset), chalk.yellow(event._service), chalk.green(event._namespace), JSON.stringify(display, undefined, 2));
   });
 }
 
-export function transformEvent(event: Event): Event {
-  try {
-    event._source = JSON.parse(event._source.replace(/\\'/g, `'`));
-    event._parsed = flatten.unflatten(event._source);
-  } catch (error) {
-    event._parsed = event._source;
+function findNestedKey(obj: any, keyString: string) {
+  if (typeof obj === "string") {
+    try {
+      obj = JSON.parse(obj);
+    } catch (error) {
+      return undefined;
+    }
   }
-  return event;
+  const keys = keyString.split(".");
+  let val = obj;
+  for (let i = 0; i < keys.length; i++) {
+    val = val[keys[i]];
+    if (val === undefined) {
+      return undefined;
+    }
+  }
+  return val;
 }
 
 export default {
