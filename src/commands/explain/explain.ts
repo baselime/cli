@@ -89,12 +89,7 @@ export async function loadAndSelectEvent(queryId: string, runId: string): Promis
     return JSON.parse(name).error;
 }
 
-type AnalysisResult = {
-    queryId: string,
-    runId: string
-}
-
-export async function analyse(openAIKey: string): Promise<AnalysisResult>  {
+export async function analyse(openAIKey: string)  {
     const from = await promptFrom();
     const to = await promptTo();
 
@@ -110,16 +105,16 @@ export async function analyse(openAIKey: string): Promise<AnalysisResult>  {
     ];
 
     const filters = [{
-        key: "error",
-        operation: QueryOperation.EXISTS,
+        key: "LogLevel",
+        operation: QueryOperation.EQUAL,
         type: "string",
-        value: "",
+        value: "ERROR",
     }];
 
     let offset = 0;
     while (true) {
         const s = spinner.get();
-        s.start("Getting error events from your system");
+        s.start("Collecting errors from your environment");
         const data = await api.listEvents({
             datasets: datasets,
             filters: filters,
@@ -127,7 +122,7 @@ export async function analyse(openAIKey: string): Promise<AnalysisResult>  {
             to: timeframe.to,
             service: "default",
             offset: offset,
-            limit: 10,
+            limit: 100,
             needle: undefined
         });
         s.succeed();
@@ -138,40 +133,29 @@ export async function analyse(openAIKey: string): Promise<AnalysisResult>  {
         const { name: errorToAnalyse } = await prompt<{ name: string }>({
             type: "select",
             name: "name",
-            message: `${chalk.bold("Select an issue to investigate")}`,
+            message: `${chalk.bold("Select an error to investigate")}`,
             choices: [
-                ...distinctIssues.map(issue => ({
-                    name: issue
-                })),
+                ...distinctIssues.map(issue => {
+                    const name = [
+                        chalk.white(`[x${issue.occurrences} times, last ${issue.lastOccurrence.toISOString()}]`),
+                        chalk.magenta(issue.dataset),
+                        chalk.yellow(issue.service),
+                        chalk.green(issue.namespace),
+                        issue.message
+                    ].join(" ")
+                    return {name}
+                }),
                 {name: nextPage}
             ]
         });
         if (errorToAnalyse == nextPage) {
             offset++
         } else {
-            await passErrorToChatGPT(openAIKey, errorToAnalyse);
-            const { confirm } = await prompt<{ confirm: boolean }>({
-                type: "confirm",
-                name: "confirm",
-                message: `${chalk.bold("Have you found answers to all your issues")}:`,
+            await askChatGPT(openAIKey as string, {
+                query: errorToAnalyse,
             });
-            if (confirm) {
-                process.exit(0);
-            }
+            return;
         }
-    }
-}
-
-async function passErrorToChatGPT(openAIKey: string, errorToAnalyse: string) {
-    const { confirm } = await prompt<{ confirm: boolean }>({
-        type: "confirm",
-        name: "confirm",
-        message: `${chalk.bold("Would you like to ask ChatGPT about the following issue")}: ${chalk.red(errorToAnalyse)}`,
-    });
-    if (confirm) {
-        await askChatGPT(openAIKey as string, {
-            query: errorToAnalyse,
-        });
     }
 }
 
@@ -191,9 +175,9 @@ export async function askChatGPT(apiKey: string, cmd: Command) {
         temperature: 0.5,
         max_tokens: 2000
     };
-    const openai = new OpenAIApi(configuration);
     const s = spinner.get();
-    s.start("Consulting ChatGPT");
+    s.start("Explaining");
+    const openai = new OpenAIApi(configuration);
     const response = await openai.createChatCompletion(openAiRequest);
     s.succeed();
     const text = response.data.choices[0].message.content;
@@ -204,6 +188,7 @@ export async function askChatGPT(apiKey: string, cmd: Command) {
     ];
     for await (const part of parts) {
         process.stdout.write(`${part} `);
+        Math.random()
         await new Promise(res => setTimeout(res, 100))
     }
 }
