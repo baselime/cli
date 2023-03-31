@@ -2,7 +2,7 @@ import {Arguments, CommandBuilder} from "yargs";
 import {authenticate, BaseOptions, baseOptions, printError} from "../shared";
 import spinner from "../services/spinner";
 import {Options} from "./query";
-import {analyse, generate, loadAndSelectEvent} from "./explain/explain";
+import {analyse, askChatGPT, loadAndSelectEvent} from "./explain/explain";
 import {prompt} from "enquirer";
 import chalk from "chalk";
 
@@ -33,19 +33,5 @@ export async function handler(argv: Arguments<Options>) {
 
     spinner.init(!!argv.quiet);
     await authenticate(profile);
-
-    const analysisResult = await analyse();
-    const errorToAnalyse = await loadAndSelectEvent(analysisResult.queryId, analysisResult.runId);
-    if (errorToAnalyse) {
-        const { confirm } = await prompt<{ confirm: boolean }>({
-            type: "confirm",
-            name: "confirm",
-            message: `${chalk.bold("Would you like to ask ChatGPT about the following issue?")}: ${errorToAnalyse}`,
-        });
-        if (confirm) {
-            await generate(openAIKey as string, {
-                query: errorToAnalyse,
-            });
-        }
-    }
+    await analyse(openAIKey as string)
 }
