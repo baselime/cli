@@ -10,5 +10,5 @@ jobs:
         uses: actions/checkout@v2
       - uses: rome/setup-rome@v0.4
         with:
-          version: latest
+          version: 0.11.0
       - run: rome ci .
