@@ -178,7 +178,7 @@ export async function askChatGPT(apiKey: string, cmd: Command) {
   const parts = ["\n", ...text.split(" "), "\n"];
   for await (const part of parts) {
     process.stdout.write(`${part} `);
-    Math.random();
-    await new Promise((res) => setTimeout(res, 100));
+    // the "typing" effect
+    await new Promise((res) => setTimeout(res, Math.random() * 100 + 100));
   }
 }
