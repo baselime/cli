@@ -17,6 +17,7 @@ import reports from "./paths/reports";
 import slack from "./paths/slack";
 import keys from "./paths/keys";
 import onboarding from "./paths/onboarding";
+import explain from "./paths/explain";
 export default {
   ...auth,
   ...queries,
@@ -37,4 +38,5 @@ export default {
   ...slack,
   ...keys,
   ...onboarding,
+  ...explain
 };
