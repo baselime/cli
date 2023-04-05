@@ -38,5 +38,5 @@ export default {
   ...slack,
   ...keys,
   ...onboarding,
-  ...explain
+  ...explain,
 };
