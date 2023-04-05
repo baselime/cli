@@ -49,6 +49,7 @@ export async function analyse() {
       limit: 100,
       needle: undefined,
     });
+    console.log('data', data.events)
     s.succeed();
     s.start("Looking for distinct issues");
     const distinctIssues = processEvents(data.events);

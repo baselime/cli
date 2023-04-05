@@ -12,31 +12,72 @@ type EventsData = {
   namespace: string;
 };
 
+type AnotherFoo = {
+  vector: number[];
+  similarHashes: string[];
+};
+
 export function processEvents(events: Event[]): EventsData[] {
-  const messagesByHash: Record<string, string> = {};
+  // const messagesByHash: Record<string, string> = {};
   const tokensByHash: Record<string, string[]> = {};
-  const eventsByHash: Record<string, Event> = {};
+  type Foo = {
+    event: Event;
+    tokens: string[];
+  }
+  const foosByHash: Record<string, Foo> = {};
+  const tokensDictionary: Record<string, number> = {};
   for (const event of events) {
-    const index = event["string.names"].findIndex((name: string) => {
-      switch (name.toLowerCase()) {
-        case "message":
-        case "@message":
-        case "msg":
-        case "@message.message":
-        case "@message.msg":
-        case "error":
-          return true;
-      }
-      return false;
-    });
-    const msg = event["string.values"][index];
-    if (msg) {
-      const hashId = crypto.createHash("sha1").update(msg).digest("base64");
-      messagesByHash[hashId] = msg;
-      tokensByHash[hashId] = processMessage(msg);
-      eventsByHash[hashId] = event;
+    if (!event["string.values"]) {
+      continue;
+    }
+    const combinedMessage = event["string.values"].join(" ");
+    // const index = event["string.names"].findIndex((name: string) => {
+    //   switch (name.toLowerCase()) {
+    //     case "message":
+    //     case "@message":
+    //     case "msg":
+    //     case "@message.message":
+    //     case "@message.msg":
+    //     case "error":
+    //       return true;
+    //   }
+    //   return false;
+    // });
+    // const msg = event["string.values"][index];
+    if (combinedMessage) {
+      const hashId = crypto.createHash("sha1").update(combinedMessage).digest("base64");
+      // messagesByHash[hashId] = combinedMessage;
+      // tokensByHash[hashId] = prepareMessage(combinedMessage);
+      const tokens = prepareMessage(combinedMessage);
+      addTokensToDictionary(tokensDictionary, tokens);
+      foosByHash[hashId] = {
+        event,
+        tokens
+      };
     }
   }
+
+  // console.log(tokensDictionary)
+
+  const vectorsByHash: Record<string, AnotherFoo> = {};
+  for (const hash in foosByHash) {
+    const value = foosByHash[hash];
+    const vector = produceVector(value.tokens);
+    const foundSimilar = findExistingSimilarities(vectorsByHash, vector, hash);
+    if (!foundSimilar) {
+      vectorsByHash[hash] = {
+        vector,
+        similarHashes: []
+      };
+    }
+    // console.log('foo', value.tokens)
+  }
+  console.log('vectorsByHash', JSON.stringify(vectorsByHash))
+  // console.log('???', vectorsByHash)
+  // group errors
+
+
+  // vector processing
   const hashesByVector: Map<string, string[]> = new Map();
   for (const hash of Object.keys(tokensByHash)) {
     const vectorAsString = produceVector(tokensByHash[hash]).join("");
@@ -51,20 +92,56 @@ export function processEvents(events: Event[]): EventsData[] {
   const distinct: EventsData[] = [];
   hashesByVector.forEach((hash, key) => {
     const firstHash = hash[0];
-    const event = eventsByHash[firstHash];
-    distinct.push({
-      dataset: event._dataset,
-      service: event._service,
-      lastOccurrence: new Date(),
-      message: messagesByHash[firstHash],
-      namespace: event._namespace,
-      occurrences: key.length,
-    });
+    const event = foosByHash[firstHash];
+    // distinct.push({
+    //   dataset: event._dataset,
+    //   service: event._service,
+    //   lastOccurrence: new Date(),
+    //   message: messagesByHash[firstHash],
+    //   namespace: event._namespace,
+    //   occurrences: key.length,
+    // });
   });
   return distinct;
 }
 
-function processMessage(msg: string): string[] {
+function findExistingSimilarities(vectorsByHash: Record<string, AnotherFoo>, vector: number[], thatHash: string): boolean {
+  for (const otherHash in vectorsByHash) {
+    const cosine = compareVectors(vectorsByHash[otherHash].vector, vector);
+    if (cosine > 0.6) {
+      vectorsByHash[otherHash].similarHashes ?
+          vectorsByHash[otherHash].similarHashes.push(thatHash) :
+          vectorsByHash[otherHash].similarHashes = [thatHash]
+      return true
+    }
+  }
+  return false
+}
+
+function compareVectors(vectorA: number[], vectorB: number[]): number {
+  if (vectorA.length != vectorB.length) {
+    console.log('incorrect vector!')
+    return 0;
+  }
+  let dotProduct = 0;
+  let sumASqr = 0;
+  let sumBSqr = 0;
+  for (let i = 0; i < vectorA.length; i++) {
+    dotProduct += (vectorA[i] * vectorB[i]);
+    sumASqr += Math.pow(vectorA[i], 2);
+    sumBSqr += Math.pow(vectorB[i], 2);
+  }
+  //cosine
+  return dotProduct / (Math.sqrt(sumASqr) * Math.sqrt(sumBSqr))
+}
+
+function addTokensToDictionary(dict: Record<string, number>, tokens: string[]) {
+  for (const token of tokens) {
+    dict[token] ? dict[token]++ : dict[token] = 1;
+  }
+}
+
+function prepareMessage(msg: string): string[] {
   const tokens = msg.split(" ");
   const validTokens = [];
   for (let token of tokens) {
