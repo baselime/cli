@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.61]
+
+### Added
+
+- Explaining the error using ChatGPT without the need for an API key
+
 ## [0.0.60]
 
 ### Added
@@ -25,7 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Enable baselime pull pull to clone existing and discovered services 
+- Enable baselime pull to clone existing and discovered services 
 - Add filters and calculations 
   - COUNT_DISTINCT
   - STDDEV
