@@ -3,20 +3,36 @@ import { Event } from "../../services/api/paths/events";
 
 const dictionary: Record<string, any> = {};
 
-type EventsData = {
-  message: string;
+export type EventsData = {
+  event: Event;
+  summary: string;
   occurrences: number;
   lastOccurrence: Date;
-  dataset: string;
-  service: string;
-  namespace: string;
+  combinedMessage: string;
+};
+
+type EventGroup = {
+  vector: number[];
+  hash: string;
+  similarHashes: string[];
+};
+
+type AdditionalData = {
+  event: Event;
+  tokens: string[];
+  summary: string;
+  combinedMessage: string;
 };
 
 export function processEvents(events: Event[]): EventsData[] {
-  const messagesByHash: Record<string, string> = {};
-  const tokensByHash: Record<string, string[]> = {};
-  const eventsByHash: Record<string, Event> = {};
+  // build dictionary
+  const additionalData: Record<string, AdditionalData> = {};
+  const tokensDictionary: Record<string, number> = {};
   for (const event of events) {
+    if (!event["string.values"]) {
+      continue;
+    }
+    // find most useful
     const index = event["string.names"].findIndex((name: string) => {
       switch (name.toLowerCase()) {
         case "message":
@@ -29,42 +45,100 @@ export function processEvents(events: Event[]): EventsData[] {
       }
       return false;
     });
-    const msg = event["string.values"][index];
-    if (msg) {
-      const hashId = crypto.createHash("sha1").update(msg).digest("base64");
-      messagesByHash[hashId] = msg;
-      tokensByHash[hashId] = processMessage(msg);
-      eventsByHash[hashId] = event;
+    const summary = event["string.values"][index];
+
+    const combinedMessage = event["string.values"].join(" ");
+    if (combinedMessage) {
+      const hashId = crypto.createHash("sha1").update(combinedMessage).digest("base64");
+      const tokens = prepareMessage(combinedMessage);
+      addTokensToDictionary(tokensDictionary, tokens);
+      additionalData[hashId] = {
+        event,
+        tokens,
+        summary,
+        combinedMessage,
+      };
     }
   }
-  const hashesByVector: Map<string, string[]> = new Map();
-  for (const hash of Object.keys(tokensByHash)) {
-    const vectorAsString = produceVector(tokensByHash[hash]).join("");
-    const existing = hashesByVector.get(vectorAsString);
-    if (existing) {
-      existing.push(hash);
-    } else {
-      hashesByVector.set(vectorAsString, [hash]);
+
+  const eventGroups: EventGroup[] = [];
+  for (const hash in additionalData) {
+    const value = additionalData[hash];
+    const vector = produceVector(value.tokens);
+    const foundSimilar = findExistingSimilarities(eventGroups, vector, hash);
+    if (!foundSimilar) {
+      eventGroups.push({
+        vector,
+        hash,
+        similarHashes: [],
+      });
     }
   }
-  // populate
+
+  // vector processing
   const distinct: EventsData[] = [];
-  hashesByVector.forEach((hash, key) => {
-    const firstHash = hash[0];
-    const event = eventsByHash[firstHash];
+  eventGroups.forEach((eventGroup) => {
+    const { event, summary, combinedMessage } = additionalData[eventGroup.hash];
     distinct.push({
-      dataset: event._dataset,
-      service: event._service,
-      lastOccurrence: new Date(),
-      message: messagesByHash[firstHash],
-      namespace: event._namespace,
-      occurrences: key.length,
+      event: event,
+      // dataset: event._dataset,
+      // service: event._service,
+      lastOccurrence: findLastOccurrence(eventGroup, additionalData),
+      summary: summary,
+      // namespace: event._namespace,
+      occurrences: eventGroup.similarHashes.length + 1,
+      combinedMessage,
     });
   });
   return distinct;
 }
 
-function processMessage(msg: string): string[] {
+function findLastOccurrence(group: EventGroup, additionalData: Record<string, AdditionalData>): Date {
+  let latest = new Date(additionalData[group.hash].event._timestamp);
+  group.similarHashes.forEach((hash) => {
+    let alt = new Date(additionalData[hash].event._timestamp);
+    if (alt.valueOf() > latest.valueOf()) {
+      latest = alt;
+    }
+  });
+  return latest;
+}
+
+function findExistingSimilarities(groups: EventGroup[], vector: number[], hash: string): boolean {
+  for (const index in groups) {
+    const cosine = compareVectors(groups[index].vector, vector);
+    if (cosine > 0.6) {
+      groups[index].similarHashes ? groups[index].similarHashes.push(hash) : (groups[index].similarHashes = [hash]);
+      return true;
+    }
+  }
+  return false;
+}
+
+function compareVectors(vectorA: number[], vectorB: number[]): number {
+  if (vectorA.length !== vectorB.length) {
+    console.log("incorrect vector!");
+    return 0;
+  }
+  let dotProduct = 0;
+  let sumASqr = 0;
+  let sumBSqr = 0;
+  for (let i = 0; i < vectorA.length; i++) {
+    dotProduct += vectorA[i] * vectorB[i];
+    sumASqr += Math.pow(vectorA[i], 2);
+    sumBSqr += Math.pow(vectorB[i], 2);
+  }
+  //cosine
+  return dotProduct / (Math.sqrt(sumASqr) * Math.sqrt(sumBSqr));
+}
+
+function addTokensToDictionary(dict: Record<string, number>, tokens: string[]) {
+  for (const token of tokens) {
+    dict[token] ? dict[token]++ : (dict[token] = 1);
+  }
+}
+
+function prepareMessage(msg: string): string[] {
   const tokens = msg.split(" ");
   const validTokens = [];
   for (let token of tokens) {

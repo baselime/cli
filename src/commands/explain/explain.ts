@@ -1,23 +1,11 @@
-import { CreateChatCompletionRequest } from "openai/api";
 import spinner from "../../services/spinner";
 import { getTimeframe } from "../../services/timeframes/timeframes";
 import { promptFrom, promptTo } from "../query/prompts/query";
 import api from "../../services/api/api";
-import { getLogger, randomString } from "../../utils";
 import { prompt } from "enquirer";
 import chalk from "chalk";
-import crypto from "crypto";
 import { QueryOperation } from "../../services/api/paths/queries";
-import { promisify } from "util";
-import { processEvents } from "./eventsVectors";
-const wait = promisify(setTimeout);
-
-const { Configuration, OpenAIApi } = require("openai");
-
-type Command = {
-  model?: string;
-  query: string;
-};
+import { EventsData, processEvents } from "./eventsVectors";
 
 export async function analyse() {
   const from = await promptFrom();
@@ -51,45 +39,67 @@ export async function analyse() {
     });
     s.succeed();
     s.start("Looking for distinct issues");
-    const distinctIssues = processEvents(data.events);
+    const distinctIssues: EventsData[] = processEvents(data.events);
     s.succeed();
-    const nextPage = "Next page";
-    const { name: errorToAnalyse } = await prompt<{ name: string }>({
+    // @ts-ignore
+    const { name: selectedIndex } = await prompt<any>({
       type: "select",
       name: "name",
       message: `${chalk.bold("Select an error to investigate")}`,
       choices: [
-        ...distinctIssues.map((issue) => {
+        ...distinctIssues.map((issue, index) => {
           const name = [
             chalk.white(`[x${issue.occurrences} times, last ${issue.lastOccurrence.toISOString()}]`),
-            chalk.magenta(issue.dataset),
-            chalk.yellow(issue.service),
-            chalk.green(issue.namespace),
-            issue.message,
+            chalk.magenta(issue.event._dataset),
+            chalk.yellow(issue.event._service),
+            chalk.green(issue.event._namespace),
+            issue.summary,
           ].join(" ");
-          return { name };
+          return {
+            name: index.toString(),
+            message: name,
+            value: issue.event,
+          };
         }),
-        { name: nextPage },
+        {
+          name: distinctIssues.length.toString(),
+          message: "Next page",
+          value: "Next page",
+        },
       ],
     });
-    if (errorToAnalyse === nextPage) {
+    if (selectedIndex >= distinctIssues.length) {
       offset++;
     } else {
-      await askChatGPT(errorToAnalyse);
+      const selection: EventsData = distinctIssues[selectedIndex];
+      await askChatGPT(selection.combinedMessage, selection);
       return;
     }
   }
 }
 
-export async function askChatGPT(question: string) {
+export async function askChatGPT(question: string, selection: EventsData) {
   const s = spinner.get();
-  s.start("Explaining");
-  const answer = await api.explain(question);
+  // send question first, then print the question
+  const answerPromise = api.explain(question);
+  s.info("Explaining:");
+  await imitateTyping(selection.combinedMessage);
+  s.start("Getting answers");
+  const answer = await answerPromise;
   s.succeed();
-  const parts = ["\n", ...answer.split(" "), "\n"];
+  await imitateTyping(answer);
+}
+
+async function imitateTyping(toPrint: string) {
+  const parts = ["\n", ...toPrint.split(/(.)/g), "\n"];
   for await (const part of parts) {
-    process.stdout.write(`${part} `);
+    process.stdout.write(part);
     // the "typing" effect
-    await new Promise((res) => setTimeout(res, Math.random() * 100 + 100));
+    await new Promise((res) => setTimeout(res, randomIntFromInterval(20, 25)));
   }
+}
+
+function randomIntFromInterval(min: number, max: number) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
