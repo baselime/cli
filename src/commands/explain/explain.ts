@@ -5,7 +5,7 @@ import api from "../../services/api/api";
 import { prompt } from "enquirer";
 import chalk from "chalk";
 import { QueryOperation } from "../../services/api/paths/queries";
-import {EventsData, processEvents} from "./eventsVectors";
+import { EventsData, processEvents } from "./eventsVectors";
 
 export async function analyse() {
   const from = await promptFrom();
@@ -58,13 +58,13 @@ export async function analyse() {
           return {
             name: index.toString(),
             message: name,
-            value: issue.event
+            value: issue.event,
           };
         }),
         {
           name: distinctIssues.length.toString(),
           message: "Next page",
-          value: "Next page"
+          value: "Next page",
         },
       ],
     });
@@ -82,7 +82,7 @@ export async function askChatGPT(question: string, selection: EventsData) {
   const s = spinner.get();
   // send question first, then print the question
   const answerPromise = api.explain(question);
-  s.info(`Explaining:`);
+  s.info("Explaining:");
   await imitateTyping(selection.combinedMessage);
   s.start("Getting answers");
   const answer = await answerPromise;
@@ -99,6 +99,7 @@ async function imitateTyping(toPrint: string) {
   }
 }
 
-function randomIntFromInterval(min: number, max: number) { // min and max included
-  return Math.floor(Math.random() * (max - min + 1) + min)
+function randomIntFromInterval(min: number, max: number) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }

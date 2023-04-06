@@ -22,7 +22,7 @@ type AdditionalData = {
   tokens: string[];
   summary: string;
   combinedMessage: string;
-}
+};
 
 export function processEvents(events: Event[]): EventsData[] {
   // build dictionary
@@ -47,7 +47,6 @@ export function processEvents(events: Event[]): EventsData[] {
     });
     const summary = event["string.values"][index];
 
-
     const combinedMessage = event["string.values"].join(" ");
     if (combinedMessage) {
       const hashId = crypto.createHash("sha1").update(combinedMessage).digest("base64");
@@ -57,7 +56,7 @@ export function processEvents(events: Event[]): EventsData[] {
         event,
         tokens,
         summary,
-        combinedMessage
+        combinedMessage,
       };
     }
   }
@@ -71,7 +70,7 @@ export function processEvents(events: Event[]): EventsData[] {
       eventGroups.push({
         vector,
         hash,
-        similarHashes: []
+        similarHashes: [],
       });
     }
   }
@@ -79,7 +78,7 @@ export function processEvents(events: Event[]): EventsData[] {
   // vector processing
   const distinct: EventsData[] = [];
   eventGroups.forEach((eventGroup) => {
-    const {event, summary, combinedMessage} = additionalData[eventGroup.hash];
+    const { event, summary, combinedMessage } = additionalData[eventGroup.hash];
     distinct.push({
       event: event,
       // dataset: event._dataset,
@@ -87,8 +86,8 @@ export function processEvents(events: Event[]): EventsData[] {
       lastOccurrence: findLastOccurrence(eventGroup, additionalData),
       summary: summary,
       // namespace: event._namespace,
-      occurrences: eventGroup.similarHashes.length +  1,
-      combinedMessage
+      occurrences: eventGroup.similarHashes.length + 1,
+      combinedMessage,
     });
   });
   return distinct;
@@ -96,12 +95,12 @@ export function processEvents(events: Event[]): EventsData[] {
 
 function findLastOccurrence(group: EventGroup, additionalData: Record<string, AdditionalData>): Date {
   let latest = new Date(additionalData[group.hash].event._timestamp);
-  group.similarHashes.forEach(hash => {
-    let alt = new Date(additionalData[hash].event._timestamp)
+  group.similarHashes.forEach((hash) => {
+    let alt = new Date(additionalData[hash].event._timestamp);
     if (alt.valueOf() > latest.valueOf()) {
       latest = alt;
     }
-  })
+  });
   return latest;
 }
 
@@ -109,35 +108,33 @@ function findExistingSimilarities(groups: EventGroup[], vector: number[], hash: 
   for (const index in groups) {
     const cosine = compareVectors(groups[index].vector, vector);
     if (cosine > 0.6) {
-      groups[index].similarHashes ?
-          groups[index].similarHashes.push(hash) :
-          groups[index].similarHashes = [hash]
-      return true
+      groups[index].similarHashes ? groups[index].similarHashes.push(hash) : (groups[index].similarHashes = [hash]);
+      return true;
     }
   }
-  return false
+  return false;
 }
 
 function compareVectors(vectorA: number[], vectorB: number[]): number {
-  if (vectorA.length != vectorB.length) {
-    console.log('incorrect vector!')
+  if (vectorA.length !== vectorB.length) {
+    console.log("incorrect vector!");
     return 0;
   }
   let dotProduct = 0;
   let sumASqr = 0;
   let sumBSqr = 0;
   for (let i = 0; i < vectorA.length; i++) {
-    dotProduct += (vectorA[i] * vectorB[i]);
+    dotProduct += vectorA[i] * vectorB[i];
     sumASqr += Math.pow(vectorA[i], 2);
     sumBSqr += Math.pow(vectorB[i], 2);
   }
   //cosine
-  return dotProduct / (Math.sqrt(sumASqr) * Math.sqrt(sumBSqr))
+  return dotProduct / (Math.sqrt(sumASqr) * Math.sqrt(sumBSqr));
 }
 
 function addTokensToDictionary(dict: Record<string, number>, tokens: string[]) {
   for (const token of tokens) {
-    dict[token] ? dict[token]++ : dict[token] = 1;
+    dict[token] ? dict[token]++ : (dict[token] = 1);
   }
 }
 
