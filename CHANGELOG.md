@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.62]
+
+### Changed
+
+- Improved error grouping
+
 ## [0.0.61]
 
 ### Added
