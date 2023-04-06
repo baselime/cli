@@ -91,11 +91,11 @@ export async function askChatGPT(question: string, selection: EventsData) {
 }
 
 async function imitateTyping(toPrint: string) {
-  const parts = ["\n", ...toPrint.split(/([\s-:.])/g), "\n"];
+  const parts = ["\n", ...toPrint.split(/(.)/g), "\n"];
   for await (const part of parts) {
     process.stdout.write(part);
     // the "typing" effect
-    await new Promise((res) => setTimeout(res, randomIntFromInterval(150, 200)));
+    await new Promise((res) => setTimeout(res, randomIntFromInterval(20, 25)));
   }
 }
 
