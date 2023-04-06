@@ -3,115 +3,115 @@ import { Event } from "../../services/api/paths/events";
 
 const dictionary: Record<string, any> = {};
 
-type EventsData = {
-  message: string;
+export type EventsData = {
+  event: Event;
+  summary: string;
   occurrences: number;
   lastOccurrence: Date;
-  dataset: string;
-  service: string;
-  namespace: string;
+  combinedMessage: string;
 };
 
-type AnotherFoo = {
+type EventGroup = {
   vector: number[];
+  hash: string;
   similarHashes: string[];
 };
 
+type AdditionalData = {
+  event: Event;
+  tokens: string[];
+  summary: string;
+  combinedMessage: string;
+}
+
 export function processEvents(events: Event[]): EventsData[] {
-  // const messagesByHash: Record<string, string> = {};
-  const tokensByHash: Record<string, string[]> = {};
-  type Foo = {
-    event: Event;
-    tokens: string[];
-  }
-  const foosByHash: Record<string, Foo> = {};
+  // build dictionary
+  const additionalData: Record<string, AdditionalData> = {};
   const tokensDictionary: Record<string, number> = {};
   for (const event of events) {
     if (!event["string.values"]) {
       continue;
     }
+    // find most useful
+    const index = event["string.names"].findIndex((name: string) => {
+      switch (name.toLowerCase()) {
+        case "message":
+        case "@message":
+        case "msg":
+        case "@message.message":
+        case "@message.msg":
+        case "error":
+          return true;
+      }
+      return false;
+    });
+    const summary = event["string.values"][index];
+
+
     const combinedMessage = event["string.values"].join(" ");
-    // const index = event["string.names"].findIndex((name: string) => {
-    //   switch (name.toLowerCase()) {
-    //     case "message":
-    //     case "@message":
-    //     case "msg":
-    //     case "@message.message":
-    //     case "@message.msg":
-    //     case "error":
-    //       return true;
-    //   }
-    //   return false;
-    // });
-    // const msg = event["string.values"][index];
     if (combinedMessage) {
       const hashId = crypto.createHash("sha1").update(combinedMessage).digest("base64");
-      // messagesByHash[hashId] = combinedMessage;
-      // tokensByHash[hashId] = prepareMessage(combinedMessage);
       const tokens = prepareMessage(combinedMessage);
       addTokensToDictionary(tokensDictionary, tokens);
-      foosByHash[hashId] = {
+      additionalData[hashId] = {
         event,
-        tokens
+        tokens,
+        summary,
+        combinedMessage
       };
     }
   }
 
-  // console.log(tokensDictionary)
-
-  const vectorsByHash: Record<string, AnotherFoo> = {};
-  for (const hash in foosByHash) {
-    const value = foosByHash[hash];
+  const eventGroups: EventGroup[] = [];
+  for (const hash in additionalData) {
+    const value = additionalData[hash];
     const vector = produceVector(value.tokens);
-    const foundSimilar = findExistingSimilarities(vectorsByHash, vector, hash);
+    const foundSimilar = findExistingSimilarities(eventGroups, vector, hash);
     if (!foundSimilar) {
-      vectorsByHash[hash] = {
+      eventGroups.push({
         vector,
+        hash,
         similarHashes: []
-      };
+      });
     }
-    // console.log('foo', value.tokens)
   }
-  console.log('vectorsByHash', JSON.stringify(vectorsByHash))
-  // console.log('???', vectorsByHash)
-  // group errors
-
 
   // vector processing
-  const hashesByVector: Map<string, string[]> = new Map();
-  for (const hash of Object.keys(tokensByHash)) {
-    const vectorAsString = produceVector(tokensByHash[hash]).join("");
-    const existing = hashesByVector.get(vectorAsString);
-    if (existing) {
-      existing.push(hash);
-    } else {
-      hashesByVector.set(vectorAsString, [hash]);
-    }
-  }
-  // populate
   const distinct: EventsData[] = [];
-  hashesByVector.forEach((hash, key) => {
-    const firstHash = hash[0];
-    const event = foosByHash[firstHash];
-    // distinct.push({
-    //   dataset: event._dataset,
-    //   service: event._service,
-    //   lastOccurrence: new Date(),
-    //   message: messagesByHash[firstHash],
-    //   namespace: event._namespace,
-    //   occurrences: key.length,
-    // });
+  eventGroups.forEach((eventGroup) => {
+    const {event, summary, combinedMessage} = additionalData[eventGroup.hash];
+    distinct.push({
+      event: event,
+      // dataset: event._dataset,
+      // service: event._service,
+      lastOccurrence: findLastOccurrence(eventGroup, additionalData),
+      summary: summary,
+      // namespace: event._namespace,
+      occurrences: eventGroup.similarHashes.length +  1,
+      combinedMessage
+    });
   });
   return distinct;
 }
 
-function findExistingSimilarities(vectorsByHash: Record<string, AnotherFoo>, vector: number[], thatHash: string): boolean {
-  for (const otherHash in vectorsByHash) {
-    const cosine = compareVectors(vectorsByHash[otherHash].vector, vector);
+function findLastOccurrence(group: EventGroup, additionalData: Record<string, AdditionalData>): Date {
+  let latest = new Date(additionalData[group.hash].event._timestamp);
+  group.similarHashes.forEach(hash => {
+    let alt = new Date(additionalData[hash].event._timestamp)
+    if (alt.valueOf() > latest.valueOf()) {
+      latest = alt;
+    }
+  })
+  return latest;
+}
+
+function findExistingSimilarities(groups: EventGroup[], vector: number[], hash: string): boolean {
+  for (const index in groups) {
+    const cosine = compareVectors(groups[index].vector, vector);
     if (cosine > 0.6) {
-      vectorsByHash[otherHash].similarHashes ?
-          vectorsByHash[otherHash].similarHashes.push(thatHash) :
-          vectorsByHash[otherHash].similarHashes = [thatHash]
+      groups[index].similarHashes ?
+          groups[index].similarHashes.push(hash) :
+          groups[index].similarHashes = [hash]
       return true
     }
   }
