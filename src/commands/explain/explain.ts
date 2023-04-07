@@ -7,19 +7,19 @@ import chalk from "chalk";
 import { QueryOperation } from "../../services/api/paths/queries";
 import { EventsData, processEvents } from "./eventsVectors";
 
-export async function analyse() {
+export async function explain() {
   const from = await promptFrom();
   const to = await promptTo();
 
-  let timeframe = getTimeframe(from, to);
-  let datasets = ["apigateway-logs", "cloudtrail", "cloudwatch-metrics", "otel", "x-ray", "lambda-logs", "ecs-logs"];
+  const timeframe = getTimeframe(from, to);
+  const datasets = ["apigateway-logs", "cloudtrail", "cloudwatch-metrics", "otel", "x-ray", "lambda-logs", "ecs-logs"];
 
   const filters = [
     {
       key: "LogLevel",
-      operation: QueryOperation.EQUAL,
       type: "string",
-      value: "ERROR",
+      operation: QueryOperation.IN,
+      value: "ERROR, Error, error, FATAL, Fatal, fatal",
     },
   ];
 
@@ -72,30 +72,32 @@ export async function analyse() {
       offset++;
     } else {
       const selection: EventsData = distinctIssues[selectedIndex];
-      await askChatGPT(selection.combinedMessage, selection);
+      await askAI(selection.combinedMessage, selection);
       return;
     }
   }
 }
 
-export async function askChatGPT(question: string, selection: EventsData) {
+export async function askAI(question: string, selection: EventsData) {
   const s = spinner.get();
   // send question first, then print the question
   const answerPromise = api.explain(question);
-  s.info("Explaining:");
-  await imitateTyping(selection.combinedMessage);
-  s.start("Getting answers");
+  console.log();
+  s.info("The error:");
+  console.log(selection.combinedMessage);
+  console.log();
+  s.start("Explaining");
   const answer = await answerPromise;
   s.succeed();
   await imitateTyping(answer);
 }
 
-async function imitateTyping(toPrint: string) {
-  const parts = ["\n", ...toPrint.split(/(.)/g), "\n"];
+async function imitateTyping(message: string) {
+  const parts = ["\n", ...message.split(" ")];
   for await (const part of parts) {
-    process.stdout.write(part);
+    process.stdout.write(`${part} `);
     // the "typing" effect
-    await new Promise((res) => setTimeout(res, randomIntFromInterval(20, 25)));
+    await new Promise((res) => setTimeout(res, Math.random() * 100 + 100));
   }
 }
 

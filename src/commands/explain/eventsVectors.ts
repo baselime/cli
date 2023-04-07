@@ -47,7 +47,7 @@ export function processEvents(events: Event[]): EventsData[] {
     });
     const summary = event["string.values"][index];
 
-    const combinedMessage = event["string.values"].join(" ");
+    const combinedMessage = JSON.stringify(event._source);
     if (combinedMessage) {
       const hashId = crypto.createHash("sha1").update(combinedMessage).digest("base64");
       const tokens = prepareMessage(combinedMessage);
