@@ -100,4 +100,3 @@ async function imitateTyping(message: string) {
     await new Promise((res) => setTimeout(res, Math.random() * 100 + 100));
   }
 }
-
