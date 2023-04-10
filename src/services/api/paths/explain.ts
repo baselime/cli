@@ -1,7 +1,7 @@
-import { client } from "../clients";
+import { client, getTuxUrl } from "../clients";
 
-async function explain(question: string): Promise<string> {
-  const res = (await client.post("/explain/", { question }, { timeout: 30000 })).data;
+async function explain(message: string): Promise<string> {
+  const res = (await client.post(`${getTuxUrl()}/explain/api`, { message }, { timeout: 120000 })).data;
   return res.answer;
 }
 

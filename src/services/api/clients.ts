@@ -16,6 +16,16 @@ function getBaseUrl(): string {
   return `https://go.${BASELIME_DOMAIN}/v1/`;
 }
 
+export function getTuxUrl(): string {
+  const { BASELIME_DOMAIN = "baselime.io" } = process.env;
+  const index = argv.findIndex((val) => val === "--endpoint");
+  if (index > -1) {
+    const endpoint = argv[index + 1];
+    return endpoint;
+  }
+  return `https://tux.${BASELIME_DOMAIN}`;
+}
+
 export const client = axios.create({
   baseURL: getBaseUrl(),
   headers: {

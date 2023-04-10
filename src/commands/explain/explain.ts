@@ -78,10 +78,10 @@ export async function explain() {
   }
 }
 
-export async function askAI(question: string, selection: EventsData) {
+export async function askAI(message: string, selection: EventsData) {
   const s = spinner.get();
   // send question first, then print the question
-  const answerPromise = api.explain(question);
+  const answerPromise = api.explain(message);
   console.log();
   s.info("The error:");
   console.log(selection.combinedMessage);
@@ -93,15 +93,11 @@ export async function askAI(question: string, selection: EventsData) {
 }
 
 async function imitateTyping(message: string) {
-  const parts = ["\n", ...message.split(" ")];
+  const parts = ["\n\n", ...message.split(" ")];
   for await (const part of parts) {
-    process.stdout.write(`${part} `);
+    process.stdout.write(`${part.trim()} `);
     // the "typing" effect
     await new Promise((res) => setTimeout(res, Math.random() * 100 + 100));
   }
 }
 
-function randomIntFromInterval(min: number, max: number) {
-  // min and max included
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
