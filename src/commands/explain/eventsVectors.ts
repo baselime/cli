@@ -45,7 +45,7 @@ export function processEvents(events: Event[]): EventsData[] {
       }
       return false;
     });
-    if(index === undefined) continue;
+    if (index === undefined) continue;
     const summary = event["string.values"][index];
 
     const combinedMessage = JSON.stringify(event._source);

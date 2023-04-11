@@ -32,7 +32,7 @@
 The official command line client for [Baselime](https://baselime.io/). Baselime CLI
 brings the power of Baselime and Observability as Code to the command-line.
 
-Documentation is available on the [Baselime Docs](https://baselime.io/docs/cli/overview/).
+Documentation is available on the [Baselime Docs](https://baselime.io/docs/cli/install/).
 
 ## Goal
 
