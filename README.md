@@ -32,7 +32,7 @@
 The official command line client for [Baselime](https://baselime.io/). Baselime CLI
 brings the power of Baselime and Observability as Code to the command-line.
 
-Documentation is available on the [Baselime Docs](https://docs.baselime.io/cli/overview/).
+Documentation is available on the [Baselime Docs](https://baselime.io/docs/cli/overview/).
 
 ## Goal
 
@@ -107,7 +107,7 @@ Use the `--debug` flag to print in the console the stack trace of any error you 
 ## Documentation
 
 To learn how to use Baselime to start observing your serverless applications, visit the
-[Baselime documentation](https://docs.baselime.io/).
+[Baselime documentation](https://baselime.io/docs/).
 
 For full command reference, see the list below, or visit
 [docs.baselime.com](https://baselime.io/docs/reference/cli).
@@ -159,7 +159,7 @@ See [LICENSE](LICENSE) for more information.
 
 <!-- Badges -->
 
-[docs]: https://docs.baselime.io
+[docs]: https://baselime.io/docs/
 [docs_badge]: https://img.shields.io/badge/docs-reference-blue.svg?style=flat-square
 [release]: https://github.com/baselime/cli/releases/latest
 [release_badge]: https://img.shields.io/github/release/baselime/cli.svg?style=flat-square&ghcache=unused

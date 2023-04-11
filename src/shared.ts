@@ -48,7 +48,7 @@ export function printError(message: string, err: Error, yargs: any) {
   Version: ${getVersion()}
   Environment: ${os.platform()}, node ${process.version} 
   Backend: ${client.defaults.baseURL}
-  Docs: docs.baselime.io
+  Docs: baselime.io/docs/
   Support: forum.baselime.io
   Bugs: github.com/baselime/cli/issues
     `);

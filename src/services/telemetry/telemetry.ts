@@ -62,7 +62,7 @@ function notify() {
 
   console.log(`${chalk.cyan.bold("Attention")}: Baselime now collects completely anonymous telemetry regarding usage. This is used to guide our roadmap.`);
   console.log("You can learn more, including how to opt-out of this anonymous program, by heading over to:");
-  console.log("https://docs.baselime.io/cli/anonymous-telemetry");
+  console.log("https://baselime.io/docs/cli/anonymous-telemetry");
   console.log();
   record("downloaded", {});
 }

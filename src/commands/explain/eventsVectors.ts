@@ -45,6 +45,7 @@ export function processEvents(events: Event[]): EventsData[] {
       }
       return false;
     });
+    if(index === undefined) continue;
     const summary = event["string.values"][index];
 
     const combinedMessage = JSON.stringify(event._source);
@@ -96,7 +97,7 @@ export function processEvents(events: Event[]): EventsData[] {
 function findLastOccurrence(group: EventGroup, additionalData: Record<string, AdditionalData>): Date {
   let latest = new Date(additionalData[group.hash].event._timestamp);
   group.similarHashes.forEach((hash) => {
-    let alt = new Date(additionalData[hash].event._timestamp);
+    const alt = new Date(additionalData[hash].event._timestamp);
     if (alt.valueOf() > latest.valueOf()) {
       latest = alt;
     }

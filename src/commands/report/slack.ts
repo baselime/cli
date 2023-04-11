@@ -67,7 +67,7 @@ export async function handler(argv: Arguments<Options>) {
 
   if (!workspace.slackTeamId) {
     s.fail("Please install the Baselime slack app and follow the setup instructions to send reports to Slack.");
-    console.log("Docs: https://docs.baselime.io/integrations/slack/overview/");
+    console.log("Docs: https://baselime.io/docs/integrations/slack/overview/");
     return;
   }
 

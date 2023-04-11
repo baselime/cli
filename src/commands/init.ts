@@ -105,6 +105,6 @@ Next steps:
   2. Run ${chalk.greenBright("baselime push")} to create your observability resources
   3. Run ${chalk.greenBright("baselime query")} to query your telemetry data
   
-${chalk.grey("Learn how to write observability resources using the Observability Reference Language (ORL):")}\nhttps://docs.baselime.io/observability-reference-language/overview/
+${chalk.grey("Learn how to write observability resources using the Observability Reference Language (ORL):")}\nhttps://baselime.io/docs/observability-reference-language/overview/
 `);
 }
