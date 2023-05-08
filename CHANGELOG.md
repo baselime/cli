@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Removed
+
+- Removed namespaces command
+
 ### Changed
 - Updated docs URL
 
@@ -96,7 +100,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 
 - removed postinstall script
-- 
+
 ### Changed
 
 - Simplified error report command
