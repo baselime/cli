@@ -1,4 +1,5 @@
-import { client } from "../clients";
+import { UserConfig } from "../../auth";
+import { client, getDataUrl } from "../clients";
 import { Event } from "./events";
 
 export interface QueryRun {
@@ -73,6 +74,7 @@ export interface QueryRunCreateParams {
       value: string;
     };
   };
+  config: UserConfig;
 }
 
 async function queryRunsList(service: string, queryId: string): Promise<QueryRun[]> {
@@ -100,7 +102,8 @@ async function queryRunCreate(params: QueryRunCreateParams): Promise<{
   calculations: { series: Series[]; aggregates?: Record<string, number | Record<string, number>> };
   events: { events?: Event[]; count?: number; series?: Series[]; fields?: { name: string; type: string }[] };
 }> {
-  const res = (await client.post("/query-runs/", params, { timeout: 30000 })).data;
+  const req = { ...params, workspaceId: params.config.workspace, environmentId: params.config.environment };
+  const res = (await client.post(`${getDataUrl()}/query_runs/`, req, { timeout: 30000 })).data.data;
   return res;
 }
 

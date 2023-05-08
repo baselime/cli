@@ -31,6 +31,6 @@ export async function handler(argv: Arguments<Options>) {
   let { profile, openAIKey } = argv;
 
   spinner.init(!!argv.quiet);
-  await authenticate(profile);
-  await explain();
+  const config = await authenticate(profile);
+  await explain(config);
 }

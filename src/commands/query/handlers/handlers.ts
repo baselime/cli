@@ -8,6 +8,7 @@ import { promptCalculations, promptDatasets, promptFilters, promptFrom, promptGr
 import { prompt } from "enquirer";
 import { Timeframe } from "../../../services/api/paths/alerts";
 import { KeySet } from "../../../services/api/paths/keys";
+import { UserConfig } from "../../../services/auth";
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
@@ -17,8 +18,9 @@ async function createRun(data: {
   to: string;
   id: string;
   service: string;
+  config: UserConfig
 }) {
-  const { format, from, to, service, id } = data;
+  const { format, from, to, service, id, config } = data;
   const s = spinner.get();
   const timeframe = getTimeframe(from, to);
   s.start("Running the query ");
@@ -31,6 +33,7 @@ async function createRun(data: {
     service: service,
     queryId: id,
     timeframe,
+    config
   });
   s.succeed();
   outputs.getQueryRun({ queryRun, aggregates, series, events, format });
@@ -48,9 +51,9 @@ async function getApplicableKeys(timeframe: Timeframe, datasets: string[], servi
   return keys.filter((set) => datasets.includes(set.dataset));
 }
 
-async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string }) {
+async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string, config: UserConfig }) {
   const s = spinner.get();
-  const { queryId, service, format } = input;
+  const { queryId, service, format, config } = input;
   let { from, to } = input;
 
   let timeframe = getTimeframe(from, to);
@@ -119,6 +122,7 @@ async function interactive(input: { queryId: string; service: string; format: Ou
       })),
       groupBy,
     },
+    config,
   });
   s.succeed();
   outputs.getQueryRun({ queryRun, aggregates, series, events, format });

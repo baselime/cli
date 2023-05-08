@@ -6,8 +6,9 @@ import { prompt } from "enquirer";
 import chalk from "chalk";
 import { QueryOperation } from "../../services/api/paths/queries";
 import { EventsData, processEvents } from "./eventsVectors";
+import { UserConfig } from "../../services/auth";
 
-export async function explain() {
+export async function explain(config: UserConfig) {
   const from = await promptFrom();
   const to = await promptTo();
 
@@ -36,6 +37,7 @@ export async function explain() {
       offset: offset,
       limit: 100,
       needle: undefined,
+      config,
     });
     s.succeed();
     s.start("Looking for distinct issues");

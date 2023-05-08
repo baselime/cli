@@ -5,7 +5,6 @@ import alertChecks from "./paths/alert-checks";
 import deployments from "./paths/deployments";
 import queryRuns from "./paths/query-runs";
 import services from "./paths/services";
-import namespaces from "./paths/namespaces";
 import events from "./paths/events";
 import cli from "./paths/cli";
 import iam from "./paths/iam";
@@ -25,7 +24,6 @@ export default {
   ...deployments,
   ...queryRuns,
   ...services,
-  ...namespaces,
   ...events,
   ...cli,
   ...iam,

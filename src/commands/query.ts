@@ -46,7 +46,7 @@ export async function handler(argv: Arguments<Options>) {
   let { profile, id, from, to, format, service } = argv;
 
   spinner.init(!!argv.quiet);
-  await authenticate(profile);
+  const config = await authenticate(profile);
 
   service ??= (await promptServiceSelect())?.name || "";
 
@@ -72,6 +72,7 @@ export async function handler(argv: Arguments<Options>) {
       format,
       from,
       to,
+      config,
     });
   }
 
@@ -81,5 +82,6 @@ export async function handler(argv: Arguments<Options>) {
     from,
     to,
     service: service,
+    config,
   });
 }

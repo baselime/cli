@@ -1,6 +1,7 @@
 import { stringify } from "qs";
-import { client } from "../clients";
+import { client, getDataUrl } from "../clients";
 import { QueryFilter, SearchNeedle } from "./queries";
+import { UserConfig } from "../../auth";
 
 export interface EventsListRequest {
   datasets: string[];
@@ -11,6 +12,7 @@ export interface EventsListRequest {
   to: number;
   offset: number;
   limit: number;
+  config: UserConfig;
 }
 
 export interface Event {
@@ -37,8 +39,8 @@ export interface SeriesData {
 export async function listEvents(
   data: EventsListRequest,
 ): Promise<{ events: Event[]; fields: { name: string; type: string }[]; series: Series[]; count: number; timeframe: { from: number; to: number } }> {
-  const res = (await client.get(`/events/?${stringify(data)}`)).data;
-  return res.events;
+  const res = (await client.get(`${getDataUrl()}/events/${data.config.workspace}/${data.config.environment}/?${stringify(data)}`)).data;
+  return res;
 }
 
 export default {
