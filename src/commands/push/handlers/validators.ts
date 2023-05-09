@@ -70,7 +70,6 @@ const dashboardSchema = object({
         .of(
           object({
             query: string().required(),
-            view: string().oneOf(["calculations", "events", "traces"]).required(),
             name: string().strict().optional(),
             description: string().strict().optional(),
           })
