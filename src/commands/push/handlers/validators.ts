@@ -27,8 +27,8 @@ const alertSchema = object({
     parameters: object({
       query: string().required(),
       threshold: string().matches(alertThresholdRegex).required(),
-      frequency: string().strict().required(),
-      window: string().strict().required(),
+      frequency: string().strict().optional(),
+      window: string().strict().optional(),
     })
       .required()
       .noUnknown(true)
@@ -53,10 +53,6 @@ const alertSchema = object({
 })
   .noUnknown(true)
   .strict();
-
-const webhookSchema = object({
-  webhook: string().url().required().typeError("Webhook must be valid URL"),
-});
 
 const dashboardSchema = object({
   type: string().equals(["dashboard"]),
@@ -398,7 +394,7 @@ function validateAlerts(alerts: any[] = [], queries: any[] = []) {
       const { frequency, window } = alert.properties.parameters;
       const convertedFrequency = ms(frequency as string);
       const convertedWindow = ms(window as string);
-      if (!convertedFrequency) {
+      if (!convertedFrequency && frequency) {
         try {
           awsCronParser.parse(frequency);
         } catch (error) {

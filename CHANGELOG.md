@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Removed
 - Removed view in the dashboards schema
+- Make alert frequency and window optional
 
 ## [0.0.64]
 
