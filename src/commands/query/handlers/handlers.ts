@@ -18,7 +18,7 @@ async function createRun(data: {
   to: string;
   id: string;
   service: string;
-  config: UserConfig
+  config: UserConfig;
 }) {
   const { format, from, to, service, id, config } = data;
   const s = spinner.get();
@@ -33,7 +33,7 @@ async function createRun(data: {
     service: service,
     queryId: id,
     timeframe,
-    config
+    config,
   });
   s.succeed();
   outputs.getQueryRun({ queryRun, aggregates, series, events, format });
@@ -51,7 +51,7 @@ async function getApplicableKeys(timeframe: Timeframe, datasets: string[], servi
   return keys.filter((set) => datasets.includes(set.dataset));
 }
 
-async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string, config: UserConfig }) {
+async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string; config: UserConfig }) {
   const s = spinner.get();
   const { queryId, service, format, config } = input;
   let { from, to } = input;
