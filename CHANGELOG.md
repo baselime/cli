@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.0.66] 2023-05-16
 ### Changed
 - Renamed push command to deploy
 - Renamed environments command to connect
@@ -19,8 +20,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Deleted explain command
 - Deleted queries commands
 - Deleted services commands
-## [0.0.65]
 
+## [0.0.65]
 ### Removed
 - Removed view in the dashboards schema
 - Make alert frequency and window optional
