@@ -15,7 +15,7 @@ import {
 } from "./auth/handlers/prompts";
 import * as open from "open";
 import { PORT, startServer } from "../services/auth/server";
-import { connect } from "./environments/handlers/handlers";
+import { connect } from "./connect/handlers/handlers";
 import { Stage } from "../services/api/paths/onboarding";
 import { resolve } from "path";
 

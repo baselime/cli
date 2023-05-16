@@ -1,12 +1,12 @@
 import { Arguments, CommandBuilder } from "yargs";
-import api from "../../services/api/api";
-import { startServer, PORT } from "../../services/auth/server";
-import spinner from "../../services/spinner";
-import { baseOptions, BaseOptions, printError } from "../../shared";
-import { promptAWSAccountId, promptAWSRegion, promptEnvironmentAlias, promptForEmail, promptForOneTimePassword } from "../auth/handlers/prompts";
-import handlers from "./handlers/handlers";
+import handlers from "./connect/handlers/handlers";
 import * as open from "open";
 import chalk from "chalk";
+import { BaseOptions, baseOptions, printError } from "../shared";
+import spinner from "../services/spinner";
+import api from "../services/api/api";
+import { PORT, startServer } from "../services/auth/server";
+import { promptAWSAccountId, promptAWSRegion, promptEnvironmentAlias } from "./auth/handlers/prompts";
 
 export interface Options extends BaseOptions {
   provider?: string;
@@ -31,7 +31,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       [
         `
       # Connect an AWS environment:
-      $0 environments connect
+      $0 connect
       `,
       ],
     ])
