@@ -1,7 +1,7 @@
 import { ResourceMap } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
-import { verifyPlan } from "../push/handlers/handlers";
-import checks, { DeploymentAlert, DeploymentQuery, DeploymentResources, UserVariableInputs } from "../push/handlers/validators";
+import { verifyPlan } from "../deploy/handlers/handlers";
+import checks, { DeploymentAlert, DeploymentQuery, DeploymentResources, UserVariableInputs } from "../deploy/handlers/validators";
 import { promptService } from "./prompts";
 import fs from "fs";
 import { prompt } from "enquirer";

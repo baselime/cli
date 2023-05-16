@@ -3,7 +3,7 @@ import api from "../../services/api/api";
 import { stringify } from "../../services/parser/parser";
 import spinner from "../../services/spinner";
 import { parseTemplateName } from "../../regex";
-import { DeploymentService } from "../push/handlers/validators";
+import { DeploymentService } from "../deploy/handlers/validators";
 const packageJson = require("../../../package.json");
 
 export async function init(folder: string, service: string, description: string, provider: string, templateUrls?: string[]) {

@@ -2,7 +2,7 @@ import spinner from "../../../services/spinner";
 import { authenticate, getVersion, OutputFormat } from "../../../shared";
 import { readFile } from "fs-extra";
 import { AlertCheck } from "../../../services/api/paths/alert-checks";
-import { validateMetadata } from "../../push/handlers/validators";
+import { validateMetadata } from "../../deploy/handlers/validators";
 import api from "../../../services/api/api";
 import outputs from "./outputs";
 

@@ -1,4 +1,4 @@
-import { DeploymentResources, DeploymentVariable } from "../../../commands/push/handlers/validators";
+import { DeploymentResources, DeploymentVariable } from "../../../commands/deploy/handlers/validators";
 import { client } from "../clients";
 import { TemplateVariable } from "./templates";
 

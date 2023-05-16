@@ -16,7 +16,7 @@ import { statusType, DiffResponse } from "../../../services/api/paths/diffs";
 const wait = promisify(setTimeout);
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
-async function push(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false, dryRun: boolean = false) {
+async function deploy(config: string, stage: string, userVariableInputs: UserVariableInputs, skip: boolean = false, dryRun: boolean = false) {
   const s = spinner.get();
   const { metadata, resources } = await validate(config, stage, userVariableInputs);
   s.start("Completing baselime plan...");
@@ -37,7 +37,7 @@ async function push(config: string, stage: string, userVariableInputs: UserVaria
   const { url, id } = await api.uploadUrlGet(metadata.service, getVersion());
   const data = readFileSync(`${config}/.out/.baselime.json`, "utf-8").toString();
   await api.upload(url, data);
-  s.start("Checking push status...");
+  s.start("Checking deployment status...");
 
   let isComplete = false;
   let deployment: Deployment | undefined = undefined;
@@ -52,7 +52,7 @@ async function push(config: string, stage: string, userVariableInputs: UserVaria
     count += 1;
   }
   if (deployment?.status === DeploymentStatus.SUCCESS) {
-    s.succeed(`Successfully pushed an observability plan: ${chalk.bold(chalk.greenBright(id))}`);
+    s.succeed(`Successfully deployed an observability plan: ${chalk.bold(chalk.greenBright(id))}`);
     console.log();
     console.log(`Check it out in the console: https://console.${BASELIME_DOMAIN}/${deployment.workspaceId}/${deployment.environmentId}/${deployment.service}/home`);
     return;
@@ -61,7 +61,7 @@ async function push(config: string, stage: string, userVariableInputs: UserVaria
     s.info("Connection timed out.");
     return;
   }
-  s.fail(`Failed to push an observability plan: ${chalk.bold(chalk.redBright(id))}
+  s.fail(`Failed to deploy an observability plan: ${chalk.bold(chalk.redBright(id))}
   ${chalk.red(deployment?.error || "")}`);
 }
 
@@ -203,6 +203,6 @@ function getYamlString(obj: { status: statusType; value: Record<string, any> }) 
 }
 
 export default {
-  push,
+  deploy,
   validate,
 };

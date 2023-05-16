@@ -2,8 +2,8 @@ import { Arguments, CommandBuilder } from "yargs";
 
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import spinner from "../services/spinner/index";
-import handlers from "./push/handlers/handlers";
-import { UserVariableInputs } from "./push/handlers/validators";
+import handlers from "./deploy/handlers/handlers";
+import { UserVariableInputs } from "./deploy/handlers/validators";
 
 export interface Options extends BaseOptions {
   config?: string;
@@ -12,7 +12,7 @@ export interface Options extends BaseOptions {
   variables?: (string | number)[];
 }
 
-export const command = "push";
+export const command = "deploy";
 export const desc = "Create or update observability configurations";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) => {
@@ -44,8 +44,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .example([
       [
         `
-      $0 push
-      $0 push --config .baselime --profile prod`,
+      $0 deploy
+      $0 deploy --config .baselime --profile prod`,
       ],
     ])
     .fail((message, err, yargs) => {
@@ -68,5 +68,5 @@ export async function handler(argv: Arguments<Options>) {
       variables[key.trim()] = val.trim();
     });
   }
-  await handlers.push(config!, stage, variables, yes!, dryRun!);
+  await handlers.deploy(config!, stage, variables, yes!, dryRun!);
 }

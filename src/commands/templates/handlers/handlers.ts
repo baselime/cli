@@ -1,7 +1,7 @@
 import spinner from "../../../services/spinner/index";
 import api from "../../../services/api/api";
 import outputs from "./outputs";
-import pushHandlers from "../../push/handlers/handlers";
+import pushHandlers from "../../deploy/handlers/handlers";
 import { cloneRepo, uploadExtraAssets } from "./fsHelper";
 import { Template } from "../../../services/api/paths/templates";
 import fs from "fs/promises";

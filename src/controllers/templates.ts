@@ -3,7 +3,7 @@ import fs from "fs";
 import spinner from "../services/spinner";
 import { InferType, lazy, object, string } from "yup";
 import { mapValues, template } from "lodash";
-import { variableSchema } from "../commands/push/handlers/validators";
+import { variableSchema } from "../commands/deploy/handlers/validators";
 import { appendToResourcesSafely, readResourcesFromFile } from "../services/parser/parser";
 import { getLogger } from "../utils";
 import path from "path";

@@ -3,7 +3,7 @@ import spinner from "../services/spinner";
 
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import handlers from "./pull/handlers";
-import { UserVariableInputs } from "./push/handlers/validators";
+import { UserVariableInputs } from "./deploy/handlers/validators";
 
 export interface Options extends BaseOptions {
   config?: string;
