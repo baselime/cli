@@ -4,7 +4,7 @@ import { readFile } from "fs-extra";
 import { AlertCheck } from "../../../services/api/paths/alert-checks";
 import { validateMetadata } from "../../push/handlers/validators";
 import api from "../../../services/api/api";
-import outputs from "../../alerts/handlers/outputs";
+import outputs from "./outputs";
 
 export async function commonHandler(profile: string, quiet: boolean, path?: string, config?: string, service?: string, format?: OutputFormat) {
   spinner.init(quiet);

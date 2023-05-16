@@ -3,11 +3,10 @@ import { Arguments, CommandBuilder } from "yargs";
 import { existsSync, rmSync } from "fs";
 import { authenticate, baseOptions, BaseOptions, printError } from "../shared";
 import spinner from "../services/spinner";
-import * as prompts from "./services/handlers/prompts";
 import { mkdirSync } from "fs";
 import { isUrl } from "../utils";
 import { init } from "./init/handlers";
-import { promptForNewService, promptForService, promptTemplateSelect } from "./init/prompts";
+import { promptForNewService, promptForService, promptTemplateSelect, promptReplaceExistingConfig } from "./init/prompts";
 import chalk from "chalk";
 import { prompt } from "enquirer";
 
@@ -59,7 +58,7 @@ export async function handler(argv: Arguments<Options>) {
   const folder = ".baselime";
 
   if (existsSync(folder)) {
-    const res = await prompts.promptReplaceExistingConfig(folder);
+    const res = await promptReplaceExistingConfig(folder);
     if (!res) {
       process.exit(0);
     }

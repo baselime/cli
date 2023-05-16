@@ -70,25 +70,6 @@ async function createTemplateFromFile(path: string): Promise<Template> {
   return template;
 }
 
-async function list() {
-  const s = spinner.get();
-  s.start("Fetching the templates");
-  const templates = await api.templatesList();
-  s.succeed();
-  outputs.list(templates, "json");
-}
-
-async function get(workspaceId: string, name: string) {
-  const s = spinner.get();
-  s.start("Fetching the template");
-  const template = await api.templateGet(workspaceId, name);
-  s.succeed();
-
-  console.log(template.template);
-}
-
 export default {
   publish,
-  list,
-  get,
 };

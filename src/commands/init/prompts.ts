@@ -1,10 +1,21 @@
 import chalk from "chalk";
 import { prompt } from "enquirer";
-const { StringPrompt, AutoComplete } = require("enquirer");
+const { StringPrompt, AutoComplete, BooleanPrompt } = require("enquirer");
 import { basename, resolve } from "path";
 import api from "../../services/api/api";
 import { Service } from "../../services/api/paths/services";
 import spinner from "../../services/spinner";
+
+export async function promptReplaceExistingConfig(filename: string): Promise<boolean> {
+  const prompt = new BooleanPrompt({
+    message: `Replace existing config folder ${filename}?`,
+    footer: `\n${chalk.grey("We want to make sure you don't delete anything by mistake.")}`,
+  });
+
+  const confirm = await prompt.run();
+  return confirm;
+}
+
 
 export async function promptTemplateSelect(): Promise<string | undefined> {
   const s = spinner.get();

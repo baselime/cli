@@ -2,7 +2,7 @@ import { writeFileSync } from "fs";
 import api from "../../services/api/api";
 import spinner from "../../services/spinner";
 import { getVersion, OutputFormat } from "../../shared";
-import outputs from "../alerts/handlers/outputs";
+import outputs from "../report/handlers/outputs";
 
 async function snapshot(format: OutputFormat, data: { service: string; outFile: string }) {
   const s = spinner.get();
