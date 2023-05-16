@@ -102,8 +102,9 @@ async function queryRunCreate(params: QueryRunCreateParams): Promise<{
   calculations: { series: Series[]; aggregates?: Record<string, number | Record<string, number>> };
   events: { events?: Event[]; count?: number; series?: Series[]; fields?: { name: string; type: string }[] };
 }> {
+  const { workspace, environment } = params.config;
   const req = { ...params, workspaceId: params.config.workspace, environmentId: params.config.environment };
-  const res = (await client.post(`${getDataUrl()}/query_runs/`, req, { timeout: 30000 })).data.data;
+  const res = (await client.post(`${getDataUrl()}/query_runs`, req, { timeout: 30000 })).data.data;
   return res;
 }
 

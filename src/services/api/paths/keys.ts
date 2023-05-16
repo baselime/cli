@@ -1,12 +1,14 @@
 import { Event } from "./events";
-import { client } from "../clients";
+import { client, getDataUrl } from "../clients";
 import { QueryRun, QueryRunCreateParams, Series } from "./query-runs";
 import { Timeframe } from "./alerts";
+import { UserConfig } from "../../auth";
 
 interface KeysGetParams {
   datasets: string[];
   timeframe: Timeframe;
   service: string;
+  config: UserConfig;
 }
 
 export type KeySet = {
@@ -16,8 +18,9 @@ export type KeySet = {
 };
 
 async function getKeys(params: KeysGetParams): Promise<KeySet[]> {
+  const { workspace, environment } = params.config;
   const res = (
-    await client.get("/keys/", {
+    await client.get(`${getDataUrl()}/keys/${workspace}/${environment}`, {
       params: {
         from: params.timeframe.from,
         to: params.timeframe.to,

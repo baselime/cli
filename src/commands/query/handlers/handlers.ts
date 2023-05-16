@@ -39,13 +39,14 @@ async function createRun(data: {
   outputs.getQueryRun({ queryRun, aggregates, series, events, format });
 }
 
-async function getApplicableKeys(timeframe: Timeframe, datasets: string[], service: string): Promise<KeySet[]> {
+async function getApplicableKeys(timeframe: Timeframe, datasets: string[], service: string, config: UserConfig): Promise<KeySet[]> {
   const s = spinner.get();
   s.start("Fetching keys...");
   const keys = await api.getKeys({
     datasets,
     timeframe,
     service,
+    config,
   });
   s.succeed();
   return keys.filter((set) => datasets.includes(set.dataset));
@@ -58,7 +59,7 @@ async function interactive(input: { queryId: string; service: string; format: Ou
 
   let timeframe = getTimeframe(from, to);
   let datasets = await promptDatasets();
-  let applicableKeys = await getApplicableKeys(timeframe, datasets, service);
+  let applicableKeys = await getApplicableKeys(timeframe, datasets, service, config);
 
   while (!applicableKeys.length) {
     const choices: Record<string, string> = {
@@ -87,7 +88,7 @@ async function interactive(input: { queryId: string; service: string; format: Ou
         break;
     }
     timeframe = getTimeframe(from, to);
-    applicableKeys = await getApplicableKeys(timeframe, datasets, service);
+    applicableKeys = await getApplicableKeys(timeframe, datasets, service, config);
   }
 
   let calculations = await promptCalculations(

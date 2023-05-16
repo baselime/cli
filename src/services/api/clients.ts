@@ -6,6 +6,15 @@ require("dotenv").config();
 import http from "http";
 const argv = hideBin(process.argv);
 
+const getDomainWithoutSubdomain = (url: string) => {
+  const urlParts = new URL(url).hostname.split('.')
+
+  return urlParts
+    .slice(0)
+    .slice(-(urlParts.length === 4 ? 3 : 2))
+    .join('.')
+}
+
 function getBaseUrl(): string {
   const { BASELIME_DOMAIN = "baselime.io" } = process.env;
   const index = argv.findIndex((val) => val === "--endpoint");
@@ -21,7 +30,8 @@ export function getTuxUrl(): string {
   const index = argv.findIndex((val) => val === "--endpoint");
   if (index > -1) {
     const endpoint = argv[index + 1];
-    return endpoint;
+    const domain = getDomainWithoutSubdomain(endpoint);
+    return `https://tux.${domain}`;
   }
   return `https://tux.${BASELIME_DOMAIN}`;
 }
@@ -31,7 +41,8 @@ export function getDataUrl(): string {
   const index = argv.findIndex((val) => val === "--endpoint");
   if (index > -1) {
     const endpoint = argv[index + 1];
-    return endpoint;
+    const domain = getDomainWithoutSubdomain(endpoint);
+    return `https://data.${domain}`;
   }
   return `https://data.${BASELIME_DOMAIN}`;
 }
