@@ -16,7 +16,6 @@ export async function promptReplaceExistingConfig(filename: string): Promise<boo
   return confirm;
 }
 
-
 export async function promptTemplateSelect(): Promise<string | undefined> {
   const s = spinner.get();
   s.start("Fetching your templates");

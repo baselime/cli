@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Renamed push command to deploy
 - Renamed environments command to connect
+- Renamed snapshot command to test
 
 
 ### Removed

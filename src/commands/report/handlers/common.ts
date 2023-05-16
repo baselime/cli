@@ -20,14 +20,14 @@ export async function commonHandler(profile: string, quiet: boolean, path?: stri
     s.start("Creating snapshots...");
     const ids = (await api.alertsList(service)).map((alert) => alert.id);
     const promises = ids.map(async (id) => {
-      return await api.alertChecksCreate(service!, id, false, false);
+      return await api.alertChecksCreate(service!, id, false, true);
     });
 
     const result = await Promise.all(promises);
     s.succeed("All alert snapshots created");
     console.log();
     const checks = result.map((result) => result.check);
-    outputs.snapshot(checks, format || "table");
+    outputs.test(checks, format || "table");
     status = {
       version: getVersion(),
       alertChecks: checks,

@@ -23,7 +23,7 @@ function list(alerts: Alert[], format: OutputFormat) {
   console.log(`✨ ${chalk.bold(chalk.cyan(`${alerts.length} alerts`))}`);
 }
 
-function snapshot(alertChecks: AlertCheck[], format: OutputFormat) {
+function test(alertChecks: AlertCheck[], format: OutputFormat) {
   if (format === "json") {
     console.log(JSON.stringify({ alertChecks }, null, 4));
     return;
@@ -31,18 +31,19 @@ function snapshot(alertChecks: AlertCheck[], format: OutputFormat) {
 
   const table = new Table({
     chars: tableChars,
-    head: ["Service", "Alert", "Triggered", "Threshold", "Value", "Snapshot URL"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["", "Alert"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alertChecks.forEach((alertCheck) => {
     const res = alertCheck.aggregates[alertCheck.calculationKey];
     const isGrouped = typeof res !== "number";
+    const colorize = alertCheck.triggered ? chalk.red : chalk.green;
+
+    const url = `https://console.${BASELIME_DOMAIN}/${alertCheck.workspaceId}/${alertCheck.environmentId}/${alertCheck.service}/alerts/${alertCheck.alertId}/${alertCheck.id}`;
     table.push([
-      alertCheck.service,
-      alertCheck.alertId,
-      alertCheck.triggered,
-      `${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}`,
-      `${isGrouped ? JSON.stringify(res, undefined, 2) : res}`,
-      `https://console.${BASELIME_DOMAIN}/${alertCheck.workspaceId}/${alertCheck.environmentId}/${alertCheck.service}/alerts/${alertCheck.alertId}/${alertCheck.id}`,
+      alertCheck.triggered ? "🔴" : "🟢",
+      `${colorize(alertCheck.alertId)}\n\Threshold: ${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}\n${colorize(
+        "Received: ",
+      )}${colorize(isGrouped ? JSON.stringify(res, undefined, 2) : res)}\n\n${url}`,
     ]);
   });
   console.log(`${table.toString()}`);
@@ -50,5 +51,5 @@ function snapshot(alertChecks: AlertCheck[], format: OutputFormat) {
 
 export default {
   list,
-  snapshot,
+  test,
 };
