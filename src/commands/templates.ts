@@ -12,7 +12,7 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
     .example([
       [
         `
-      $0 templates create
+      $0 templates publish
     `,
       ],
     ])
