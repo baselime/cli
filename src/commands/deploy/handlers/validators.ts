@@ -13,7 +13,7 @@ import { getCalculationAlias } from "../../../builder";
 import { readMetadataFile } from "../../templates/handlers/fsHelper";
 
 const filterCombinations = ["AND", "OR"];
-const channelTypes = ["slack", "webhook"];
+const channelTypes = ["slack", "webhook", "email"];
 const groupByTypes = ["string", "number", "boolean"];
 
 const idRegex = /^[a-zA-Z0-9-_]+$/;

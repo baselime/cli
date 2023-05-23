@@ -15,6 +15,7 @@ export interface AlertThreshold {
 export enum ChannelTypes {
   SLACK = "slack",
   WEBHOOK = "webhook",
+  EMAIL = "email",
 }
 
 export interface Alert {

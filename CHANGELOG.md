@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Changed
 - Fixed typo in templates docs
+- Add support for email alerts
 
 ## [0.0.66] 2023-05-16
 ### Changed
