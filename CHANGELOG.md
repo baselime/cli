@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+- Changed the data structure for query calculations to enable multiple group-bys
+
 ## [0.0.67] 2023-05-23
 ### Changed
 - Fixed typo in templates docs

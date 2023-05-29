@@ -2,14 +2,14 @@ import Table from "cli-table3";
 
 import { OutputFormat, tableChars } from "../../../shared";
 import chalk from "chalk";
-import { QueryRun, Series } from "../../../services/api/paths/query-runs";
+import { Aggregates, QueryRun, Series } from "../../../services/api/paths/query-runs";
 import dayjs from "dayjs";
 import outputs from "../../tail/outputs";
 import { Event } from "../../../services/api/paths/events";
 
 const { BASELIME_DOMAIN = "baselime.io" } = process.env;
 
-function getQueryRun(data: { queryRun: QueryRun; aggregates?: Record<string, number | Record<string, number>>; series: Series[]; events?: Event[]; format: OutputFormat }) {
+function getQueryRun(data: { queryRun: QueryRun; aggregates?: Aggregates; series: Series[]; events?: Event[]; format: OutputFormat }) {
   const { queryRun, aggregates, series, events, format } = data;
 
   if (format === "json") {
@@ -22,31 +22,40 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Record<string, num
     return;
   }
 
-  let aggregatesTable: Table.Table;
-  const isGrouped = typeof aggregates._count !== "number";
-  const calculationKeys = Object.keys(aggregates).filter((k) => k !== "_count");
-  if (isGrouped) {
-    const groups = Object.keys(aggregates._count);
-    aggregatesTable = new Table({
-      chars: tableChars,
-      head: ["", ...calculationKeys].map((e) => `${chalk.bold(chalk.cyan(e))}`),
-    });
 
-    if (!groups.length) {
-      aggregatesTable.push(["No results for the given groupBy"]);
-    }
+  const isGrouped = aggregates.some(a => a.groups) || !aggregates.length;
+  const groups = isGrouped ? Object.keys(aggregates[0]?.groups || {}) : [];
+  const first = aggregates[0];
+  const calculationKeys = !first ? ["None"] : Object.keys(first.values).filter((k) => k !== "_count");
 
-    groups.forEach((group) => {
-      const vals = calculationKeys.map((key) => (aggregates as Record<string, Record<string, number>>)[key][group]);
-      aggregatesTable.push([group, ...vals]);
-    });
+  const filteredAggregates = aggregates.map(agg => {
+    const values = { ...agg.values };
+    // rome-ignore lint/performance/noDelete: <explanation>
+    delete values["_count"];
+    return {
+      groups: agg.groups,
+      values,
+    };
+  });
+
+  const head = isGrouped ? ["", ...calculationKeys]: calculationKeys; 
+  const aggregatesTable: Table.Table = new Table({
+    chars: tableChars,
+    head: head.map((e) => `${chalk.bold(chalk.cyan(e))}`),
+  });
+
+  if (isGrouped && !groups.length) {
+    aggregatesTable.push(["No results for the given groupBy"]);
+
   } else {
-    aggregatesTable = new Table({
-      chars: tableChars,
-      head: [...calculationKeys].map((e) => `${chalk.bold(chalk.cyan(e))}`),
-    });
-
-    aggregatesTable.push(calculationKeys.map((key) => (aggregates as Record<string, number>)[key]));
+    aggregatesTable.push(...filteredAggregates.map(agg => {
+      const group = agg.groups ? Object.values(agg.groups).join("") : "";
+      const values = Object.values(agg.values).map(v => v.toString());
+      if (group) {
+        values.unshift(group)
+      }
+      return values;
+    }));
   }
 
   console.log();

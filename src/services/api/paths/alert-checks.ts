@@ -1,5 +1,6 @@
 import { client } from "../clients";
 import { Alert, AlertThreshold, Timeframe } from "./alerts";
+import { Aggregates } from "./query-runs";
 
 export interface AlertCheck {
   workspaceId: string;
@@ -10,7 +11,7 @@ export interface AlertCheck {
   timeframe: Timeframe;
   granularity: number;
   triggered: boolean;
-  aggregates: Record<string, number | Record<string, number>>;
+  aggregates: Aggregates;
   calculationKey: string;
   time: string;
   threshold: AlertThreshold;

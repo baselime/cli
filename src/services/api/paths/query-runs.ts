@@ -21,6 +21,11 @@ export interface QueryRun {
   updated?: string;
 }
 
+export type Aggregates = Array<{
+  groups?: Record<string, any>;
+  values: Record<string, number>
+}>
+
 export interface Series {
   time: string;
   data: SeriesData;
@@ -99,7 +104,7 @@ async function queryRunGet(params: QueryRunGetParams): Promise<{ queryRun: Query
 
 async function queryRunCreate(params: QueryRunCreateParams): Promise<{
   queryRun: QueryRun;
-  calculations: { series: Series[]; aggregates?: Record<string, number | Record<string, number>> };
+  calculations: { series: Series[]; aggregates?: Aggregates };
   events: { events?: Event[]; count?: number; series?: Series[]; fields?: { name: string; type: string }[] };
 }> {
   const { workspace, environment } = params.config;

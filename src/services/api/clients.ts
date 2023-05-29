@@ -37,14 +37,15 @@ export function getTuxUrl(): string {
 }
 
 export function getDataUrl(): string {
-  const { BASELIME_DOMAIN = "baselime.io" } = process.env;
-  const index = argv.findIndex((val) => val === "--endpoint");
-  if (index > -1) {
-    const endpoint = argv[index + 1];
-    const domain = getDomainWithoutSubdomain(endpoint);
-    return `https://data.${domain}`;
-  }
-  return `https://data.${BASELIME_DOMAIN}`;
+  return "http://localhost:8080";
+  // const { BASELIME_DOMAIN = "baselime.io" } = process.env;
+  // const index = argv.findIndex((val) => val === "--endpoint");
+  // if (index > -1) {
+  //   const endpoint = argv[index + 1];
+  //   const domain = getDomainWithoutSubdomain(endpoint);
+  //   return `https://data.${domain}`;
+  // }
+  // return `https://data.${BASELIME_DOMAIN}`;
 }
 
 export const client = axios.create({

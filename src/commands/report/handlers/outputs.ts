@@ -34,8 +34,12 @@ function test(alertChecks: AlertCheck[], format: OutputFormat) {
     head: ["", "Alert"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alertChecks.forEach((alertCheck) => {
-    const res = alertCheck.aggregates[alertCheck.calculationKey];
-    const isGrouped = typeof res !== "number";
+    const values = alertCheck.aggregates.map(agg => {
+      return {
+        ...agg.groups,
+        [alertCheck.calculationKey]: agg.values[alertCheck.calculationKey]
+      };
+    });
     const colorize = alertCheck.triggered ? chalk.red : chalk.green;
 
     const url = `https://console.${BASELIME_DOMAIN}/${alertCheck.workspaceId}/${alertCheck.environmentId}/${alertCheck.service}/alerts/${alertCheck.alertId}/${alertCheck.id}`;
@@ -43,7 +47,7 @@ function test(alertChecks: AlertCheck[], format: OutputFormat) {
       alertCheck.triggered ? "🔴" : "🟢",
       `${colorize(alertCheck.alertId)}\n\Threshold: ${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}\n${colorize(
         "Received: ",
-      )}${colorize(isGrouped ? JSON.stringify(res, undefined, 2) : res)}\n\n${url}`,
+      )}${colorize(JSON.stringify(values, undefined, 2))}\n\n${url}`,
     ]);
   });
   console.log(`${table.toString()}`);
