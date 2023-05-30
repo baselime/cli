@@ -23,8 +23,8 @@ export interface QueryRun {
 
 export type Aggregates = Array<{
   groups?: Record<string, any>;
-  values: Record<string, number>
-}>
+  values: Record<string, number>;
+}>;
 
 export interface Series {
   time: string;

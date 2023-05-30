@@ -22,13 +22,12 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Aggregates; series
     return;
   }
 
-
-  const isGrouped = aggregates.some(a => a.groups) || !aggregates.length;
+  const isGrouped = aggregates.some((a) => a.groups) || !aggregates.length;
   const groups = isGrouped ? Object.keys(aggregates[0]?.groups || {}) : [];
   const first = aggregates[0];
   const calculationKeys = !first ? ["None"] : Object.keys(first.values).filter((k) => k !== "_count");
 
-  const filteredAggregates = aggregates.map(agg => {
+  const filteredAggregates = aggregates.map((agg) => {
     const values = { ...agg.values };
     // rome-ignore lint/performance/noDelete: <explanation>
     delete values["_count"];
@@ -38,7 +37,7 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Aggregates; series
     };
   });
 
-  const head = isGrouped ? ["", ...calculationKeys]: calculationKeys; 
+  const head = isGrouped ? ["", ...calculationKeys] : calculationKeys;
   const aggregatesTable: Table.Table = new Table({
     chars: tableChars,
     head: head.map((e) => `${chalk.bold(chalk.cyan(e))}`),
@@ -46,16 +45,17 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Aggregates; series
 
   if (isGrouped && !groups.length) {
     aggregatesTable.push(["No results for the given groupBy"]);
-
   } else {
-    aggregatesTable.push(...filteredAggregates.map(agg => {
-      const group = agg.groups ? Object.values(agg.groups).join("") : "";
-      const values = Object.values(agg.values).map(v => v.toString());
-      if (group) {
-        values.unshift(group)
-      }
-      return values;
-    }));
+    aggregatesTable.push(
+      ...filteredAggregates.map((agg) => {
+        const group = agg.groups ? Object.values(agg.groups).join("") : "";
+        const values = Object.values(agg.values).map((v) => v.toString());
+        if (group) {
+          values.unshift(group);
+        }
+        return values;
+      }),
+    );
   }
 
   console.log();

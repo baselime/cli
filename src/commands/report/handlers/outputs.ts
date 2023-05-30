@@ -34,10 +34,10 @@ function test(alertChecks: AlertCheck[], format: OutputFormat) {
     head: ["", "Alert"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alertChecks.forEach((alertCheck) => {
-    const values = alertCheck.aggregates.map(agg => {
+    const values = alertCheck.aggregates.map((agg) => {
       return {
         ...agg.groups,
-        [alertCheck.calculationKey]: agg.values[alertCheck.calculationKey]
+        [alertCheck.calculationKey]: agg.values[alertCheck.calculationKey],
       };
     });
     const colorize = alertCheck.triggered ? chalk.red : chalk.green;
