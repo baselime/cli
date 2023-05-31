@@ -5,7 +5,12 @@ export interface QueryParameters {
   filters?: Array<QueryFilter>;
   filterCombination: "AND" | "OR";
   calculations?: QueryCalculation[];
-  groupBy?: QueryGroupBy;
+  groupBys?: QueryGroupBy[];
+  orderBy?: {
+    value: string;
+    order?: "ASC" | "DESC";
+  };
+  limit?: number;
   needle?: SearchNeedle;
 }
 
@@ -19,9 +24,6 @@ export interface QueryFilter {
 export interface QueryGroupBy {
   type: "string" | "number" | "boolean";
   value: string;
-  orderBy?: string;
-  limit?: number;
-  order?: "ASC" | "DESC";
 }
 
 export interface QueryCalculation {

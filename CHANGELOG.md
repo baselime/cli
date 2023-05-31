@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Changed
+- Changed the data structure for queries to enable multiple group bys
 
 ## [0.0.68] 2023-05-29
 ### Changed

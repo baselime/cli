@@ -106,11 +106,18 @@ const querySchema = object({
         .default(undefined)
         .noUnknown(true)
         .strict(),
-      groupBy: object({
-        type: string().oneOf(groupByTypes).min(1).required(),
+      groupBys: array()
+        .of(
+          object({
+            type: string().oneOf(groupByTypes).min(1).required(),
+            value: string().min(1).required(),
+          })
+            .noUnknown(true)
+            .strict(),
+        )
+        .optional(),
+      orderBy: object({
         value: string().min(1).required(),
-        orderBy: string().min(1).optional(),
-        limit: number().min(1).optional(),
         order: string().oneOf(["ASC", "DESC"]).optional(),
       })
         .nullable()
@@ -118,6 +125,7 @@ const querySchema = object({
         .default(undefined)
         .noUnknown(true)
         .strict(),
+      limit: number().min(1).optional(),
     })
       .noUnknown(true)
       .required()
@@ -350,7 +358,7 @@ function validateQueries(queries: any[] = []) {
       const res = await querySchema.validate(item);
       const filters = res.properties.parameters.filters;
       const calculations = res.properties.parameters.calculations;
-      const groupBy = res.properties.parameters.groupBy;
+      const orderBy = res.properties.parameters.orderBy;
 
       filters?.forEach((filter) => {
         parseFilter(filter);
@@ -364,8 +372,8 @@ function validateQueries(queries: any[] = []) {
         throw new Error("Aliases must me unique across all calculation / visualisation .");
       }
 
-      if (groupBy?.orderBy && !calcs?.some((c) => getCalculationAlias(c) === groupBy?.orderBy)) {
-        throw new Error("The orderBy field of the groupBy must be present in the calculations / visualisations.");
+      if (orderBy?.value && !calcs?.some((c) => getCalculationAlias(c) === orderBy?.value)) {
+        throw new Error("The orderBy must be present in the visualisations.");
       }
     } catch (error) {
       const message = `query: ${item.id}: ${error}`;

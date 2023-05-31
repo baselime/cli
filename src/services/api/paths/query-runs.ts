@@ -71,13 +71,12 @@ export interface QueryRunCreateParams {
       isRegex: boolean;
       matchCase: boolean;
     };
-    groupBy?: {
-      limit: number;
-      order: string;
-      orderBy: string;
+    groupBys?: {
       type: string;
       value: string;
-    };
+    }[];
+    orderBy?: { value: string; order: string };
+    limit?: number;
   };
   config: UserConfig;
 }

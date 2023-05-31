@@ -95,9 +95,14 @@ async function interactive(input: { queryId: string; service: string; format: Ou
     // only numeric
     applicableKeys.filter((keySet) => keySet.type === "number"),
   );
-  let groupBy;
+  let groupBys;
+  let orderBy;
+  let limit;
   if (calculations.length) {
-    groupBy = await promptGroupBy(applicableKeys, calculations);
+    const res = await promptGroupBy(applicableKeys, calculations);
+    groupBys = res?.type ? [{ value: res?.value, type: res?.type }] : undefined;
+    orderBy = res?.orderBy ? { value: res?.orderBy, order: res?.order } : undefined;
+    limit = res?.limit ? limit : undefined;
   }
 
   const filters = await promptFilters(applicableKeys);
@@ -121,7 +126,9 @@ async function interactive(input: { queryId: string; service: string; format: Ou
         ...filter,
         operation: filter.operator,
       })),
-      groupBy,
+      groupBys,
+      orderBy,
+      limit,
     },
     config,
   });

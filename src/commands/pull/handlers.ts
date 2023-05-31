@@ -153,7 +153,9 @@ function convertQuery(query: Query): DeploymentQuery {
               matchCase: query.parameters.needle.matchCase,
             }
           : undefined,
-        groupBy: query.parameters.groupBy,
+        groupBys: query.parameters.groupBys,
+        orderBy: query.parameters.orderBy,
+        limit: query.parameters.limit,
         filterCombination: query.parameters.filterCombination,
         filters: query.parameters.filters?.map((filter) => `${filter.key} ${filter.operation} ${filter.value}`),
         calculations: query.parameters.calculations?.map((calculation) => {
