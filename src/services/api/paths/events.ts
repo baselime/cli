@@ -28,12 +28,15 @@ export interface Event {
 
 export interface Series {
   time: string;
-  data: SeriesData;
+  data: SeriesData[];
 }
 
 export interface SeriesData {
-  _count: number | Record<string, number>;
-  [key: string]: number | undefined | Record<string, number>;
+  aggregates: {
+    _count: number;
+    [key: string]: number | undefined;
+  }
+  groups?: Record<string, any>
 }
 
 export async function listEvents(
