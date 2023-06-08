@@ -5,7 +5,6 @@ import { hideBin } from "yargs/helpers";
 import { getVersion } from "./shared";
 import { trackCommand } from "./services/telemetry/telemetry";
 async function track(args: Arguments) {
-  console.log('???', args)
   const command = args._[0];
   await trackCommand(command.toString(), args);
   return;
