@@ -7,8 +7,12 @@ type RehydrateParams = {
   region: string
 }
 
-export async function rehydrate(params: RehydrateParams): Promise<boolean> {
+async function rehydrate(params: RehydrateParams): Promise<boolean> {
   return (await client.post(`/rehydrate`, {
     ...params
   })).data;
+}
+
+export default {
+  rehydrate
 }
