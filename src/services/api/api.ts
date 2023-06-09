@@ -41,5 +41,5 @@ export default {
   ...onboarding,
   ...explain,
   ...environments,
-  ...rehydrate
+  ...rehydrate,
 };

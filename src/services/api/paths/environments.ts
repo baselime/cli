@@ -1,4 +1,4 @@
-import {client} from "../clients";
+import { client } from "../clients";
 
 export interface Account {
   id: string;
@@ -11,9 +11,9 @@ export interface Environment {
 }
 
 async function getEnvironment(): Promise<Environment> {
-  return (await client.get(`/environments`)).data.environment;
+  return (await client.get("/environments")).data.environment;
 }
 
 export default {
-  getEnvironment
-}
+  getEnvironment,
+};

@@ -3,7 +3,7 @@ import { Arguments, CommandBuilder } from "yargs";
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import spinner from "../services/spinner/index";
 import api from "../services/api/api";
-import {promptSelectAccount} from "./rehydrate/prompts";
+import { promptSelectAccount } from "./rehydrate/prompts";
 
 export interface Options extends BaseOptions {
   config?: string;

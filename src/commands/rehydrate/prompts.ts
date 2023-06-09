@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { prompt } from "enquirer";
 import api from "../../services/api/api";
 import spinner from "../../services/spinner";
-import {Account} from "../../services/api/paths/environments";
+import { Account } from "../../services/api/paths/environments";
 
 export async function promptSelectAccount(): Promise<Account> {
   const s = spinner.get();

@@ -35,8 +35,8 @@ export interface SeriesData {
   aggregates: {
     _count: number;
     [key: string]: number | undefined;
-  }
-  groups?: Record<string, any>
+  };
+  groups?: Record<string, any>;
 }
 
 export async function listEvents(
