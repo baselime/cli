@@ -17,6 +17,9 @@ import slack from "./paths/slack";
 import keys from "./paths/keys";
 import onboarding from "./paths/onboarding";
 import explain from "./paths/explain";
+import environments from "./paths/environments";
+import rehydrate from "./paths/rehydrate";
+
 export default {
   ...auth,
   ...queries,
@@ -37,4 +40,6 @@ export default {
   ...keys,
   ...onboarding,
   ...explain,
+  ...environments,
+  ...rehydrate,
 };
