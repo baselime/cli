@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.0.70] 2023-06-12
+## [0.0.70] 2023-06-15
 ### Changed
 - Updated the series data types to enable multi-group bys
 - Added rehydration command
