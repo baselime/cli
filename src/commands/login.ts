@@ -12,6 +12,7 @@ import {
   promptForOneTimePassword,
   promptForWorkspaceName,
   promptReplaceExistingProfile,
+  promptForIDPProvider,
 } from "./auth/handlers/prompts";
 import * as open from "open";
 import { PORT, startServer } from "../services/auth/server";
@@ -75,11 +76,16 @@ export async function handler(argv: Arguments<Options>) {
     const otp = await promptForOneTimePassword(email);
     oathData.otp = otp;
   } else {
+    let idpProvider = await promptForIDPProvider();
     s.start("Redirecting to the browser...");
     const config = await api.getAuthConfig();
     const creds = await startServer(config, oathData.otp, argv);
-
-    const loginUrl = `${config.url}/oauth2/authorize?client_id=${config.client}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:${PORT}`;
+    
+    if(idpProvider === 'GitHub') {
+      idpProvider = 'GITHUB'
+    }
+    
+    const loginUrl = `${config.url}/oauth2/authorize?client_id=${config.client}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:${PORT}&identity_provider=${idpProvider}`;
     await open.default(loginUrl);
 
     oathData.id_token = (await creds.getCreds()).id_token;

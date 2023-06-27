@@ -24,6 +24,17 @@ export async function promptForEmail(): Promise<string> {
   return accountEmail.trim();
 }
 
+export async function promptForIDPProvider(): Promise<string> {
+  const { idpProvider } = await prompt<{ idpProvider: string }>({
+    type: "select",
+    name: "idpProvider",
+    message: "Whats your identity provider?",
+    choices: ["Google", "GitHub"],
+  });
+
+  return idpProvider;
+}
+
 export async function promptEnvironmentAlias(): Promise<string> {
   const { alias } = await prompt<{ alias: string }>({
     type: "input",
