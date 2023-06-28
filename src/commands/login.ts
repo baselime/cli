@@ -80,11 +80,11 @@ export async function handler(argv: Arguments<Options>) {
     s.start("Redirecting to the browser...");
     const config = await api.getAuthConfig();
     const creds = await startServer(config, oathData.otp, argv);
-    
-    if(idpProvider === 'GitHub') {
-      idpProvider = 'GITHUB'
+
+    if (idpProvider === "GitHub") {
+      idpProvider = "GITHUB";
     }
-    
+
     const loginUrl = `${config.url}/oauth2/authorize?client_id=${config.client}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:${PORT}&identity_provider=${idpProvider}`;
     await open.default(loginUrl);
 
