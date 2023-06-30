@@ -7,10 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] 
 
+## [0.0.72] 2023-06-30
 ### Fixed
-- fixed data endpoint
+- Fixed data endpoint
 
-## [0.0.71] 2023-07-27
+## [0.0.71] 2023-06-27
 
 - add GitHub login support
   
