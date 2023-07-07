@@ -4,8 +4,6 @@ import { baseOptions, BaseOptions, printError } from "../shared";
 import * as open from "open";
 
 export interface Options extends BaseOptions {
-  email?: string;
-  profile: string;
 }
 
 export const command = "console";
