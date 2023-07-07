@@ -5,14 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] 
+## [Unreleased]
 
+
+## [0.0.73] 2023-07-07
 ### Added
 - Added baselime mark command
-
-## Changed
+### Changed
 - Improved the docs of the baselime rehydrate command
-
 ### Removed
 - Removed unnecessary options in baselime console command
 
