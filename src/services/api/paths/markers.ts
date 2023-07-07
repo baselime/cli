@@ -15,8 +15,7 @@ export type Marker = {
   type?: string;
   url?: string;
   metadata?: Record<string, unknown>;
-}
-
+};
 
 export interface MarkerCreateParams {
   service: string;
@@ -28,7 +27,6 @@ export interface MarkerCreateParams {
   url?: string;
   metadata?: Record<string, unknown>;
 }
-
 
 async function markerCreate(marker: MarkerCreateParams): Promise<Marker> {
   const res = (await client.post("/markers", marker)).data;

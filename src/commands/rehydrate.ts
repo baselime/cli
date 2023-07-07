@@ -18,7 +18,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .options({
       ...baseOptions,
       "start-date": { type: "string", desc: "Date to start recovering data from, in ISO format" },
-      "hours-to-recover": { type: "number", desc: "Number of consecutive hours of data to recover starting from start-date. Minimum: 1, maximum: 12", },
+      "hours-to-recover": { type: "number", desc: "Number of consecutive hours of data to recover starting from start-date. Minimum: 1, maximum: 12" },
     })
     .example([
       [
@@ -47,7 +47,7 @@ export async function handler(argv: Arguments<Options>) {
   const account = await promptSelectAccount();
   const s = spinner.get();
   s.start("Requesting data rehydration");
-  
+
   await api.rehydrate({
     startDate: sd,
     hoursToRecover: htr,

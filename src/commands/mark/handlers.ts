@@ -16,7 +16,7 @@ async function mark(data: {
   endTime?: number;
   type?: string;
 }) {
-  const { format, service, url, name, description, startTime, endTime, type, } = data;
+  const { format, service, url, name, description, startTime, endTime, type } = data;
   const s = spinner.get();
   s.start("Creating marker");
 
@@ -31,7 +31,7 @@ async function mark(data: {
   });
 
   s.succeed("Marker created");
-  outputs.mark({marker, format});
+  outputs.mark({ marker, format });
 }
 
 export default {

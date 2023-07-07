@@ -3,8 +3,7 @@ import spinner from "../services/spinner";
 import { baseOptions, BaseOptions, printError } from "../shared";
 import * as open from "open";
 
-export interface Options extends BaseOptions {
-}
+export interface Options extends BaseOptions {}
 
 export const command = "console";
 export const desc = "Open the baselime web console";

@@ -29,7 +29,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       name: {
         type: "string",
         desc: "The name of this specific marker",
-        default: "created-by-baselime-cli"
+        default: "created-by-baselime-cli",
       },
       description: {
         type: "string",
