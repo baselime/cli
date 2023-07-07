@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Added baselime mark command
 
+## Changed
+- Improved the docs of the baselime rehydrate command
+
 ### Removed
 - Removed unnecessary options in baselime console command
 
