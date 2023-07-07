@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] 
 
+### Added
+- Added baselime mark command
+
 ## [0.0.72] 2023-06-30
 ### Fixed
 - Fixed data endpoint

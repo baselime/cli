@@ -19,6 +19,7 @@ import onboarding from "./paths/onboarding";
 import explain from "./paths/explain";
 import environments from "./paths/environments";
 import rehydrate from "./paths/rehydrate";
+import markers from "./paths/markers";
 
 export default {
   ...auth,
@@ -42,4 +43,5 @@ export default {
   ...explain,
   ...environments,
   ...rehydrate,
+  ...markers,
 };
