@@ -31,7 +31,9 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Aggregates; series
     const values = { ...agg.values };
     // rome-ignore lint/performance/noDelete: <explanation>
     delete values["_count"];
+    // rome-ignore lint/performance/noDelete: <explanation>
     delete values["_firstSeen"];
+    // rome-ignore lint/performance/noDelete: <explanation>
     delete values["_lastSeen"];
     return {
       groups: agg.groups,
