@@ -25,12 +25,14 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Aggregates; series
   const isGrouped = aggregates.some((a) => a.groups) || !aggregates.length;
   const groups = isGrouped ? Object.keys(aggregates[0]?.groups || {}) : [];
   const first = aggregates[0];
-  const calculationKeys = !first ? ["None"] : Object.keys(first.values).filter((k) => k !== "_count");
+  const calculationKeys = !first ? ["None"] : Object.keys(first.values).filter((k) => !["_count", "_firstSeen", "_lastSeen"].includes(k));
 
   const filteredAggregates = aggregates.map((agg) => {
     const values = { ...agg.values };
     // rome-ignore lint/performance/noDelete: <explanation>
     delete values["_count"];
+    delete values["_firstSeen"];
+    delete values["_lastSeen"];
     return {
       groups: agg.groups,
       values,
