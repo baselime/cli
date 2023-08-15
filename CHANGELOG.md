@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
+## [0.0.74] 2023-08-15
 ### Removed
 - Removed _firstSeen and _lastSeen from the query results
 
