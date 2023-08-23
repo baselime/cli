@@ -33,6 +33,7 @@
     "release:patch": "npm version patch | xargs -i sh -c \"git push && git push && git push origin {}\""
   },
   "dependencies": {
+    "asciichart": "^1.5.25",
     "aws-cron-parser": "^1.1.12",
     "axios": "^0.26.1",
     "chalk": "^4.1.2",
@@ -58,6 +59,7 @@
     "yup": "^1.0.0-beta.8"
   },
   "devDependencies": {
+    "@types/asciichart": "^1.5.6",
     "@types/express": "^4.17.15",
     "@types/figlet": "^1.5.4",
     "@types/flat": "^5.0.2",

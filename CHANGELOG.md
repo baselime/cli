@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Added support for passing in the granularity when running queries
 - Added fetching the datasets from the backend when prompting to select a dataset
+- Added printing a chart of the query results
 
 ## [0.0.74] 2023-08-15
 ### Removed

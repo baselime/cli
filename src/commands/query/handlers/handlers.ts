@@ -22,7 +22,7 @@ async function createRun(data: {
   granularity?: string;
   config: UserConfig;
 }) {
-  const { format, from, to, service, id, config, granularity, } = data;
+  const { format, from, to, service, id, config, granularity } = data;
   const s = spinner.get();
   const timeframe = getTimeframe(from, to);
   s.start("Running the query ");
@@ -63,7 +63,7 @@ async function getApplicableDatasets(): Promise<Dataset[]> {
   return datasets;
 }
 
-async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string; granularity: string, config: UserConfig }) {
+async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string; granularity: string; config: UserConfig }) {
   const s = spinner.get();
   const { queryId, service, format, config } = input;
   let { from, to, granularity } = input;

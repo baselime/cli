@@ -75,7 +75,7 @@ export async function promptTo(): Promise<string> {
 }
 
 export async function promptGranularity(initial: number): Promise<string> {
-  const { granularity} = await prompt<{ granularity: string }>({
+  const { granularity } = await prompt<{ granularity: string }>({
     type: "input",
     name: "granularity",
     initial: `${ms(initial)}`,
@@ -88,9 +88,9 @@ export async function promptGranularity(initial: number): Promise<string> {
 export async function promptDatasets(applicableDatasets: Dataset[]): Promise<string[]> {
   const choices: Record<string, string> = {};
 
-  applicableDatasets.forEach(dataset => {
+  applicableDatasets.forEach((dataset) => {
     choices[dataset.id] = dataset.id;
-  })
+  });
 
   let datasets: string[] = [];
   while (!datasets.length) {
