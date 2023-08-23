@@ -2,13 +2,14 @@ import spinner from "../../../services/spinner/index";
 import api from "../../../services/api/api";
 import outputs from "./outputs";
 import { OutputFormat } from "../../../shared";
-import { getTimeframe } from "../../../services/timeframes/timeframes";
+import { getGranularity, getTimeframe } from "../../../services/timeframes/timeframes";
 import dayjs from "dayjs";
 import { promptCalculations, promptDatasets, promptFilters, promptFrom, promptGroupBy, promptNeedle, promptTo } from "../prompts/query";
 import { prompt } from "enquirer";
 import { Timeframe } from "../../../services/api/paths/alerts";
 import { KeySet } from "../../../services/api/paths/keys";
 import { UserConfig } from "../../../services/auth";
+import { Dataset } from "../../../services/api/paths/datasets";
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
@@ -18,9 +19,10 @@ async function createRun(data: {
   to: string;
   id: string;
   service: string;
+  granularity?: string;
   config: UserConfig;
 }) {
-  const { format, from, to, service, id, config } = data;
+  const { format, from, to, service, id, config, granularity, } = data;
   const s = spinner.get();
   const timeframe = getTimeframe(from, to);
   s.start("Running the query ");
@@ -34,6 +36,7 @@ async function createRun(data: {
     queryId: id,
     timeframe,
     config,
+    granularity: granularity ? getGranularity(granularity) : undefined,
   });
   s.succeed();
   outputs.getQueryRun({ queryRun, aggregates, series, events, format });
@@ -52,13 +55,23 @@ async function getApplicableKeys(timeframe: Timeframe, datasets: string[], servi
   return keys.filter((set) => datasets.includes(set.dataset));
 }
 
-async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string; config: UserConfig }) {
+async function getApplicableDatasets(): Promise<Dataset[]> {
+  const s = spinner.get();
+  s.start("Fetching your datasets...");
+  const datasets = await api.datasetsList();
+  s.succeed();
+  return datasets;
+}
+
+async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string; granularity: string, config: UserConfig }) {
   const s = spinner.get();
   const { queryId, service, format, config } = input;
-  let { from, to } = input;
+  let { from, to, granularity } = input;
+
+  const applicableDatasets = await getApplicableDatasets();
 
   let timeframe = getTimeframe(from, to);
-  let datasets = await promptDatasets();
+  let datasets = await promptDatasets(applicableDatasets);
   let applicableKeys = await getApplicableKeys(timeframe, datasets, service, config);
 
   while (!applicableKeys.length) {
@@ -84,7 +97,7 @@ async function interactive(input: { queryId: string; service: string; format: Ou
         to = await promptTo();
         break;
       case "dataset":
-        datasets = await promptDatasets();
+        datasets = await promptDatasets(applicableDatasets);
         break;
     }
     timeframe = getTimeframe(from, to);
@@ -118,6 +131,7 @@ async function interactive(input: { queryId: string; service: string; format: Ou
     service,
     queryId,
     timeframe,
+    granularity: granularity ? getGranularity(granularity) : undefined,
     parameters: {
       datasets,
       calculations,

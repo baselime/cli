@@ -53,6 +53,7 @@ export interface QueryRunGetParams {
 export interface QueryRunCreateParams {
   service: string;
   queryId: string;
+  granularity?: number;
   timeframe: {
     from: number;
     to: number;

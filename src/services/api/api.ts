@@ -20,6 +20,7 @@ import explain from "./paths/explain";
 import environments from "./paths/environments";
 import rehydrate from "./paths/rehydrate";
 import markers from "./paths/markers";
+import datasets from "./paths/datasets";
 
 export default {
   ...auth,
@@ -44,4 +45,5 @@ export default {
   ...environments,
   ...rehydrate,
   ...markers,
+  ...datasets,
 };

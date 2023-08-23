@@ -11,3 +11,7 @@ export function getTimeframe(from: string, to: string): { from: number; to: numb
     to: t.valueOf(),
   };
 }
+
+export function getGranularity(granularity: string): number {
+  return ms(granularity);
+}

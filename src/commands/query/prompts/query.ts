@@ -5,6 +5,8 @@ import { Service } from "../../../services/api/paths/services";
 import { Query } from "../../../services/api/paths/queries";
 import spinner from "../../../services/spinner";
 import { KeySet } from "../../../services/api/paths/keys";
+import ms from "ms";
+import { Dataset } from "../../../services/api/paths/datasets";
 
 export async function promptServiceSelect(): Promise<Service | undefined> {
   const s = spinner.get();
@@ -72,15 +74,23 @@ export async function promptTo(): Promise<string> {
   return to;
 }
 
-export async function promptDatasets(): Promise<string[]> {
-  const choices: Record<string, string> = {
-    "API Gateway logs": "apigateway-logs",
-    CloudTrail: "cloudtrail",
-    "CloudWatch Metrics": "cloudwatch-metrics",
-    "Open Telemetry": "otel",
-    "X-Ray": "x-ray",
-    "Lambda Logs": "lambda-logs",
-  };
+export async function promptGranularity(initial: number): Promise<string> {
+  const { granularity} = await prompt<{ granularity: string }>({
+    type: "input",
+    name: "granularity",
+    initial: `${ms(initial)}`,
+    message: "Granularity: (Size of the query result bins - may also be relative eg: 1h, 20mins):",
+  });
+
+  return granularity;
+}
+
+export async function promptDatasets(applicableDatasets: Dataset[]): Promise<string[]> {
+  const choices: Record<string, string> = {};
+
+  applicableDatasets.forEach(dataset => {
+    choices[dataset.id] = dataset.id;
+  })
 
   let datasets: string[] = [];
   while (!datasets.length) {
@@ -102,7 +112,7 @@ export async function promptCalculations(keySets: KeySet[]): Promise<{ operator:
   const { name } = await prompt<{ name: string }>({
     type: "select",
     name: "name",
-    message: "Would you like to add any calculations?",
+    message: "Add a calculations?",
     choices: [{ name: "Yes" }, { name: "No" }],
   });
   if (name !== "Yes") {
@@ -192,7 +202,7 @@ export async function promptFilters(keySets: KeySet[]): Promise<{ key: string; o
   const { name } = await prompt<{ name: string }>({
     type: "select",
     name: "name",
-    message: "Would you like to add a filter?",
+    message: "Add a filter?",
     choices: [{ name: "Yes" }, { name: "No" }],
   });
   if (name === "Yes") {
@@ -328,7 +338,7 @@ export async function promptGroupBy(keySets: KeySet[], calculations: { operator:
   const { name } = await prompt<{ name: string }>({
     type: "select",
     name: "name",
-    message: "Would you like to group results?",
+    message: "Group results by a key?",
     choices: [{ name: "Yes" }, { name: "No" }],
   });
   if (name !== "Yes") {

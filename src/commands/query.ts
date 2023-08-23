@@ -5,12 +5,14 @@ import spinner from "../services/spinner";
 import { authenticate, BaseOptions, baseOptions, printError } from "../shared";
 import { randomString } from "../utils";
 import handlers from "./query/handlers/handlers";
-import { promptServiceSelect as promptServiceSelect, promptFrom, promptQuerySelect, promptTo } from "./query/prompts/query";
+import { promptServiceSelect as promptServiceSelect, promptFrom, promptQuerySelect, promptTo, promptGranularity } from "./query/prompts/query";
+import { getTimeframe } from "../services/timeframes/timeframes";
 
 export interface Options extends BaseOptions {
   service?: string;
   id?: string;
   from?: string;
+  granularity?: string;
   to?: string;
 }
 export const command = "query";
@@ -25,6 +27,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       id: { type: "string", desc: "Query id, if running a saved query" },
       from: { type: "string", desc: "UTC start time - may also be relative eg: 1h, 20mins" },
       to: { type: "string", desc: "UTC end time - may also be relative eg: 1h, 20mins, now" },
+      granularity: { type: "string", desc: "Size of the query result bins - may also be relative eg: 1h, 20mins" },
     })
     .example([
       [
@@ -43,7 +46,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  let { profile, id, from, to, format, service } = argv;
+  let { profile, id, from, to, granularity, format, service } = argv;
 
   spinner.init(!!argv.quiet);
   const config = await authenticate(profile);
@@ -64,6 +67,9 @@ export async function handler(argv: Arguments<Options>) {
 
   from ??= await promptFrom();
   to ??= await promptTo();
+  const timeframe = getTimeframe(from, to);
+  let initialGranularity = Math.abs(timeframe.from - timeframe.to) / 60;
+  granularity ??= await promptGranularity(initialGranularity);
 
   if (!isSaved) {
     return await handlers.interactive({
@@ -71,6 +77,7 @@ export async function handler(argv: Arguments<Options>) {
       service: service as string,
       format,
       from,
+      granularity,
       to,
       config,
     });
@@ -82,6 +89,7 @@ export async function handler(argv: Arguments<Options>) {
     from,
     to,
     service: service,
+    granularity,
     config,
   });
 }
