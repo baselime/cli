@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [0.0.78] 2023-08-27
+## [0.0.76] 2023-08-27
 ### Added
 - Added widget type to dashbaords
 
