@@ -21,6 +21,7 @@ import environments from "./paths/environments";
 import rehydrate from "./paths/rehydrate";
 import markers from "./paths/markers";
 import datasets from "./paths/datasets";
+import dashboards from "./paths/ask";
 
 export default {
   ...auth,
@@ -46,4 +47,5 @@ export default {
   ...rehydrate,
   ...markers,
   ...datasets,
+  ...dashboards,
 };

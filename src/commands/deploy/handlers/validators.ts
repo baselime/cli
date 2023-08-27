@@ -11,10 +11,13 @@ import { stepTemplates, templateSchema } from "../../../controllers/templates";
 import { getLogger, hasDuplicates } from "../../../utils";
 import { getCalculationAlias } from "../../../builder";
 import { readMetadataFile } from "../../templates/handlers/fsHelper";
+import { WidgetType } from "../../../services/api/paths/dashbaords";
+import { ChannelTypes } from "../../../services/api/paths/alerts";
 
 const filterCombinations = ["AND", "OR"];
-const channelTypes = ["slack", "webhook", "email"];
+const channelTypes = Object.values(ChannelTypes) as ChannelTypes[];
 const groupByTypes = ["string", "number", "boolean"];
+const widgetTypes = Object.values(WidgetType) as WidgetType[];
 
 const idRegex = /^[a-zA-Z0-9-_]+$/;
 
@@ -66,6 +69,7 @@ const dashboardSchema = object({
         .of(
           object({
             query: string().required(),
+            type: string().oneOf(widgetTypes).required(),
             name: string().strict().optional(),
             description: string().strict().optional(),
           })

@@ -2,7 +2,7 @@ import { AlertThreshold } from "./services/api/paths/alerts";
 import { QueryCalculation, QueryFilter, QueryOperation, QueryOperator } from "./services/api/paths/queries";
 
 const operations = Object.values(QueryOperation) as QueryOperation[];
-const operatiors = Object.values(QueryOperator) as QueryOperator[];
+const operators = Object.values(QueryOperator) as QueryOperator[];
 export const queryFilterRegex = new RegExp(`^([\\w.@\$-()]+)\\s(${operations.join("|")})\\s?'?(.*?)?'?$`);
 export const alertThresholdRegex = new RegExp(
   `^(${operations
@@ -12,7 +12,7 @@ export const alertThresholdRegex = new RegExp(
 
 const arrayFilterRegex = new RegExp(`^(.+) (${["IN", "NOT_IN"].join("|")}) \\((.+)\\)$`);
 
-export const calculationsRegex = new RegExp(`(${operatiors.filter((c) => c !== "COUNT").join("|")})\\(([^)]*)\\)(?: as (\\w+))?|(COUNT)(?: as (\\w+))?$`);
+export const calculationsRegex = new RegExp(`(${operators.filter((c) => c !== "COUNT").join("|")})\\(([^)]*)\\)(?: as (\\w+))?|(COUNT)(?: as (\\w+))?$`);
 
 export function extractCalculation(input: string): QueryCalculation {
   if (input === "COUNT") {
