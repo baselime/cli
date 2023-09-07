@@ -48,8 +48,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { path, url, profile, recurse } = argv;
+  const { path, url, profile, recurse, "api-key": apiKey } = argv;
   spinner.init(!!argv.quiet);
-  await authenticate(profile);
+  await authenticate(profile, apiKey);
   await handlers.publish(path, url, !!recurse);
 }

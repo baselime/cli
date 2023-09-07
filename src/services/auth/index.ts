@@ -20,9 +20,10 @@ export async function deleteUserAuth(profile: string): Promise<string> {
   return configPath;
 }
 
-export async function readUserAuth(profile: string): Promise<UserConfig> {
-  const { BASELIME_API_KEY: apiKey } = process.env;
+export async function readUserAuth(profile: string, apiKey?: string): Promise<UserConfig> {
   if (apiKey) return { apiKey };
+  const { BASELIME_API_KEY: key } = process.env;
+  if (key) return { apiKey: key };
   const configPath = getAuthProfilePath(profile);
   const userConfig = await readJson(configPath);
   return userConfig;

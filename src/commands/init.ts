@@ -53,7 +53,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   const s = spinner.init(!!argv.quiet);
-  let { service, description, profile, template, provider } = argv;
+  let { service, description, profile, template, provider, "api-key": apiKey } = argv;
 
   const folder = ".baselime";
 
@@ -66,7 +66,7 @@ export async function handler(argv: Arguments<Options>) {
   }
 
   mkdirSync(folder);
-  await authenticate(profile);
+  await authenticate(profile, apiKey);
 
   if (!service) {
     const serv = await promptForService();

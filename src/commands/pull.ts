@@ -48,10 +48,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { config, profile, yes, variables: vars } = argv;
+  const { config, profile, yes, variables: vars, "api-key": apiKey } = argv;
   spinner.init(!!argv.quiet);
 
-  await authenticate(profile);
+  await authenticate(profile, apiKey);
   let stage = "";
   const variables: UserVariableInputs = {};
   if (vars?.length === 1 && !vars[0].toString().includes("=")) {

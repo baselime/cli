@@ -42,11 +42,11 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, config, quiet, "out-file": outputFile, format } = argv;
+  const { profile, config, quiet, "out-file": outputFile, format, "api-key": apiKey } = argv;
   let { service } = argv;
   spinner.init(!!argv.quiet);
-  await authenticate(profile);
-  const status = await commonHandler(profile, quiet, undefined, config, service, format);
+  await authenticate(profile, apiKey);
+  const status = await commonHandler(quiet, undefined, config, service, format);
   if (outputFile) {
     writeFileSync(outputFile, Buffer.from(JSON.stringify(status)));
   } else {

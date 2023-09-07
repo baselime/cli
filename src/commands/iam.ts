@@ -31,9 +31,9 @@ export const builder: CommandBuilder<BaseOptions, BaseOptions> = (yargs) => {
 export async function handler(argv: Arguments<BaseOptions>) {
   const s = spinner.init(!!argv.quiet);
 
-  let { profile, format } = argv;
+  let { profile, format, "api-key": apiKey } = argv;
 
-  const config = await authenticate(profile);
+  const config = await authenticate(profile, apiKey);
   s.start("Fetching your authenticated status");
   const { key, workspace, environment } = await api.getApiKeyPermissions();
   s.succeed();

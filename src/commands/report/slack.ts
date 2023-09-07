@@ -56,9 +56,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, channel, path, config, quiet, service } = argv;
+  const { channel, path, config, quiet, service } = argv;
 
-  let status = await commonHandler(profile, quiet, path, config, service);
+  let status = await commonHandler(quiet, path, config, service);
 
   const s = spinner.get();
 

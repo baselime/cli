@@ -58,10 +58,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  let { profile, url, name, description, "start-time": endTime, "end-time": startTime, type, format, service } = argv;
+  let { profile, url, name, description, "start-time": endTime, "end-time": startTime, type, format, service, "api-key": apiKey } = argv;
 
   spinner.init(!!argv.quiet);
-  await authenticate(profile);
+  await authenticate(profile, apiKey);
 
   await handlers.mark({
     format,

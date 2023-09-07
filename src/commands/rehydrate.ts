@@ -33,9 +33,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, "start-date": startDate, "hours-to-recover": hoursToRecover } = argv;
+  const { profile, "start-date": startDate, "hours-to-recover": hoursToRecover, "api-key": apiKey } = argv;
   spinner.init(!!argv.quiet);
-  await authenticate(profile);
+  await authenticate(profile, apiKey);
   const sd = new Date(startDate as string);
   if (isNaN(sd.valueOf())) {
     throw new Error("Invalid Start date");

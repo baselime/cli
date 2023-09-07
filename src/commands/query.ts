@@ -46,10 +46,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  let { profile, id, from, to, granularity, format, service } = argv;
+  let { profile, id, from, to, granularity, format, service, "api-key": apiKey } = argv;
 
   spinner.init(!!argv.quiet);
-  const config = await authenticate(profile);
+  const config = await authenticate(profile, apiKey);
 
   service ??= (await promptServiceSelect())?.name || "";
 

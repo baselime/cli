@@ -6,9 +6,8 @@ import { validateMetadata } from "../../deploy/handlers/validators";
 import api from "../../../services/api/api";
 import outputs from "./outputs";
 
-export async function commonHandler(profile: string, quiet: boolean, path?: string, config?: string, service?: string, format?: OutputFormat) {
+export async function commonHandler(quiet: boolean, path?: string, config?: string, service?: string, format?: OutputFormat) {
   spinner.init(quiet);
-  await authenticate(profile);
 
   const s = spinner.get();
 

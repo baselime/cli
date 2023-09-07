@@ -13,6 +13,7 @@ export interface BaseOptions {
   format: OutputFormat;
   debug: boolean;
   endpoint?: string;
+  "api-key"?: string;
 }
 
 export type OutputFormat = "json" | "table";
@@ -21,6 +22,7 @@ export const baseOptions = {
   profile: { type: "string", default: "default" },
   quiet: { type: "boolean", default: false },
   debug: { type: "boolean", default: false },
+  "api-key": { type: "string" },
   endpoint: { type: "string", hidden: true },
   format: { type: "string", desc: "Format to output the data in", default: "table", choices: ["table", "json"] },
 } as const;
@@ -63,9 +65,9 @@ export function getVersion() {
   return require("../package").version;
 }
 
-export async function authenticate(profile: string) {
+export async function authenticate(profile: string, apiKey?: string) {
   try {
-    const config = await readUserAuth(profile);
+    const config = await readUserAuth(profile, apiKey);
     setAxiosAuth(config.apiKey);
     return config;
   } catch (_) {

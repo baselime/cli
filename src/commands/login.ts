@@ -59,7 +59,7 @@ export async function handler(argv: Arguments<Options>) {
   welcome();
 
   try {
-    const config = await readUserAuth(profile);
+    const config = await readUserAuth(profile, "");
     if (config) {
       userConfigFound(profile);
       const res = await promptReplaceExistingProfile(profile);
@@ -146,7 +146,7 @@ export async function handler(argv: Arguments<Options>) {
     environment: environmentId,
   });
   s.succeed();
-  await authenticate(profile);
+  await authenticate(profile, apiKey);
 
   credentialsConfigured(path);
 }

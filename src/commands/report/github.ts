@@ -54,12 +54,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, repo, "pull-request": prNumber, "github-token": githubToken, path, commit, config, quiet, service } = argv;
+  const { repo, "pull-request": prNumber, "github-token": githubToken, path, commit, config, quiet, service } = argv;
 
   if (!(commit || prNumber)) {
     throw new Error("Please specifiy either --commit or --pull-request");
   }
-  let status = await commonHandler(profile, quiet, path, config, service);
+  let status = await commonHandler(quiet, path, config, service);
   const [owner, name] = repo.split("/");
 
   const s = spinner.get();

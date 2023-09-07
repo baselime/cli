@@ -41,10 +41,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   spinner.init(!!argv.quiet);
-  const { config, profile, "out-file": outFile, format } = argv;
+  const { config, profile, "out-file": outFile, format, "api-key": apiKey } = argv;
   let { service } = argv;
   spinner.init(!!argv.quiet);
-  await authenticate(profile);
+  await authenticate(profile, apiKey);
 
   service = service || (await validateMetadata(config!)).service;
 
