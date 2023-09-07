@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [0.0.77] 2023-09-07
 ### Added
 - Enabled passing the api key as arg 
 
