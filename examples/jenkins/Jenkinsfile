@@ -1,0 +1,30 @@
+// make sure to add "baselime-api-key" to your Jenkins credentials prior to running this pipeline
+
+pipeline {
+    agent any
+
+    stages {
+
+        stage("Report") {
+
+            // We need to specify our agent to be docker using Baselime image
+            agent {
+                docker {
+                    image 'baselime/baselime:latest'
+                    args '--entrypoint='
+                    reuseNode true
+                }
+            }
+
+            environment {
+                // Required: in order to authenticate with Baselime's API
+                BASELIME_API_KEY = credentials('baselime-api-key')
+            }
+
+            steps {
+                // This step will collect and print report of the alerts and their statuses for your service
+                sh 'baselime report'
+            }
+        }
+    }
+}

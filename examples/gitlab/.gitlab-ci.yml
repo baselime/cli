@@ -1,0 +1,19 @@
+default:
+  image:
+    # Specify docker image to be used to execute the pipeline inside
+    name: baselime/baselime:latest
+    entrypoint: [""]
+
+variables:
+  BASELIME_API_KEY: $BASELIME_API_KEY
+
+stages:
+  - report
+
+report:
+  stage: report
+  needs:
+    - push
+  script:
+    # Produces report of your alerts with the latest changes applied.
+    - baselime report --c .baselime

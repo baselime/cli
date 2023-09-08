@@ -1,0 +1,9 @@
+image: baselime/baselime:latest
+
+pipelines:
+  default:
+    # Prints report of your alerts
+    - step:
+        name: 'Print report'
+        script:
+          - baselime report

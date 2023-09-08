@@ -1,0 +1,22 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+
+jobs:
+  apply-changes:
+    runs-on: ubuntu-latest
+    # Make sure to use the latest available version of Baselime's Docker image
+    container: baselime/baselime:latest
+    env:
+      BASELIME_API_KEY: ${{ secrets.BASELIME_API_KEY }}
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        # Collect and print the report for latest deployment of your alerts
+      - name: Print report
+        run: baselime report

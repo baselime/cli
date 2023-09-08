@@ -1,0 +1,25 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.1
+
+workflows:
+  version: 2
+  push-workflow:
+    jobs:
+      - report
+
+# Specify the jobs
+jobs:
+  report:
+    # The Baselime container is very lightweight, so we require smallest resource class
+    resource_class: small
+    docker:
+      - image: baselime/baselime:latest
+    working_directory: /tmp/workspace
+    steps:
+      - checkout
+      - run:
+          name: Produce Report
+          # Produces report of your alerts
+          command: baselime report
