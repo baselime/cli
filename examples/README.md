@@ -6,7 +6,7 @@ Example implmentations of the Baselime CLI in major CI/CD platforms:
 - [Jenkins](jenkins)
 - [Gitlab](gitlab)
 - [CircleCI](circleci)
-- [Bitbucket](circleci)
+- [Bitbucket](bitbucket)
 
 The above examples use the [Baselime Docker image](https://hub.docker.com/r/baselime/baselime) to execute the Baselime CLI.
 
