@@ -35,7 +35,7 @@ export function iam(profile: string, key: APIKey, workspace: Workspace, environm
   const table = new Table({
     chars: tableChars,
   });
-  
+
   table.push(["Workspace", `${workspace.id}`]);
   table.push(["Environment", `${environment.id}`]);
   table.push(["User ID", key.userId]);
