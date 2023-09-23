@@ -7,10 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
+## [0.0.79] 2023-09-23
 ### Added
 - Add metadata to baselime mark command
 ### Fixed
 - Improved baselime iam output formatting
+
 ## [0.0.78] 2023-09-23
 ### Removed
 - API Key permissions
