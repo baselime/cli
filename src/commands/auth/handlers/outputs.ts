@@ -38,18 +38,7 @@ export function iam(profile: string, key: APIKey, workspace: Workspace, environm
   });
   table.push([`${workspace.id}`, `${environment.id}`, key.userId, apiKey]);
 
-  const permissionsTable = new Table({
-    chars: tableChars,
-    head: ["Permission", "Value"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
-  });
-  Object.keys(key.permissions)
-    .sort()
-    .map((k) => {
-      permissionsTable.push([k, (key.permissions as any)[k]]);
-    });
-
   console.log(`\n${path}`);
   console.log(BASELIME_DOMAIN);
   console.log(table.toString());
-  console.log(permissionsTable.toString());
 }

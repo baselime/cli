@@ -4,7 +4,6 @@ export interface APIKey {
   userId: string;
   environmentId: string;
   workspaceId: string;
-  permissions: KeyPermissions;
   created: string;
   updated: string;
 }
