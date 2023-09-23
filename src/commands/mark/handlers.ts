@@ -12,19 +12,32 @@ async function mark(data: {
   url?: string;
   name?: string;
   description?: string;
+  metadata?: string;
   startTime?: number;
   endTime?: number;
   type?: string;
 }) {
-  const { format, service, url, name, description, startTime, endTime, type } = data;
+  const { format, service, url, name, description, metadata, startTime, endTime, type } = data;
   const s = spinner.get();
   s.start("Creating marker");
+
+  let parsed: Record<string, any> | undefined;
+  if (metadata) {
+    try {
+      parsed = JSON.parse(metadata);
+    } catch (error) {
+      s.fail("Failed to parse the marker metadata");
+      console.error(error);
+      return;
+    }
+  }
 
   const marker = await api.markerCreate({
     service,
     url,
     name,
     description,
+    metadata: parsed,
     startTime: startTime || dayjs().valueOf(),
     endTime,
     type,

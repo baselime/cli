@@ -9,6 +9,7 @@ export interface Options extends BaseOptions {
   url?: string;
   name?: string;
   description?: string;
+  metadata?: string;
   "start-time"?: number;
   "end-time"?: number;
   type?: string;
@@ -24,16 +25,20 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       service: { type: "string", desc: "The service to add the marker to", default: "default" },
       url: {
         type: "string",
-        desc: "The URL associated with this specific marker",
+        desc: "The URL associated with the marker",
       },
       name: {
         type: "string",
-        desc: "The name of this specific marker",
+        desc: "The name of the marker",
         default: "created-by-baselime-cli",
       },
       description: {
         type: "string",
-        desc: "The description of this specific marker",
+        desc: "The description of the marker",
+      },
+      metadata: {
+        type: "string",
+        desc: "JSON object metadata of the marker",
       },
       "start-time": {
         type: "number",
@@ -48,7 +53,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       [
         `
       # Creates a marker
-      baselime mark --service <service_name> --url <marker_url> --description <description>
+      baselime mark --service <service_name> --url <marker_url> --description <description> --metadata <json-object>
       `,
       ],
     ])
@@ -58,7 +63,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  let { profile, url, name, description, "start-time": endTime, "end-time": startTime, type, format, service, "api-key": apiKey } = argv;
+  let { profile, url, name, description, metadata, "start-time": endTime, "end-time": startTime, type, format, service, "api-key": apiKey } = argv;
 
   spinner.init(!!argv.quiet);
   await authenticate(profile, apiKey);
@@ -69,6 +74,7 @@ export async function handler(argv: Arguments<Options>) {
     url,
     name,
     description,
+    metadata,
     startTime,
     endTime,
     type,
