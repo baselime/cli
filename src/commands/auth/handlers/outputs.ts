@@ -34,11 +34,14 @@ export function iam(profile: string, key: APIKey, workspace: Workspace, environm
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Workspace", "Environment", "userId", "apiKey"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
-  table.push([`${workspace.id}`, `${environment.id}`, key.userId, apiKey]);
+  
+  table.push(["Workspace", `${workspace.id}`]);
+  table.push(["Environment", `${environment.id}`]);
+  table.push(["User ID", key.userId]);
+  table.push(["API Key", apiKey]);
+  table.push(["Path", path]);
+  table.push(["Domain", BASELIME_DOMAIN]);
 
-  console.log(`\n${path}`);
-  console.log(BASELIME_DOMAIN);
   console.log(table.toString());
 }
