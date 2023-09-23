@@ -1,6 +1,6 @@
 {
   "name": "@baselime/cli",
-  "version": "0.0.77",
+  "version": "0.0.78",
   "description": "",
   "main": "./build/cli.js",
   "bin": {
