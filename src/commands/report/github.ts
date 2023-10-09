@@ -9,8 +9,7 @@ export interface Options extends BaseOptions {
   "pull-request"?: number;
   commit?: string;
   path?: string;
-  service?: string;
-  config?: string;
+  service: string;
   "github-token": string;
 }
 
@@ -28,13 +27,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       path: { type: "string", desc: "Path to the Baselime output file", required: false },
       service: {
         type: "string",
-        desc: "The service to create the report for. Defaults to the service specified in the .baselime folder, if it exists.",
-      },
-      config: {
-        type: "string",
-        desc: "The configuration folder to create the report for. This will be used to determine the service if no service is provided.",
-        alias: "c",
-        default: ".baselime",
+        desc: "The service to create the report for.",
+        required: true,
       },
     })
     .example([
@@ -54,12 +48,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { repo, "pull-request": prNumber, "github-token": githubToken, path, commit, config, quiet, service } = argv;
+  const { repo, "pull-request": prNumber, "github-token": githubToken, path, commit, quiet, service } = argv;
 
   if (!(commit || prNumber)) {
     throw new Error("Please specifiy either --commit or --pull-request");
   }
-  let status = await commonHandler(quiet, path, config, service);
+  let status = await commonHandler(quiet, service, path);
   const [owner, name] = repo.split("/");
 
   const s = spinner.get();

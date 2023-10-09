@@ -6,8 +6,7 @@ import { commonHandler } from "./handlers/common";
 
 export interface Options extends BaseOptions {
   "out-file"?: string;
-  service?: string;
-  config?: string;
+  service: string;
 }
 
 export const command = "*";
@@ -18,12 +17,6 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
     .options({
       ...baseOptions,
       "out-file": { type: "string", desc: "Path to the Baselime output file", required: false },
-      config: {
-        type: "string",
-        desc: "The configuration folder to create the report for. This will be used to determine the service if no service is provided.",
-        alias: "c",
-        default: ".baselime",
-      },
     })
     .example([
       [
@@ -42,11 +35,11 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { profile, config, quiet, "out-file": outputFile, format, "api-key": apiKey } = argv;
+  const { profile, quiet, "out-file": outputFile, format, "api-key": apiKey } = argv;
   let { service } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile, apiKey);
-  const status = await commonHandler(quiet, undefined, config, service, format);
+  const status = await commonHandler(quiet, service, undefined, format);
   if (outputFile) {
     writeFileSync(outputFile, Buffer.from(JSON.stringify(status)));
   } else {

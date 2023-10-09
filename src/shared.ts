@@ -4,8 +4,6 @@ import { client, setAxiosAuth } from "./services/api/clients";
 import { readUserAuth } from "./services/auth";
 import * as os from "os";
 import { hideBin } from "yargs/helpers";
-import spinner from "./services/spinner";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { promisify } from "util";
 export interface BaseOptions {
   profile: string;
@@ -51,7 +49,7 @@ export function printError(message: string, err: Error, yargs: any) {
   Environment: ${os.platform()}, node ${process.version} 
   Backend: ${client.defaults.baseURL}
   Docs: baselime.io/docs/
-  Support: forum.baselime.io
+  Support: baselime.io
   Bugs: github.com/baselime/cli/issues
     `);
     console.error(err);
@@ -111,23 +109,6 @@ export const blankChars = {
   "right-mid": "",
   middle: "",
 };
-
-export function writeOutFile(folder: string, metadata: Record<string, any>, resources: Record<string, any>) {
-  const s = spinner.get();
-
-  const dir = `${folder}/.out`;
-  try {
-    if (!existsSync(dir)) {
-      mkdirSync(dir);
-    }
-    writeFileSync(`${dir}/.baselime.json`, JSON.stringify({ ...metadata, resources }, null, 2));
-  } catch (error) {
-    const m = `folder: ${folder} - failed to create out file`;
-    s.fail(chalk.bold(chalk.red("Validation error")));
-    console.log(m);
-    throw new Error(m);
-  }
-}
 
 export async function retryAfterSeconds(func: Function, mili: number) {
   try {

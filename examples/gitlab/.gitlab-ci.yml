@@ -16,4 +16,4 @@ report:
     - push
   script:
     # Produces report of your alerts with the latest changes applied.
-    - baselime report --c .baselime
+    - baselime report

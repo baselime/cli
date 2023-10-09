@@ -2,11 +2,10 @@ import spinner from "../../../services/spinner";
 import { authenticate, getVersion, OutputFormat } from "../../../shared";
 import { readFile } from "fs-extra";
 import { AlertCheck } from "../../../services/api/paths/alert-checks";
-import { validateMetadata } from "../../deploy/handlers/validators";
 import api from "../../../services/api/api";
 import outputs from "./outputs";
 
-export async function commonHandler(quiet: boolean, path?: string, config?: string, service?: string, format?: OutputFormat) {
+export async function commonHandler(quiet: boolean, service: string, path?: string, format?: OutputFormat) {
   spinner.init(quiet);
 
   const s = spinner.get();
@@ -15,7 +14,6 @@ export async function commonHandler(quiet: boolean, path?: string, config?: stri
   if (path) {
     status = JSON.parse((await readFile(path)).toString()) as { version: string; service: string; alertChecks: AlertCheck[] };
   } else {
-    service = service || (await validateMetadata(config!)).service;
     s.start("Creating snapshots...");
     const ids = (await api.alertsList(service)).map((alert) => alert.id);
     const promises = ids.map(async (id) => {

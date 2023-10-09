@@ -82,7 +82,7 @@ In all cases the installation can be validated by running `baselime -v` in the
 terminal:
 
 ```shell
-0.0.2
+0.0.78
 ```
 
 ## Usage

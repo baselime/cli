@@ -7,7 +7,7 @@ import { commonHandler } from "./handlers/common";
 export interface Options extends BaseOptions {
   channel: string;
   path?: string;
-  service?: string;
+  service: string;
   config?: string;
 }
 
@@ -30,13 +30,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       },
       service: {
         type: "string",
-        desc: "The service to create the report for. Defaults to the service specified in the .baselime folder, if it exists.",
-      },
-      config: {
-        type: "string",
-        desc: "The configuration folder to create the report for. This will be used to determine the service if no service is provided.",
-        alias: "c",
-        default: ".baselime",
+        desc: "The service to create the report for.",
+        required: true,
       },
     })
     .example([
@@ -56,9 +51,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { channel, path, config, quiet, service } = argv;
+  const { channel, path, quiet, service } = argv;
 
-  let status = await commonHandler(quiet, path, config, service);
+  let status = await commonHandler(quiet, service, path);
 
   const s = spinner.get();
 
