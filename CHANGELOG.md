@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Deprecated
+- connect command
 
 ## [0.0.80] 2023-10-10
 ### Deprecated

@@ -4,21 +4,10 @@ import { readUserAuth, writeUserAuth } from "../services/auth";
 import spinner from "../services/spinner";
 import { authenticate, baseOptions, BaseOptions, printError } from "../shared";
 import { credentialsConfigured, userConfigFound, welcome } from "./auth/handlers/outputs";
-import {
-  promptAWSAccountId,
-  promptAWSRegion,
-  promptEnvironmentAlias,
-  promptForEnvironment,
-  promptForOneTimePassword,
-  promptForWorkspaceName,
-  promptReplaceExistingProfile,
-  promptForIDPProvider,
-} from "./auth/handlers/prompts";
+import { promptForEnvironment, promptForOneTimePassword, promptForWorkspaceName, promptReplaceExistingProfile, promptForIDPProvider } from "./auth/handlers/prompts";
 import * as open from "open";
 import { PORT, startServer } from "../services/auth/server";
-import { connect } from "./connect/handlers/handlers";
 import { Stage } from "../services/api/paths/onboarding";
-import { resolve } from "path";
 
 export interface Options extends BaseOptions {
   email?: string;
@@ -124,18 +113,8 @@ export async function handler(argv: Arguments<Options>) {
 
   let { workspaceId, environmentId, isCreate } = await promptForEnvironment(workspaces);
   if (isCreate) {
-    const provider = "aws";
-    const alias = await promptEnvironmentAlias();
-    const account = await promptAWSAccountId();
-    const region = await promptAWSRegion();
-    environmentId = alias;
-    await connect("table", workspaceId, provider, { account, region }, alias, oathData.id_token);
-
-    await api.editOnboardingStatus({
-      token: oathData.id_token,
-      stage: Stage.CONNECT_ENVIRONMENT,
-      completed: true,
-    });
+    s.succeed();
+    return;
   }
 
   s.start("Fetching your API key...");

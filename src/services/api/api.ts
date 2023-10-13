@@ -8,7 +8,6 @@ import services from "./paths/services";
 import events from "./paths/events";
 import cli from "./paths/cli";
 import iam from "./paths/iam";
-import aws from "./paths/aws";
 import reports from "./paths/reports";
 import slack from "./paths/slack";
 import keys from "./paths/keys";
@@ -29,7 +28,6 @@ export default {
   ...events,
   ...cli,
   ...iam,
-  ...aws,
   ...reports,
   ...alertChecks,
   ...slack,

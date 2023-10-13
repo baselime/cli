@@ -35,55 +35,6 @@ export async function promptForIDPProvider(): Promise<string> {
   return idpProvider;
 }
 
-export async function promptEnvironmentAlias(): Promise<string> {
-  const { alias } = await prompt<{ alias: string }>({
-    type: "input",
-    name: "alias",
-    message: "Name your environment",
-    required: true,
-    initial: "prod",
-  });
-
-  return alias.replace(/[^\w\s]/gi, "-");
-}
-
-export async function promptAWSAccountId(): Promise<string> {
-  const { accountId } = await prompt<{ accountId: string }>({
-    type: "input",
-    name: "accountId",
-    message: "Provide your AWS account ID",
-    required: true,
-    initial: "012345678912",
-  });
-
-  return accountId.replace(/[^\w\s]/gi, "-");
-}
-
-export async function promptAWSRegion(): Promise<string> {
-  const regions = [
-    "us-east-1",
-    "us-east-2",
-    "us-west-2",
-    "eu-central-1",
-    "eu-west-2",
-    "ap-south-1",
-    "ap-southeast-1",
-    "ap-southeast-2",
-    "ap-northeast-1",
-    "eu-west-1",
-    "ca-central-1",
-  ];
-
-  const { region } = await prompt<{ region: string }>({
-    type: "autocomplete",
-    name: "region",
-    message: "Which key to group by?",
-    choices: regions.sort(),
-  });
-
-  return region;
-}
-
 export async function promptForOneTimePassword(email: string): Promise<string> {
   const otpSchema = yup.string().length(8).required();
 
@@ -139,6 +90,11 @@ export async function promptForEnvironment(workspaces: Workspace[]): Promise<{ i
       });
     });
 
+  if (!environments.length) {
+    console.log("Create an environment in the Baselime console: https://console.baselime.io");
+    return { isCreate: true, workspaceId: "", environmentId: "" };
+  }
+
   const choices = environments.map((env) => {
     return {
       name: env.id,
@@ -146,21 +102,16 @@ export async function promptForEnvironment(workspaces: Workspace[]): Promise<{ i
       value: env.id,
     };
   });
-  const create = { name: "baselime-create-an-environment", message: "Create an environment", value: "baselime-create-an-environment" };
   const { environmentId } = await prompt<{ environmentId: string }>({
     type: "select",
     name: "environmentId",
     message: "Select one of your environments",
-    choices: [create, ...choices],
+    choices: choices,
     required: true,
     result(value) {
       return value;
     },
   });
-
-  if (environmentId === create.value) {
-    return { isCreate: true, workspaceId: workspaces[0].id, environmentId };
-  }
 
   const environment = environments.find((env) => env.id === environmentId);
   return { isCreate: false, workspaceId: environment!.workspaceId, environmentId };
