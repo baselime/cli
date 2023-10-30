@@ -8,7 +8,6 @@ import { KeySet } from "../../../services/api/paths/keys";
 import ms from "ms";
 import { Dataset } from "../../../services/api/paths/datasets";
 
-
 export async function promptQuerySelect(): Promise<Query | undefined> {
   const s = spinner.get();
   s.start("Fetching your queries...");

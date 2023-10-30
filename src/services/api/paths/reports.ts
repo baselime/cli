@@ -5,13 +5,13 @@ export interface GitHubReportData {
   repo: { owner: string; name: string };
   prNumber?: number;
   commit?: string;
-  status: { version: string; alertChecks: AlertCheck[]; };
+  status: { version: string; alertChecks: AlertCheck[] };
   token: string;
 }
 
 export interface SlackReportData {
   channel: string;
-  status: { version: string; alertChecks: AlertCheck[]; };
+  status: { version: string; alertChecks: AlertCheck[] };
 }
 
 async function reportGithubCreate(data: GitHubReportData): Promise<boolean> {

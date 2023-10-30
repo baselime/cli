@@ -45,7 +45,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { channel, path, quiet, } = argv;
+  const { channel, path, quiet } = argv;
 
   let status = await commonHandler(quiet, path);
 

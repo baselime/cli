@@ -88,9 +88,7 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Aggregates; series
     });
   }
   console.log();
-  console.log(
-    `Explore the query results: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/queries/${queryRun.query.id}/${queryRun.id}`,
-  );
+  console.log(`Explore the query results: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/queries/${queryRun.query.id}/${queryRun.id}`);
 }
 
 function getChartData(data: { aggregates?: Aggregates; series: Series[] }) {
