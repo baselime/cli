@@ -14,10 +14,10 @@ function list(alerts: Alert[], format: OutputFormat) {
   }
   const table = new Table({
     chars: tableChars,
-    head: ["Service", "Id", "Name", "Enabled", "Created (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
+    head: ["Id", "Name", "Enabled", "Created (UTC)"].map((e) => `${chalk.bold(chalk.cyan(e))}`),
   });
   alerts.forEach((alert) => {
-    table.push([alert.service, alert.id, alert.name, alert.enabled, alert.created]);
+    table.push([alert.id, alert.name, alert.enabled, alert.created]);
   });
   console.log(`${table.toString()}`);
   console.log(`✨ ${chalk.bold(chalk.cyan(`${alerts.length} alerts`))}`);
@@ -42,7 +42,7 @@ function test(alertChecks: AlertCheck[], format: OutputFormat) {
     });
     const colorize = alertCheck.triggered ? chalk.red : chalk.green;
 
-    const url = `https://console.${BASELIME_DOMAIN}/${alertCheck.workspaceId}/${alertCheck.environmentId}/${alertCheck.service}/alerts/${alertCheck.alertId}/${alertCheck.id}`;
+    const url = `https://console.${BASELIME_DOMAIN}/${alertCheck.workspaceId}/${alertCheck.environmentId}/alerts/${alertCheck.alertId}/${alertCheck.id}`;
     table.push([
       alertCheck.triggered ? "🔴" : "🟢",
       `${colorize(alertCheck.alertId)}\n\Threshold: ${alertCheck.calculationKey} ${alertCheck.threshold.operation} ${alertCheck.threshold.value}\n${colorize(

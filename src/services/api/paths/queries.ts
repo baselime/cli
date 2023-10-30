@@ -80,7 +80,6 @@ export interface Query {
   description: string;
   workspaceId: string;
   environmentId: string;
-  service: string;
   userId: string;
   created?: string;
   updated?: string;
@@ -92,8 +91,8 @@ export interface SearchNeedle {
   matchCase?: boolean;
 }
 
-async function queriesList(service?: string): Promise<Query[]> {
-  const res = (await client.get("/queries", { params: { service } })).data;
+async function queriesList(): Promise<Query[]> {
+  const res = (await client.get("/queries")).data;
   return res.queries;
 }
 

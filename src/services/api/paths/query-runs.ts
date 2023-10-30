@@ -9,7 +9,6 @@ export interface QueryRun {
   };
   workspaceId: string;
   environmentId: string;
-  service: string;
   timeframe: {
     from: number;
     to: number;
@@ -40,7 +39,6 @@ export interface SeriesData {
 }
 
 export interface QueryRunGetParams {
-  service: string;
   queryId: string;
   id: string;
   events?: boolean;
@@ -51,7 +49,6 @@ export interface QueryRunGetParams {
 }
 
 export interface QueryRunCreateParams {
-  service: string;
   queryId: string;
   granularity?: number;
   timeframe: {
@@ -85,14 +82,14 @@ export interface QueryRunCreateParams {
   config: UserConfig;
 }
 
-async function queryRunsList(service: string, queryId: string): Promise<QueryRun[]> {
-  const res = (await client.get(`/query-runs/${service}/${queryId}`)).data;
+async function queryRunsList(queryId: string): Promise<QueryRun[]> {
+  const res = (await client.get(`/query-runs/${queryId}`)).data;
   return res.queryRuns;
 }
 
 async function queryRunGet(params: QueryRunGetParams): Promise<{ queryRun: QueryRun[]; events: Event[]; calculations: Record<string, any>; count: number }> {
   const res = (
-    await client.get(`/query-runs/${params.service}/${params.queryId}/${params.id}`, {
+    await client.get(`/query-runs/${params.queryId}/${params.id}`, {
       params: {
         events: params.events,
         from: params.from,

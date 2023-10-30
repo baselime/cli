@@ -9,7 +9,6 @@ export interface Options extends BaseOptions {
   "pull-request"?: number;
   commit?: string;
   path?: string;
-  service: string;
   "github-token": string;
 }
 
@@ -25,11 +24,6 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
       commit: { type: "string", desc: "Commit Id", required: false },
       "github-token": { type: "string", desc: "Token used to post the report on GitHub", required: true },
       path: { type: "string", desc: "Path to the Baselime output file", required: false },
-      service: {
-        type: "string",
-        desc: "The service to create the report for.",
-        required: true,
-      },
     })
     .example([
       [
@@ -48,12 +42,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { repo, "pull-request": prNumber, "github-token": githubToken, path, commit, quiet, service } = argv;
+  const { repo, "pull-request": prNumber, "github-token": githubToken, path, commit, quiet } = argv;
 
   if (!(commit || prNumber)) {
     throw new Error("Please specifiy either --commit or --pull-request");
   }
-  let status = await commonHandler(quiet, service, path);
+  let status = await commonHandler(quiet, path);
   const [owner, name] = repo.split("/");
 
   const s = spinner.get();

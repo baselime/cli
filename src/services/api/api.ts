@@ -2,7 +2,6 @@ import auth from "./paths/auth";
 import queries from "./paths/queries";
 import alerts from "./paths/alerts";
 import alertChecks from "./paths/alert-checks";
-import deployments from "./paths/deployments";
 import queryRuns from "./paths/query-runs";
 import services from "./paths/services";
 import events from "./paths/events";
@@ -22,7 +21,6 @@ export default {
   ...auth,
   ...queries,
   ...alerts,
-  ...deployments,
   ...queryRuns,
   ...services,
   ...events,

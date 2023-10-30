@@ -6,7 +6,6 @@ import { commonHandler } from "./handlers/common";
 
 export interface Options extends BaseOptions {
   "out-file"?: string;
-  service: string;
 }
 
 export const command = "*";
@@ -36,10 +35,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 
 export async function handler(argv: Arguments<Options>) {
   const { profile, quiet, "out-file": outputFile, format, "api-key": apiKey } = argv;
-  let { service } = argv;
   spinner.init(!!argv.quiet);
   await authenticate(profile, apiKey);
-  const status = await commonHandler(quiet, service, undefined, format);
+  const status = await commonHandler(quiet, undefined, format);
   if (outputFile) {
     writeFileSync(outputFile, Buffer.from(JSON.stringify(status)));
   } else {

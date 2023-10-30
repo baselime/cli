@@ -8,32 +8,11 @@ import { KeySet } from "../../../services/api/paths/keys";
 import ms from "ms";
 import { Dataset } from "../../../services/api/paths/datasets";
 
-export async function promptServiceSelect(): Promise<Service | undefined> {
-  const s = spinner.get();
-  s.start("Fetching your services");
-  const services = await api.servicesList();
-  s.succeed();
 
-  if (services.length === 0) {
-    throw new Error("No service found. Please create at least one Baselime service.");
-  }
-
-  const { name } = await prompt<{ name: string }>({
-    type: "select",
-    name: "name",
-    message: `${chalk.bold("Select a service")}`,
-    choices: services.map((service) => {
-      return { name: service.name, value: service.name };
-    }),
-  });
-
-  return services.find((service) => service.name === name);
-}
-
-export async function promptQuerySelect(service?: string): Promise<Query | undefined> {
+export async function promptQuerySelect(): Promise<Query | undefined> {
   const s = spinner.get();
   s.start("Fetching your queries...");
-  const queries = await api.queriesList(service);
+  const queries = await api.queriesList();
   s.succeed();
 
   const choices = [

@@ -89,7 +89,7 @@ function getQueryRun(data: { queryRun: QueryRun; aggregates?: Aggregates; series
   }
   console.log();
   console.log(
-    `Explore the query results: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/${queryRun.service}/queries/${queryRun.query.id}/${queryRun.id}`,
+    `Explore the query results: https://console.${BASELIME_DOMAIN}/${queryRun.workspaceId}/${queryRun.environmentId}/queries/${queryRun.query.id}/${queryRun.id}`,
   );
 }
 

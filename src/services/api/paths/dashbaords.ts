@@ -20,7 +20,6 @@ export interface Dashboard {
   description?: string;
   workspaceId: string;
   environmentId: string;
-  service: string;
   userId: string;
   parameters: DashboardParameters;
   created?: string;
@@ -31,8 +30,8 @@ export interface DashboardParameters {
   widgets: Widget[];
 }
 
-async function dashboardsList(service?: string): Promise<Dashboard[]> {
-  const res = (await client.get("/dashboards", { params: { service } })).data;
+async function dashboardsList(): Promise<Dashboard[]> {
+  const res = (await client.get("/dashboards")).data;
   return res.alerts;
 }
 

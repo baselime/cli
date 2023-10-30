@@ -7,7 +7,6 @@ import { UserConfig } from "../../auth";
 interface KeysGetParams {
   datasets: string[];
   timeframe: Timeframe;
-  service: string;
   config: UserConfig;
 }
 
@@ -25,7 +24,6 @@ async function getKeys(params: KeysGetParams): Promise<KeySet[]> {
         from: params.timeframe.from,
         to: params.timeframe.to,
         datasets: params.datasets,
-        service: params.service,
       },
     })
   ).data;

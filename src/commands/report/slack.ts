@@ -7,7 +7,6 @@ import { commonHandler } from "./handlers/common";
 export interface Options extends BaseOptions {
   channel: string;
   path?: string;
-  service: string;
   config?: string;
 }
 
@@ -28,11 +27,6 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
         desc: "Path to the Baselime output file",
         required: false,
       },
-      service: {
-        type: "string",
-        desc: "The service to create the report for.",
-        required: true,
-      },
     })
     .example([
       [
@@ -51,9 +45,9 @@ export const builder: CommandBuilder<Options, Options> = (yargs) => {
 };
 
 export async function handler(argv: Arguments<Options>) {
-  const { channel, path, quiet, service } = argv;
+  const { channel, path, quiet, } = argv;
 
-  let status = await commonHandler(quiet, service, path);
+  let status = await commonHandler(quiet, path);
 
   const s = spinner.get();
 

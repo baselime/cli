@@ -18,11 +18,10 @@ async function createRun(data: {
   from: string;
   to: string;
   id: string;
-  service: string;
   granularity?: string;
   config: UserConfig;
 }) {
-  const { format, from, to, service, id, config, granularity } = data;
+  const { format, from, to, id, config, granularity } = data;
   const s = spinner.get();
   const timeframe = getTimeframe(from, to);
   s.start("Running the query ");
@@ -32,7 +31,6 @@ async function createRun(data: {
     calculations: { aggregates, series },
     events: { events, count },
   } = await api.queryRunCreate({
-    service: service,
     queryId: id,
     timeframe,
     config,
@@ -42,13 +40,12 @@ async function createRun(data: {
   outputs.getQueryRun({ queryRun, aggregates, series, events, format });
 }
 
-async function getApplicableKeys(timeframe: Timeframe, datasets: string[], service: string, config: UserConfig): Promise<KeySet[]> {
+async function getApplicableKeys(timeframe: Timeframe, datasets: string[], config: UserConfig): Promise<KeySet[]> {
   const s = spinner.get();
   s.start("Fetching keys...");
   const keys = await api.getKeys({
     datasets,
     timeframe,
-    service,
     config,
   });
   s.succeed();
@@ -63,16 +60,16 @@ async function getApplicableDatasets(): Promise<Dataset[]> {
   return datasets;
 }
 
-async function interactive(input: { queryId: string; service: string; format: OutputFormat; from: string; to: string; granularity: string; config: UserConfig }) {
+async function interactive(input: { queryId: string;  format: OutputFormat; from: string; to: string; granularity: string; config: UserConfig }) {
   const s = spinner.get();
-  const { queryId, service, format, config } = input;
+  const { queryId, format, config } = input;
   let { from, to, granularity } = input;
 
   const applicableDatasets = await getApplicableDatasets();
 
   let timeframe = getTimeframe(from, to);
   let datasets = await promptDatasets(applicableDatasets);
-  let applicableKeys = await getApplicableKeys(timeframe, datasets, service, config);
+  let applicableKeys = await getApplicableKeys(timeframe, datasets, config);
 
   while (!applicableKeys.length) {
     const choices: Record<string, string> = {
@@ -101,7 +98,7 @@ async function interactive(input: { queryId: string; service: string; format: Ou
         break;
     }
     timeframe = getTimeframe(from, to);
-    applicableKeys = await getApplicableKeys(timeframe, datasets, service, config);
+    applicableKeys = await getApplicableKeys(timeframe, datasets, config);
   }
 
   let calculations = await promptCalculations(
@@ -128,7 +125,6 @@ async function interactive(input: { queryId: string; service: string; format: Ou
     calculations: { aggregates, series },
     events: { events, count },
   } = await api.queryRunCreate({
-    service,
     queryId,
     timeframe,
     granularity: granularity ? getGranularity(granularity) : undefined,
