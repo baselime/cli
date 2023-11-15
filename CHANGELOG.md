@@ -6,11 +6,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] 
+
+## [0.0.84] 2023-11-15
 ### Changed
 - The README
 - The splash screen after login
-
-
 
 ## [0.0.83] 2023-10-30
 ### Deleted
