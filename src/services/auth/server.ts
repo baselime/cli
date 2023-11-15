@@ -28,7 +28,7 @@ const template = (name: string, logout?: string) => /*html*/ `<!DOCTYPE html>
             <img src="https://cli-assets.baselime.io/baselime_celebrations@2x.png" class="h-40 w-40 mb-6" alt="Baselime illustration"/>
           </div>
           <h1 class="text-white text-4xl" style="font-family: 'Poppins', sans-serif;">Welcome ${name || "baselimer"}!</h1>
-          <p class="text-white text-center" style="font-family: 'Poppins', sans-serif;">Return to your terminal to setup your environment and start with observability for serverless.</p>
+          <p class="text-white text-center" style="font-family: 'Poppins', sans-serif;">Return to your terminal to setup your environment and start observing your apps.</p>
          </div>
       </div>
     </div>
